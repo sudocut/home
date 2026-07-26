@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SudoCut PRIMARY LOCKUP — horizontal.
+  Mark + wordmark + tagline, per Option H lockup 1 of 6.
+
+  Wordmark rule: lowercase "sudocut", "sudo" in ink and "cut" in cobalt.
+  The colour break lands exactly where the product name does — the cut.
+
+  NOTE: this uses live <text>, so it renders correctly only where the Jost
+  face is available. Convert to outlined paths before sending anywhere
+  outside our own surfaces, or request the official vector (Q-VECTORS).
+
+  Geometry: mark occupies 0-72. The wordmark begins at x=94, i.e. exactly
+  one bar-width (22) of clear space after the mark, per the clear-space rule.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 372 88" width="372" height="88" role="img" aria-label="SudoCut — less footage, more story">
+  <title>SudoCut</title>
+
+  <!-- mark -->
+  <rect x="0"  y="0" width="22" height="88" fill="var(--sc-ink, #24292c)"/>
+  <rect x="34" y="0" width="4"  height="88" fill="var(--sc-accent, #1f55ff)"/>
+  <rect x="50" y="0" width="22" height="88" fill="var(--sc-ink, #24292c)"/>
+
+  <!-- wordmark: Jost 400, tight -->
+  <text x="94" y="58"
+        font-family="Jost Local, Jost, sans-serif"
+        font-size="58" font-weight="400" letter-spacing="-1.6">
+    <tspan fill="var(--sc-ink, #24292c)">sudo</tspan><tspan fill="var(--sc-accent, #1f55ff)">cut</tspan>
+  </text>
+
+  <!-- tagline: mono, uppercase, generously tracked -->
+  <text x="96" y="80"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="11" font-weight="400" letter-spacing="2.6"
+        fill="var(--sc-muted, #666c70)">LESS FOOTAGE. MORE STORY.</text>
+</svg>

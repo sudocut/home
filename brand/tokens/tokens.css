@@ -1,0 +1,126 @@
+/* =========================================================================
+ * SudoCut Brand Tokens v2.0
+ * GENERATED FROM tokens.json BY tools/build-tokens.mjs — DO NOT HAND-EDIT.
+ *
+ * Authority order:
+ *   1. meta/strategy/soul.md                  the constitution
+ *   2. sudocut/web shipped Round 6            the visual system of record
+ *      (web/design/mockups/shared/bauhaus.css, body[data-round="6"], L2694-2713)
+ *   3. brand/reference/option-h-*.pdf         an exploration, values superseded
+ *
+ * Nothing outside brand/tokens/ may declare a color, typeface, spacing,
+ * radius, shadow or easing literal.
+ * ========================================================================= */
+
+/* --- Typefaces: three SIL OFL variable faces, vendored in /public/fonts ---
+ * IBM Plex Mono is deliberately absent: it cannot set Hangul, and soul.md
+ * mandates Korean-first. See brand/SUPERSEDES.md.
+ */
+@font-face {
+  font-family: "Jost Local";
+  src: url("/fonts/Jost-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "SUIT Local";
+  src: url("/fonts/SUIT-Variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Hahmlet Local";
+  src: url("/fonts/Hahmlet-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  /* ===== RAW BRAND VALUES — web-shipped, bauhaus.css body[data-round="6"] ===== */
+  --sc-ink: #24292c;                      /* L2695 */
+  --sc-structure: #656b6f;                /* L2696 */
+  --sc-shadow-grey: #aeb2b3;              /* L2697 */
+  --sc-paper: #f1f1ec;                    /* L2698 — warm, per soul.md */
+  --sc-panel: #fbfaf5;                    /* L2699 */
+  --sc-muted: #666c70;                    /* L2700 */
+  --sc-line: rgba(36, 41, 44, 0.2);       /* L2701 */
+  --sc-accent: #1f55ff;                   /* L2702 — cobalt, THE point color */
+  --sc-accent-ink: #ffffff;               /* L2703 */
+  --sc-accent-soft: #dfe3ec;              /* L2704 */
+  --sc-signal-red: #ff3b2f;               /* L2705 — status only */
+  --sc-signal-yellow: #ffd523;            /* L2706 — status only */
+  --sc-primary-shadow: #000000;           /* L2707 */
+  --sc-rail: #e5e6e3;                     /* L2708 */
+  --sc-rail-hover: #d4d6d4;               /* L2709 */
+  --sc-rail-current: #c9ccca;             /* L2710 */
+  --sc-rail-strong: #676e72;              /* L2711 */
+
+  /* ===== TYPEFACES ===== */
+  --sc-face-jost: "Jost Local", "SUIT Local", sans-serif;
+  --sc-face-suit: "SUIT Local", "Jost Local", sans-serif;
+  --sc-face-hahmlet: "Hahmlet Local", "SUIT Local", serif;
+  --sc-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* ===== TYPE ROLES — Round 6 selected defaults ===== */
+  --sc-heavy: var(--sc-face-hahmlet);     /* display  (runtime default of the selected variant) */
+  --sc-body: var(--sc-face-suit);         /* UI + Korean */
+  --sc-numbers: var(--sc-face-jost);      /* numerals */
+
+  /* ===== GEOMETRY ===== */
+  --sc-radius: 0px;                       /* bauhaus.css L26 — see Q-RADIUS */
+  --sc-density: 1;                        /* L27 — spacing = calc(Npx * var(--sc-density)) */
+  --sc-type: 1;                           /* L28 */
+  --sc-measure: 1180px;
+
+  /* ===== SHADOW LAW — hard offset, zero blur, zero spread ===== */
+  --sc-shadow-action: 6px 6px 0 var(--sc-primary-shadow);
+  --sc-shadow-action-hover: 9px 9px 0 var(--sc-primary-shadow);
+  --sc-shadow-widget: 14px 14px 0 var(--sc-primary-shadow);
+  --sc-lift: translate(-2px, -2px);
+
+  /* ===== MOTION ===== */
+  --sc-fast: 140ms;
+  --sc-ease: ease;
+  --sc-entrance: 360ms;
+  --sc-entrance-ease: cubic-bezier(0.16, 0.78, 0.22, 1);
+  --sc-stagger: 32ms;
+
+  /* ===== SEMANTIC ROLES — components reference THESE, never the raw values ===== */
+  --sc-surface: var(--sc-paper);
+  --sc-surface-raised: var(--sc-panel);
+  --sc-content: var(--sc-ink);
+  --sc-content-muted: var(--sc-muted);
+  --sc-rule: var(--sc-line);
+  --sc-action: var(--sc-accent);          /* soul.md: at most ONE per viewport */
+  --sc-action-content: var(--sc-accent-ink);
+  --sc-action-shadow: var(--sc-primary-shadow);
+  --sc-status-error: var(--sc-signal-red);
+  --sc-status-warning: var(--sc-signal-yellow);
+  --sc-hover: color-mix(in srgb, var(--sc-ink) 5%, transparent);
+
+  /* ===== TEXTURE — how soul.md's 양피지 warmth is actually implemented ===== */
+  --sc-grid-size: 76px;
+}
+
+/* Higher contrast, mirroring bauhaus.css L2664-2666 */
+@media (prefers-contrast: more) {
+  :root {
+    --sc-ink: #172128;
+    --sc-structure: #313d44;
+    --sc-line: rgba(23, 33, 40, 0.42);
+  }
+}
+
+/* Global motion kill switch — non-negotiable, mirrors bauhaus.css */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

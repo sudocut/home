@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SudoCut mark — "the cut point".
+  Two blocks of footage held apart by a single cobalt frame line.
+
+  RECONSTRUCTED from the published geometry in the Option H exploration
+  (unit x = bar/22; bar 22x, gap 12x, line 4x; height 88x, width 72x)
+  and RECOLORED to the shipped palette (ink #24292c, cobalt #1f55ff).
+  Replace with the official vector when it arrives — see Q-VECTORS.
+
+  Clear space: 22 units on all four sides. Minimum size: 16px WIDE.
+  At 16px wide the 4x cut line lands at ~0.9px and starts to disappear —
+  which kills the whole idea. Below that, use favicon.svg, whose line is
+  thickened to 6 units for exactly this reason.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 88" width="72" height="88" role="img" aria-label="SudoCut">
+  <title>SudoCut</title>
+  <rect x="0"  y="0" width="22" height="88" fill="var(--sc-ink, #24292c)"/>
+  <rect x="34" y="0" width="4"  height="88" fill="var(--sc-accent, #1f55ff)"/>
+  <rect x="50" y="0" width="22" height="88" fill="var(--sc-ink, #24292c)"/>
+</svg>

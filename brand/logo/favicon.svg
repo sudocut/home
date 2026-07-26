@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SudoCut favicon / avatar — mark alone on a square field.
+  The 72x88 mark is centred in an 88x88 square (x offset = 8).
+
+  The cut line is 4 units of 88 here. At a rendered 16px that is ~0.7px,
+  so this file thickens it to 6 units (~1.1px) and the browser rounds it up.
+  Option H's rule: below 16px the line thickens to 2px minimum so the cut
+  stays visible. The mark is meaningless if the cut disappears.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88" width="88" height="88" role="img" aria-label="SudoCut">
+  <title>SudoCut</title>
+  <rect width="88" height="88" fill="var(--sc-paper, #f1f1ec)"/>
+  <rect x="8"  y="0" width="22" height="88" fill="var(--sc-ink, #24292c)"/>
+  <rect x="41" y="0" width="6"  height="88" fill="var(--sc-accent, #1f55ff)"/>
+  <rect x="58" y="0" width="22" height="88" fill="var(--sc-ink, #24292c)"/>
+</svg>
