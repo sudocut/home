@@ -89,10 +89,13 @@ The site's final layout is what the rounds are for — `r1` is written but not y
   conversion to WOFF2 before launch.
 - **Logo vectors are reconstructed**, not official — rebuilt from the published
   geometry. Exact, but replace them if the originals turn up.
-- **The waitlist needs three environment variables or it cannot send.** See
-  `.env.example`. Without them the form does not fake a success — it tells the
-  visitor to email `support@sudo-cut.com` instead — but nothing reaches you, so
-  set them before pointing a domain at this.
+- **The waitlist needs two environment variables or it cannot store anything.**
+  Signups append to a Google Sheet via an Apps Script web app — four steps, no
+  DNS, instructions in `tools/waitlist-sheet.gs`, variables in `.env.example`.
+  Without them the form does not fake a success (it offers
+  `support@sudo-cut.com` instead), but nothing reaches you, so set them before
+  pointing a domain at this. **The Sheet holds personal data:** keep it in the
+  Workspace, share it per-person rather than by link, and delete on request.
 - **The homepage figures are illustrative, not measured.** `14:32 → 10:47` comes
   from `brand/voice.md`'s examples and is labelled as such on the page. Replace
   it with a real project's numbers when one is publishable — that would be a

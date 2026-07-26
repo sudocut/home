@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useActionState, useId } from "react";
 import { joinWaitlist, WAITLIST_INITIAL } from "@/actions/waitlist";
 
@@ -23,6 +23,7 @@ import { joinWaitlist, WAITLIST_INITIAL } from "@/actions/waitlist";
 export function WaitlistForm() {
   const t = useTranslations("waitlist");
   const contact = useTranslations("contact");
+  const locale = useLocale();
   const id = useId();
   const [state, formAction, pending] = useActionState(joinWaitlist, WAITLIST_INITIAL);
 
@@ -63,6 +64,10 @@ export function WaitlistForm() {
               type="text"
             />
           </div>
+
+          {/* Which language they applied in, recorded in the sheet. Phase 0 is
+              Korea-first, so it says who to write back to in Korean. */}
+          <input name="locale" type="hidden" value={locale} />
 
           {/* Honeypot: off-screen rather than display:none, which some password
               managers and bots both skip. Never shown, never tabbed to. */}

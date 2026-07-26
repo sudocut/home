@@ -1,22 +1,33 @@
 "use server";
 
 /**
- * Closed-beta waitlist intake.
+ * Closed-beta waitlist intake → a Google Sheet, via an Apps Script web app.
  *
- * Phase 0 is invite-only at roughly ten channels (business/pricing.md, rev.
- * 2026-07-22), so the "list" is a mailbox a human reads and acts on, not a
- * database anyone queries. That is why this posts an email and stores nothing:
- * at this volume a table would be a schema, a migration and a privacy surface
- * bought for no benefit. When the volume outgrows an inbox, add the store — the
- * shape of this function does not have to change.
+ * WHY THIS AND NOT EMAIL. Phase 0 picks roughly ten channels out of everyone who
+ * applies (business/pricing.md, rev. 2026-07-22). That is a review job: sort the
+ * applicants, look at each channel, mark the ones you invited. A spreadsheet does
+ * all of that and an inbox does none of it — so the Sheet is not the lazy option
+ * here, it is the correct shape for the task. We run Google Workspace on this
+ * domain already, so it costs nothing extra and no third party holds the list.
  *
- * NO SILENT SUCCESS. If the mail credentials are absent or the send fails, this
- * returns a state that says so and the form tells the visitor to email us
- * directly. A waitlist that shows a confirmation while dropping the submission
- * is the exact failure soul.md names — it looks more capable than it is.
+ * WHY NOT GOOGLE FORMS. Posting to a Form's /formResponse endpoint answers 200
+ * for anything, including submissions it silently discards — there is no way to
+ * tell a stored signup from a dropped one. That is exactly the failure this
+ * function exists to prevent. An Apps Script web app returns a real JSON result,
+ * so "saved" can be distinguished from "not saved". (Embedding the Form itself
+ * was never an option: it would drop a Google-styled widget into a closed
+ * palette and cost the page its one cobalt object.)
  *
- * Resend is called over plain fetch rather than its SDK: one POST does not earn
- * a dependency, and this keeps the deployment a static site plus one function.
+ * NO SILENT SUCCESS. Missing config, a non-2xx, an error from the script, and a
+ * network failure are four distinct states and none of them renders as a
+ * confirmation. The visitor is given the support address instead, so a
+ * submission is never quietly lost. soul.md: a thing that looks more capable
+ * than it is breaks trust.
+ *
+ * Plain fetch, no SDK and no database. Deployment stays a static site plus one
+ * function. When the volume outgrows a Sheet, only the endpoint changes.
+ *
+ * Setup is four steps and no DNS: tools/waitlist-sheet.gs.
  */
 
 export type WaitlistState = {
@@ -62,38 +73,51 @@ export async function joinWaitlist(
   const channel = normaliseChannel(String(formData.get("channel") ?? ""));
   if (!channel) return { status: "invalidChannel" };
 
-  const key = process.env.RESEND_API_KEY;
-  const to = process.env.WAITLIST_TO;
-  const from = process.env.WAITLIST_FROM;
-  if (!key || !to || !from) {
+  const endpoint = process.env.WAITLIST_ENDPOINT;
+  const secret = process.env.WAITLIST_SECRET;
+  if (!endpoint || !secret) {
     // Unconfigured is not the visitor's fault and must not read as their error.
-    console.warn("waitlist: RESEND_API_KEY / WAITLIST_TO / WAITLIST_FROM not set");
+    console.warn("waitlist: WAITLIST_ENDPOINT / WAITLIST_SECRET not set");
     return { status: "unconfigured" };
   }
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
+    const response = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-      },
+      // Apps Script rejects a preflight on application/json but accepts a plain
+      // text body, which doPost reads verbatim from e.postData.contents. The
+      // payload is still JSON; only the declared type differs.
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
-        from,
-        to: [to],
-        reply_to: email,
-        subject: `Waitlist — ${email}`,
-        text: [`email:   ${email}`, `channel: ${channel}`].join("\n"),
+        secret,
+        email,
+        channel,
+        locale: String(formData.get("locale") ?? ""),
       }),
+      // A published web app answers with a 302 to googleusercontent.com; fetch
+      // follows it by default, and the JSON we care about is behind it.
+      redirect: "follow",
     });
 
     if (!response.ok) {
-      console.error("waitlist: resend responded", response.status, await response.text());
+      console.error("waitlist: endpoint responded", response.status, await response.text());
       return { status: "failed" };
     }
+
+    // A 200 is not proof it stored anything — the script reports that itself,
+    // and an unparseable body means we do not know, which is not success.
+    const body = (await response.json().catch(() => null)) as {
+      ok?: boolean;
+      error?: string;
+    } | null;
+    if (!body?.ok) {
+      console.error("waitlist: script rejected the row", body?.error ?? "unparseable response");
+      return { status: "failed" };
+    }
+
     return { status: "ok" };
   } catch (error) {
-    console.error("waitlist: send threw", error);
+    console.error("waitlist: post threw", error);
     return { status: "failed" };
   }
 }
