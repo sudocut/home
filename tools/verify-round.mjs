@@ -126,9 +126,15 @@ function checkVariant(id, html) {
     problems.push(`blurred shadow — must be hard offset, zero blur: box-shadow: ${s}`);
   }
 
-  for (const g of css.match(/(linear|radial|conic)-gradient\([^)]*\)/gi) || []) {
-    // gradients are allowed only to draw the 76px hairline grid
-    if (!/1px,\s*transparent\s+1px/i.test(g)) warn.push(`gradient that is not the hairline grid: ${g.slice(0, 60)}…`);
+  // Gradients are allowed only to draw the 76px hairline grid. Match the whole
+  // declaration, not `gradient(...)` — a `[^)]*` body stops at the `)` inside
+  // `var(--sc-rule)` and never sees the `1px, transparent 1px` signature, which
+  // flagged every compliant grid as a violation.
+  for (const decl of css.match(/background(-image)?\s*:[^;}]+/gi) || []) {
+    if (!/(linear|radial|conic)-gradient/i.test(decl)) continue;
+    if (!/1px,\s*transparent\s+1px/i.test(decl)) {
+      warn.push(`gradient that is not the hairline grid: ${decl.trim().slice(0, 70)}…`);
+    }
   }
 
   // Rule S1: one point colour per view. Cobalt as a *background* is the action.
@@ -137,7 +143,8 @@ function checkVariant(id, html) {
     + (css.match(/#1f55ff/gi) || []).length;
   if (cobalt > 3) warn.push(`cobalt referenced ${cobalt}× — soul.md allows ONE required action per view; check this is not decoration`);
 
-  if (!/lang\s*=\s*["']ko["']/i.test(html)) warn.push('html lang is not "ko" — Korean is the default locale');
+  // Constitution D5 (2026-07-26) reversed this: English first, Korean second.
+  if (!/lang\s*=\s*["']en["']/i.test(html)) warn.push('html lang is not "en" — English is the default locale (constitution D5)');
 
   return { id, problems, warn };
 }

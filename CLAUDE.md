@@ -25,9 +25,13 @@ an existing token — never hand-pick a hex.
 - **Shadows are hard offset, zero blur.** `6px 6px 0`, `9px 9px 0` on hover.
   A blur radius is a rejection.
 - **Three typefaces:** Hahmlet (display) · SUIT (UI/Korean) · Jost (numerals).
-  **Never IBM Plex** — it cannot set Hangul, and Korean is the default locale.
-- **Korean-first.** `ko` is the default locale; copy lives in `messages/`, never
-  hardcoded in components.
+  **Never IBM Plex** — it cannot set Hangul, and Korean is a shipped locale.
+- **English first, Korean second** (constitution D5, founder 2026-07-26 — this
+  REVERSES soul.md's "Korean-first is our home"; the gap is tracked in
+  `docs/open-questions.md`). `en` is the default locale; copy lives in
+  `messages/`, never hardcoded in components. Korean is written as Korean.
+- **No background texture shader** (constitution D6). r2 tested it and the page
+  read as greyed-out. Nothing imports from `design/vendor/`.
 - Gradients only for the 76px hairline grid.
 - `prefers-reduced-motion` must kill all animation.
 

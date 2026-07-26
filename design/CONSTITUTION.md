@@ -55,6 +55,34 @@ used by the selected *Bauhaus Timeline Proof* direction.
 | D2 | Hahmlet is frozen as the display face. | `--sc-heavy` |
 | D3 | The cut-point mark is adopted as the official mark. | delete `brand/logo/` |
 | D4 | 양피지 warmth = warm paper + 76px grid. No raster texture. | one `background-image` |
+| **D5** | **English first, Korean second.** Reverses S5. | locale default |
+| **D6** | **No background texture shader.** Reverses r2's experiment. | unban in a brief |
+
+### D5 — English first (2026-07-26, founder)
+
+**This reverses S5, and S5 came from soul.md.** soul.md says *"Korean-first is our
+home, English in parallel"*; the founder has ruled English first, Korean second.
+
+The founder outranks every document here, so the rule stands — but soul.md is the
+constitution and lives in `sudocut/meta`, where it says *"when our behavior needs
+correcting, we correct this."* **Right now this repo and soul.md disagree.** Until
+soul.md is updated, that gap is real and is tracked in `docs/open-questions.md`.
+
+Consequence: `en` is the default locale, `ko` secondary. Korean copy is still
+written as Korean, never machine-translated English.
+
+### D6 — No background texture shader (2026-07-26, founder, from r2)
+
+r2 tested `paperTexture` and it failed on legibility, not taste: the page read as
+**greyed-out, the visual language of a disabled control or a modal scrim.** Four
+of five models used it and all four landed in the same grey.
+
+Warmth comes from the paper colour plus the 76px grid. `design/vendor/paper-shaders`
+stays vendored for a future round with a real, bounded use — but it is off by
+default, and a brief must explicitly unban it before any variant may use it.
+
+This closes **Q-PARCHMENT**, which soul.md opened and which had been deferred twice.
+Full reasoning: `design/rounds/r2/VERDICT.md`.
 
 ---
 

@@ -1,0 +1,135 @@
+{
+  "round": "r3",
+  "totalCostUSD": 10.607797,
+  "variants": [
+    {
+      "id": "opus5-a",
+      "status": "written",
+      "model": "opus5",
+      "label": "Claude Opus 5",
+      "modelId": "claude-opus-5",
+      "vendor": "Anthropic",
+      "effort": "max",
+      "round": "r3",
+      "seconds": 251,
+      "bytes": 13854,
+      "usage": {
+        "input": 8,
+        "output": 19608,
+        "cacheRead": 115767,
+        "cacheWrite": 23376,
+        "reportedCostUSD": 0.7818835
+      },
+      "costUSD": 0.6942235,
+      "reportedCostUSD": 0.7818835,
+      "price": {
+        "input": 5,
+        "output": 25,
+        "cacheRead": 0.5,
+        "cacheWrite": 6.25
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "fable5-a",
+      "status": "written",
+      "model": "fable5",
+      "label": "Claude Fable 5",
+      "modelId": "claude-fable-5",
+      "vendor": "Anthropic",
+      "effort": "max",
+      "round": "r3",
+      "seconds": 696,
+      "bytes": 14646,
+      "usage": {
+        "input": 2,
+        "output": 49581,
+        "cacheRead": 15476,
+        "cacheWrite": 14734,
+        "reportedCostUSD": 2.789226
+      },
+      "costUSD": 2.6787210000000004,
+      "reportedCostUSD": 2.789226,
+      "price": {
+        "input": 10,
+        "output": 50,
+        "cacheRead": 1,
+        "cacheWrite": 12.5
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "gpt-sol-a",
+      "status": "written",
+      "model": "gpt-sol",
+      "label": "GPT-5.6 Sol",
+      "modelId": "gpt-5.6-sol",
+      "vendor": "OpenAI",
+      "effort": "xhigh",
+      "round": "r3",
+      "seconds": 385,
+      "bytes": 18127,
+      "usage": {
+        "input": 672851,
+        "output": 27383,
+        "cacheRead": 581888,
+        "cacheWrite": 0,
+        "reportedCostUSD": null
+      },
+      "costUSD": 7.095185,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 5,
+        "output": 30
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "gpt-terra-a",
+      "status": "written",
+      "model": "gpt-terra",
+      "label": "GPT-5.6 Terra",
+      "modelId": "gpt-5.6-terra",
+      "vendor": "OpenAI",
+      "effort": "xhigh",
+      "round": "r3",
+      "seconds": 55,
+      "bytes": 12579,
+      "usage": {
+        "input": 20843,
+        "output": 4088,
+        "cacheRead": 10496,
+        "cacheWrite": 0,
+        "reportedCostUSD": null
+      },
+      "costUSD": 0.1396675,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 2.5,
+        "output": 15
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "kimi-k3-a",
+      "status": "written",
+      "model": "kimi-k3",
+      "label": "Kimi K3",
+      "modelId": "kimi-k3",
+      "vendor": "Moonshot",
+      "effort": "high",
+      "round": "r3",
+      "seconds": 405,
+      "bytes": 12493,
+      "usage": null,
+      "costUSD": null,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 3,
+        "output": 15,
+        "cacheRead": 0.3
+      },
+      "generatedBy": "tools/generate.mjs"
+    }
+  ]
+}

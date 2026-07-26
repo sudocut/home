@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SudoCut — sudo rm the boring parts</title>
+<meta name="description" content="SudoCut removes the boring 80% of long raw footage — silences, fillers, fumbles, retakes — and hands back an editor-ready cut. Closed beta.">
+<link rel="icon" href="/brand/logo/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/brand/tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  html { margin: 0; }
+  body {
+    margin: 0;
+    background-color: var(--sc-surface);
+    background-image:
+      linear-gradient(var(--sc-rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--sc-rule) 1px, transparent 1px);
+    background-size: var(--sc-grid-size) var(--sc-grid-size);
+    color: var(--sc-content);
+    font-family: var(--sc-body);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: var(--sc-measure);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .mono { font-family: var(--sc-mono); }
+
+  /* ---------- nav ---------- */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--sc-rule);
+  }
+  nav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  nav .brand img { height: 22px; display: block; }
+  nav .links { display: flex; align-items: center; gap: 28px; }
+  nav .links a {
+    font-family: var(--sc-mono);
+    font-size: 13px;
+    color: var(--sc-content);
+    text-decoration: none;
+    transition: color var(--sc-fast) var(--sc-ease);
+  }
+  nav .links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  nav .tag {
+    font-family: var(--sc-mono);
+    font-size: 12px;
+    color: var(--sc-content-muted);
+    border: 1px solid var(--sc-content-muted);
+    padding: 3px 8px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 88px 0 72px; max-width: 860px; }
+  .kicker {
+    font-family: var(--sc-mono);
+    font-size: 14px;
+    color: var(--sc-content-muted);
+    margin: 0 0 28px;
+  }
+  h1 {
+    font-family: var(--sc-heavy);
+    font-weight: 600;
+    font-size: clamp(42px, 6.2vw, 78px);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    margin: 0 0 28px;
+  }
+  .lede {
+    font-size: 19px;
+    max-width: 600px;
+    margin: 0 0 40px;
+  }
+  .lede strong { font-weight: 700; }
+
+  /* ---------- the one action ---------- */
+  .signup { display: flex; gap: 12px; max-width: 540px; margin: 0; }
+  .signup input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--sc-body);
+    font-size: 16px;
+    color: var(--sc-content);
+    background: var(--sc-surface-raised);
+    border: 2px solid var(--sc-content);
+    border-radius: var(--sc-radius);
+    padding: 14px 16px;
+  }
+  .signup input::placeholder { color: var(--sc-content-muted); }
+  .signup input:focus { outline: 2px solid var(--sc-content); outline-offset: 2px; }
+  .signup button {
+    font-family: var(--sc-body);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--sc-action-content);
+    background: var(--sc-action);
+    border: 2px solid var(--sc-action);
+    border-radius: var(--sc-radius);
+    padding: 14px 24px;
+    cursor: pointer;
+    box-shadow: var(--sc-shadow-action);
+    transition: box-shadow var(--sc-fast) var(--sc-ease), transform var(--sc-fast) var(--sc-ease);
+    white-space: nowrap;
+  }
+  .signup button:hover {
+    box-shadow: var(--sc-shadow-action-hover);
+    transform: var(--sc-lift);
+  }
+  .micro {
+    font-family: var(--sc-mono);
+    font-size: 12.5px;
+    color: var(--sc-content-muted);
+    margin: 14px 0 0;
+  }
+  .done {
+    font-family: var(--sc-body);
+    font-weight: 700;
+    font-size: 17px;
+    margin: 0;
+    padding: 14px 0;
+  }
+
+  /* ---------- proof ---------- */
+  .proof { padding: 0 0 88px; }
+  .panel {
+    background: var(--sc-surface-raised);
+    border: 2px solid var(--sc-content);
+    box-shadow: var(--sc-shadow-action);
+    padding: 56px;
+  }
+  .label {
+    font-family: var(--sc-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sc-content-muted);
+    margin: 0 0 20px;
+  }
+  h2 {
+    font-family: var(--sc-heavy);
+    font-weight: 600;
+    font-size: clamp(30px, 4vw, 50px);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 20px;
+    max-width: 16em;
+  }
+  .panel p { max-width: 640px; margin: 0; }
+  .ab {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    margin-top: 36px;
+  }
+  .ab .cut {
+    flex: 1;
+    border: 1px solid var(--sc-content);
+    padding: 16px 18px;
+    font-family: var(--sc-mono);
+    font-size: 13px;
+  }
+  .ab .cut b { display: block; font-size: 14px; margin-bottom: 4px; }
+  .ab .verdict {
+    display: flex;
+    align-items: center;
+    font-family: var(--sc-mono);
+    font-size: 13px;
+    color: var(--sc-content-muted);
+    padding: 0 4px;
+  }
+
+  /* ---------- 80 / 20 ---------- */
+  .ratio { padding: 24px 0 88px; }
+  .ratio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 2px solid var(--sc-content);
+  }
+  .ratio-cell { padding: 48px 48px 8px 0; }
+  .ratio-cell + .ratio-cell {
+    border-left: 1px solid var(--sc-rule);
+    padding-left: 48px;
+    padding-right: 0;
+  }
+  .bignum {
+    font-family: var(--sc-numbers);
+    font-weight: 500;
+    font-size: clamp(72px, 10vw, 132px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+  }
+  .ratio-cell h3 {
+    font-family: var(--sc-heavy);
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0 0 10px;
+  }
+  .ratio-cell p { margin: 0; max-width: 420px; }
+
+  /* ---------- how ---------- */
+  .how { padding: 0 0 96px; }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 2px solid var(--sc-content);
+    margin-top: 8px;
+  }
+  .step { padding: 32px 32px 8px 0; }
+  .step + .step { border-left: 1px solid var(--sc-rule); padding-left: 32px; padding-right: 0; }
+  .step .n {
+    font-family: var(--sc-numbers);
+    font-size: 30px;
+    font-weight: 500;
+    margin: 0 0 10px;
+  }
+  .step p { margin: 0; font-size: 16px; }
+  .example {
+    font-family: var(--sc-numbers);
+    font-size: 22px;
+    margin: 40px 0 0;
+  }
+  .example .note {
+    font-family: var(--sc-mono);
+    font-size: 12.5px;
+    color: var(--sc-content-muted);
+    margin-left: 10px;
+  }
+
+  /* ---------- bottom ---------- */
+  .bottom {
+    border-top: 2px solid var(--sc-content);
+    padding: 88px 0;
+  }
+  .bottom h2 { margin-bottom: 32px; }
+
+  /* ---------- footer ---------- */
+  footer {
+    border-top: 1px solid var(--sc-rule);
+    padding: 32px 0 48px;
+  }
+  footer .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  footer img { height: 26px; display: block; }
+  footer .line { font-family: var(--sc-mono); font-size: 13px; color: var(--sc-content-muted); margin: 12px 0 0; }
+  footer nav { border: 0; padding: 0; }
+  footer nav a {
+    font-family: var(--sc-mono);
+    font-size: 13px;
+    color: var(--sc-content-muted);
+    text-decoration: none;
+    margin-left: 24px;
+  }
+  footer nav a:hover { color: var(--sc-content); }
+
+  @media (max-width: 700px) {
+    .hero { padding: 56px 0 56px; }
+    .signup { flex-direction: column; }
+    .panel { padding: 28px; }
+    .ab { flex-direction: column; }
+    .ab .verdict { padding: 0; }
+    .ratio-grid, .steps { grid-template-columns: 1fr; }
+    .ratio-cell + .ratio-cell,
+    .step + .step { border-left: 0; border-top: 1px solid var(--sc-rule); padding-left: 0; }
+    .ratio-cell { padding: 32px 0 8px; }
+    .step { padding: 24px 0 8px; }
+    nav .tag { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav aria-label="Main">
+    <a class="brand" href="/" aria-label="SudoCut home">
+      <img src="/brand/logo/lockup-horizontal.svg" alt="SudoCut">
+    </a>
+    <div class="links">
+      <span class="tag">closed beta</span>
+      <a href="/team">team</a>
+      <a href="/pricing">pricing</a>
+      <a href="/about">about</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <p class="kicker">sudo rm the boring parts.</p>
+    <h1>AI cuts the boring 80% of your footage. You keep the rest.</h1>
+    <p class="lede">SudoCut removes the silences, fillers, fumbles, and retakes from
+      long recordings, and hands back a cut worth keeping — as FCPXML and SRT you
+      finish in your own editor. <strong>AI proposes; humans decide.</strong></p>
+
+    <form class="signup" action="#" method="post">
+      <label for="email-top" class="mono" style="position:absolute;left:-9999px">Email address</label>
+      <input id="email-top" type="email" name="email" placeholder="you@example.com" required autocomplete="email">
+      <button type="submit">Join the waitlist</button>
+    </form>
+    <p class="micro">Closed beta. Free while in beta. We email you when a seat opens.</p>
+  </header>
+
+  <section class="proof" aria-label="Proof">
+    <div class="panel">
+      <p class="label">The blind test — shipped, not promised</p>
+      <h2>Two cuts of the same footage. Viewers couldn't tell them apart.</h2>
+      <p>One cut edited by hand. One cut by SudoCut. Played side by side, nobody
+        could reliably say which was which. That result is why SudoCut is a
+        product, not a pitch.</p>
+      <div class="ab">
+        <div class="cut"><b>Cut A</b>edited by hand</div>
+        <div class="verdict">vs — blind viewers: no reliable difference</div>
+        <div class="cut"><b>Cut B</b>edited by SudoCut</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ratio" aria-label="The 80 20 split">
+    <div class="ratio-grid">
+      <div class="ratio-cell">
+        <p class="bignum">80%</p>
+        <h3>Boring. Removed.</h3>
+        <p>Dead air, ums, tangents, NG takes. Cutting them is slow, repetitive,
+          and nobody's creativity lives there. So the machine does it.</p>
+      </div>
+      <div class="ratio-cell">
+        <p class="bignum">20%</p>
+        <h3>Creative. Yours.</h3>
+        <p>Story, pacing, taste. The part you actually signed up for stays exactly
+          where it belongs — with you.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" aria-label="How it works">
+    <p class="label">How it works</p>
+    <div class="steps">
+      <div class="step">
+        <p class="n">01</p>
+        <p>Drop in the raw footage. Four hours is fine.</p>
+      </div>
+      <div class="step">
+        <p class="n">02</p>
+        <p>SudoCut proposes the cut. You keep or override every decision.</p>
+      </div>
+      <div class="step">
+        <p class="n">03</p>
+        <p>Export FCPXML and SRT. Finish in your own editor.</p>
+      </div>
+    </div>
+    <p class="example">14:32 → 10:47 <span class="note">an example, not a benchmark</span></p>
+  </section>
+
+  <section class="bottom" aria-label="Join the beta">
+    <h2>Join the closed beta.</h2>
+    <form class="signup" action="#" method="post">
+      <label for="email-bottom" class="mono" style="position:absolute;left:-9999px">Email address</label>
+      <input id="email-bottom" type="email" name="email" placeholder="you@example.com" required autocomplete="email">
+      <button type="submit">Join the waitlist</button>
+    </form>
+    <p class="micro">Waitlist only. Free while in beta.</p>
+  </section>
+
+  <footer>
+    <div class="row">
+      <div>
+        <img src="/brand/logo/mark.svg" alt="SudoCut mark">
+        <p class="line">Less footage. More story.</p>
+        <p class="line" lang="ko">덜어낼 건 덜어내고, 이야기만 남깁니다.</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="/team">team</a>
+        <a href="/pricing">pricing</a>
+        <a href="/about">about</a>
+      </nav>
+    </div>
+    <p class="line">© 2026 SudoCut</p>
+  </footer>
+</div>
+
+<script>
+  document.querySelectorAll("form.signup").forEach(function (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var input = form.querySelector("input[type=email]");
+      if (!input.value.trim()) return;
+      var done = document.createElement("p");
+      done.className = "done";
+      done.textContent = "You're on the list. We'll email you when a seat opens.";
+      form.replaceWith(done);
+    });
+  });
+</script>
+
+</body>
+</html>

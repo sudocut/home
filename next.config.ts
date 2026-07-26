@@ -20,10 +20,10 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Korean is the default locale (soul.md: "Korean-first is our home").
+      // English is the default locale (constitution D5, founder 2026-07-26).
       // localePrefix is "always", so the bare root has to land somewhere explicit.
       // Done here rather than in middleware.ts — see src/i18n/routing.ts.
-      { source: "/", destination: "/ko", permanent: false },
+      { source: "/", destination: "/en", permanent: false },
     ];
   },
 };

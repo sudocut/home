@@ -29,9 +29,12 @@ machine that ships a finished film with no human in the loop.
 
 ## 2. What you are designing
 
-**The company website** — `sudocut/home`. Who we are, why we exist, the proof.
-This is **not** the product app and **not** a feature tour. Someone landing here
-should understand what we believe within one screen.
+**The company website** — `sudocut/home`. Not the product app, not a feature tour.
+
+Its job is to turn a stranger into a **closed-beta signup**. Everything else on
+the site — who we are, the proof, the team, what it costs — exists to make that
+one decision easy. A visitor who understands what we do and trusts that it works
+should be able to join in a few seconds.
 
 ## 3. Non-negotiable rules
 
@@ -51,8 +54,14 @@ Full list in `design/CONSTITUTION.md`. The ones that get variants rejected:
 6. **No decorative gradients.** Gradients are permitted only to draw the 76px
    hairline grid.
 7. **Motion 120–200ms `ease`.** Honour `prefers-reduced-motion`.
-8. **Korean-first.** Korean copy primary, English secondary or parallel.
+8. **English first, Korean second.** Reversed 2026-07-26 by the founder — see
+   constitution D5. `<html lang="en">`. Korean, where you include it, is written
+   as Korean and never as translated English.
 9. **Subtract by default.** If removing something improves the page, remove it.
+10. **No background texture shader.** Constitution D6. r2 tested it and the page
+    read as greyed-out — the visual language of a disabled control. Warmth comes
+    from the paper colour and the 76px hairline grid. Do not import anything from
+    `design/vendor/`.
 
 ## 4. Output contract
 
@@ -92,50 +101,16 @@ break at 390px.
 
 `tools/verify-round.mjs` mechanically checks rules 1–7. Run it before ranking.
 
-## 4b. The paper texture shader (optional, vendored locally)
+## 4b. The paper texture shader — BANNED (constitution D6)
 
-soul.md asks for *watercolor-paper / oriental parchment (양피지)* warmth. The
-shipped system only approximates it with a warm flat colour plus a 76px grid.
-[Paper Shaders](https://github.com/paper-design/shaders) is vendored in this repo
-at `design/vendor/paper-shaders/` — no CDN, no install, works offline — and its
-`paperTexture` shader renders real paper fibre. **Verified rendering on this
-machine at 900×420.**
+`design/vendor/paper-shaders/` is vendored and r2 tested it. **It failed.** At the
+settings four of five models chose, the page read as greyed-out — the visual
+language of a disabled control or a modal scrim. A landing page whose default
+state looks disabled is broken however well the fibre is simulated.
 
-```html
-<div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
-<script type="module">
-  import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
-  import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
-  import { getShaderColorFromString } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
-  import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
-
-  const u = {
-    u_colorFront: getShaderColorFromString('#24292c'),   // fibre — ink
-    u_colorBack:  getShaderColorFromString('#f1f1ec'),   // sheet — paper
-    u_contrast: 0.12, u_roughness: 0.25, u_fiber: 0.45, u_fiberSize: 0.6,
-    u_crumples: 0.15, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
-    u_drops: 0, u_seed: 3, u_fade: 0,
-    u_noiseTexture: getShaderNoiseTexture(),
-    u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
-    u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
-  };
-  await u.u_noiseTexture.decode();          // REQUIRED — mounting before the
-  new ShaderMount(document.getElementById('bg'),  // noise image decodes throws
-                  paperTextureFragmentShader, u, undefined, 0, 0);
-</script>
-```
-
-**Rules if you use it.** Speed `0` — a *static* texture; the brand does not
-animate its background. Only palette colours in `u_colorFront`/`u_colorBack`.
-Keep it faint: it is the paper the content sits on, not a feature. If it competes
-with the type for attention, you have turned it up too far — the values above are
-already near the ceiling. It must never carry the point colour.
-
-**Using it is optional and it is being tested this round** — a variant without it
-is a legitimate answer, and "the flat colour was enough" is a legitimate finding.
-Other shaders exist in `design/vendor/paper-shaders/shaders/` (`grain-gradient`,
-`dithering`, `halftone-dots`, …) but anything that reads as a decorative gradient
-violates rule 6. `paperTexture` is the one with a mandate behind it.
+**Do not import anything from `design/vendor/`.** Warmth comes from the paper
+colour plus the 76px hairline grid, as the shipped system always did. A future
+brief may unban it for a bounded use; this one does not.
 
 ## 4c. Moodboard
 
@@ -170,8 +145,12 @@ Numbers are the argument. Say **6:12**, not "significant time savings." Say
 **14:32 → 10:47**, not "dramatically shorter." If a sentence has no number, ask
 whether it needs to exist.
 
-Korean register: `-습니다`/`-예요`, not `-하십시오`. Numerals stay numerals. Avoid
-외래어 padding (솔루션, 플랫폼, 최적화 are usually deletable).
+**English is the primary voice.** Short declaratives. Numerals stay numerals.
+No hedging, no hype, no em-dash-joined clauses doing the work a full stop should.
+
+If you include Korean, write it *as Korean*: `-습니다`/`-예요`, not `-하십시오`;
+numerals stay numerals; avoid 외래어 padding (솔루션, 플랫폼, 최적화 are usually
+deletable). Never machine-translate the English.
 
 Positioning line: `sudo rm the boring parts.`
 Secondary English line: "Less footage. More story."
@@ -183,11 +162,11 @@ Five criteria, 1–5 each:
 
 | Criterion | Question |
 |---|---|
-| **clarity** | Does a first-time visitor understand what SudoCut does within one screen? |
+| **clarity** | Does a first-time visitor understand what SudoCut does, fast, without jargon? |
 | **hierarchy** | Is there exactly one required action, and does it read first? |
 | **voice** | Direct, numeric, editor-to-editor? Or does it drift into hype? |
 | **restraint** | Would removing anything improve it? Does every element earn its place? |
-| **proof** | Does it show evidence rather than claim capability? |
+| **proof** | Does it show evidence rather than claim capability — and is the evidence *prominent*? |
 
 Design for a judge who will spend thirty seconds on the first impression and then
 look hard for a reason to reject it.

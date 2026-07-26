@@ -6,6 +6,8 @@ import { Logo } from "./Logo";
 const LINKS = [
   { key: "home", href: "/" },
   { key: "about", href: "/about" },
+  { key: "team", href: "/team" },
+  { key: "pricing", href: "/pricing" },
   { key: "contact", href: "/contact" },
 ] as const;
 

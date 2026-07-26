@@ -8,6 +8,8 @@
     "skipToContent": "Skip to content",
     "home": "Home",
     "about": "About",
+    "team": "Team",
+    "pricing": "Pricing",
     "contact": "Contact",
     "languageLabel": "Language",
     "language": {
@@ -69,6 +71,110 @@
       "label": "Talk to us",
       "note": "Product, partnerships, hiring — one address."
     }
+  },
+  "team": {
+    "eyebrow": "Team",
+    "title": "The names aren't up yet.",
+    "lede": "Who is here is the founder's to announce. How the work gets decided isn't, so that's what this page has.",
+    "body": {
+      "one": "SudoCut is small and builds one thing. There is no roster on this page — not as mystique. We just haven't published one.",
+      "two": "The rest of this page is how the work actually gets decided. On most team pages that part is filler around the photos. Here it is the part we can source."
+    },
+    "roster": {
+      "title": "Who's here",
+      "empty": {
+        "label": "Not published",
+        "body": "Names, roles and one line each go in this grid. It is empty because nothing has been cleared for publication yet. The team exists; the list doesn't."
+      }
+    },
+    "principles": {
+      "title": "How the work gets decided",
+      "one": "We are not artists. An artist spreads across everything. We go narrow, on purpose.",
+      "two": "Direction over perfection. Decide, ship it, iterate. It can change later.",
+      "three": "Honesty over polish. The failures and the dead ends get written down with everything else.",
+      "four": "AI proposes; humans decide. Automating until nobody can step in is worse, not better."
+    }
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "title": "The beta is free. Launch won't be.",
+    "lede": "Both cards are below, including the one that isn't switched on yet.",
+    "body": {
+      "one": "Beta channels get access free, plus a one-time grant of 600 raw minutes. There is no subscription charge during the beta. The only payment that exists is a one-time credit top-up — no card on file, nothing that renews.",
+      "two": "The launch card is a target, not a live price. We publish it now because a channel deserves to know what launch costs before it moves a workflow onto us. None of it can be bought today; billing isn't built."
+    },
+    "beta": {
+      "label": "Now",
+      "title": "Closed beta — Aug–Oct 2026, Korea",
+      "access": {
+        "term": "Access",
+        "detail": "Invite-only, around 10 channels. No charge."
+      },
+      "grant": {
+        "term": "On joining",
+        "detail": "600 raw minutes (10h), once."
+      },
+      "subscription": {
+        "term": "Subscription",
+        "detail": "None during the beta."
+      },
+      "topups": {
+        "term": "Top-ups",
+        "detail": "₩100 per raw minute, as one-time packs: 300 min ₩30,000 · 600 min ₩60,000 · 1,200 min ₩120,000."
+      }
+    },
+    "launch": {
+      "label": "At launch",
+      "title": "Target Q4 2026, Korea",
+      "caveat": "A target, not a date. Nothing on this card can be bought today.",
+      "columns": {
+        "tier": "Tier",
+        "price": "Per month",
+        "included": "Included raw time"
+      },
+      "tiers": {
+        "free": {
+          "name": "Free",
+          "note": "Plus the one-time 600 min signup grant.",
+          "price": "₩0",
+          "included": "60 min / month"
+        },
+        "starter": {
+          "name": "Starter",
+          "note": "A weekly show — 4 episodes at 1.5–2h.",
+          "price": "₩14,900",
+          "included": "600 min (10h)"
+        },
+        "pro": {
+          "name": "Pro",
+          "note": "Twice a week.",
+          "price": "₩49,000",
+          "included": "1,200 min (20h)"
+        },
+        "studio": {
+          "name": "Studio",
+          "note": "Stream re-publishing, agencies.",
+          "price": "₩149,000",
+          "included": "3,600 min (60h)"
+        },
+        "managed": {
+          "name": "Managed",
+          "note": "Publish-ready guarantee, human QC, priority turnaround.",
+          "price": "₩299,000",
+          "included": "3,600 min (60h)"
+        }
+      },
+      "notes": {
+        "one": "Overage is ₩100 per raw minute.",
+        "two": "Re-processing a source you already uploaded is free.",
+        "three": "Prices are in Korean won. Korea first — other markets get their own card, not a conversion."
+      }
+    },
+    "cta": {
+      "label": "Ask about the beta",
+      "note": "It's invite-only, so asking is how you get in."
+    },
+    "stamp": "This page changes the day the price does."
   },
   "contact": {
     "eyebrow": "Contact",
