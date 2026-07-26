@@ -41,14 +41,20 @@ node tools/build-tokens.mjs          # regenerates tokens.css
 node tools/verify-round.mjs          # checks nothing hardcoded a literal
 ```
 
-## Outstanding from the founder
+## Decided 2026-07-26
 
-- **Q-VECTORS** — official SVG/EPS for the mark. Ours are reconstructed from
-  published measurements.
-- **Q-RADIUS** — `radius: 0` (app) vs `radius: 14px` (the ranking catalog's
-  marketing-style surface). Which governs a company site?
-- **Q-DISPLAY-FACE** — Hahmlet or Jost for display on a marketing surface?
-- **Q-MARK** — adopt the cut-point mark as official?
-- **Q-PARCHMENT** — is warm paper + 76px grid enough 양피지 warmth?
+The five open questions are resolved at their recommended values so work isn't
+blocked. All five are judgement calls, and all five are cheap to reverse.
 
-Full context in `docs/open-questions.md`.
+| ID | Decision | Reverse by |
+|---|---|---|
+| **Q-RADIUS** | `radius: 0` + hard offset shadows | editing `--sc-radius` |
+| **Q-DISPLAY-FACE** | Hahmlet for display | editing `--sc-heavy` |
+| **Q-MARK** | Adopt the cut-point mark | deleting `logo/` |
+| **Q-PARCHMENT** | Warm paper + 76px grid, no raster texture | adding one `background-image` |
+| **Q-VECTORS** | Ship the reconstructed vectors | dropping in official files |
+
+Reasoning for each: [`BRAND-KIT.md` §14](./BRAND-KIT.md#14-resolved--2026-07-26).
+
+**Still wanted from the founder:** the official SVG/EPS for the mark. Ours are
+reconstructed from published measurements — exact, but not the originals.

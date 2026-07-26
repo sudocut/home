@@ -1,0 +1,37 @@
+{
+  "name": "sudocut-home",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome ci .",
+    "format": "biome check --write .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "tokens": "node tools/build-tokens.mjs",
+    "design:new": "bash tools/new-round.sh",
+    "design:generate": "node tools/generate.mjs",
+    "design:verify": "node tools/verify-round.mjs",
+    "design:board": "bash tools/serve.sh"
+  },
+  "dependencies": {
+    "next": "16.2.10",
+    "next-intl": "^4.13.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.2",
+    "@tailwindcss/postcss": "^4.3.2",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^5.9.0"
+  }
+}

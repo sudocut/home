@@ -1,0 +1,58 @@
+{
+  "_comment": [
+    "Model registry for the design-iteration harness.",
+    "",
+    "Contract: every model is invoked non-interactively, receives the brief on stdin,",
+    "and PRINTS a complete HTML document to stdout. The runner extracts the document",
+    "and writes it to disk. Models never write files themselves — that keeps the",
+    "invocation uniform across four different CLIs and avoids tool-permission setup.",
+    "",
+    "'available' is verified, not assumed. Re-check with: node tools/generate.mjs --check",
+    "Verified 2026-07-26 on this machine."
+  ],
+
+  "criteria": ["clarity", "hierarchy", "voice", "restraint", "proof"],
+
+  "models": [
+    {
+      "id": "opus",
+      "label": "Claude Opus",
+      "cmd": ["claude", "-p", "--model", "opus"],
+      "promptVia": "stdin",
+      "available": true,
+      "note": "claude 2.1.220. -p prints the response and exits."
+    },
+    {
+      "id": "fable",
+      "label": "Claude Fable",
+      "cmd": ["claude", "-p", "--model", "claude-fable-5"],
+      "promptVia": "stdin",
+      "available": true,
+      "note": "Same CLI as opus, different --model. If the alias is rejected, the runner reports it rather than silently falling back."
+    },
+    {
+      "id": "gpt",
+      "label": "OpenAI (Codex CLI)",
+      "cmd": ["codex", "exec"],
+      "promptVia": "stdin",
+      "available": true,
+      "note": "codex-cli 0.144.3, authed via ~/.codex/auth.json. 'exec' is the non-interactive mode. Output includes session chatter, so the runner extracts the HTML document from it."
+    },
+    {
+      "id": "kimi",
+      "label": "Kimi",
+      "cmd": ["kimi", "-p", "--auto"],
+      "promptVia": "arg",
+      "available": true,
+      "note": "kimi -p takes the prompt as a flag VALUE, not stdin. --auto runs fully autonomously without asking questions."
+    },
+    {
+      "id": "opencode",
+      "label": "OpenCode",
+      "cmd": ["opencode", "run"],
+      "promptVia": "arg",
+      "available": false,
+      "note": "Installed but not enabled by default — it is a multi-provider router, so which model actually answers is ambiguous, which defeats the point of comparing models. Flip available to true and pin a provider if you want it in the pool."
+    }
+  ]
+}

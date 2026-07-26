@@ -1,0 +1,199 @@
+/* =========================================================================
+ * SudoCut company site — base layer only.
+ *
+ * THIS FILE IS NOT THE DESIGN. The final LAYOUT of this site comes from the
+ * design rounds under design/ — not from here. What lives in this file is the
+ * minimum needed to render a structurally correct skeleton: base element
+ * styles, the 76px hairline grid, focus, and five component classes. When a
+ * round is selected, its layout supersedes everything below.
+ *
+ * Authority order — a lower layer never overrides a higher one:
+ *   1. meta/strategy/soul.md                      the constitution
+ *   2. sudocut/web shipped Round 6                the visual system of record
+ *      (web/design/mockups/shared/bauhaus.css, body[data-round="6"])
+ *   3. brand/reference/option-h-exploration-*.pdf an exploration, superseded
+ *
+ * Hard rules this file obeys, and so must anything added to app/ or src/:
+ *   - Every value is var(--sc-*). No hex, no typeface name, no radius, no
+ *     shadow, no easing is ever written literally outside brand/tokens/.
+ *   - Components use the SEMANTIC tokens (--sc-surface, --sc-content,
+ *     --sc-content-muted, --sc-rule, --sc-action, --sc-action-content,
+ *     --sc-shadow-action, --sc-lift), never the raw --sc-ink / --sc-paper.
+ *   - Cobalt (--sc-action) appears AT MOST ONCE per page, on the single
+ *     required action. Two cobalt objects in one view is a bug. .sc-action is
+ *     therefore the only rule in this file that touches --sc-action.
+ *   - radius 0, hard offset zero-blur shadows only, and the single permitted
+ *     gradient is the 76px hairline grid on body::before.
+ * ========================================================================= */
+
+@import "tailwindcss" source(none);
+@import "../brand/tokens/tokens.css";
+
+/* Only our own code declares classes. brand/, design/, docs/ and tools/ are
+   other people's files and must not widen the utility scan. */
+@source "./";
+@source "../src";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* BRAND-KIT §5 — the root scale is the one place a px number is spelled out,
+     because --sc-type is a multiplier and needs something to multiply. */
+  font-size: calc(16px * var(--sc-type));
+  background: var(--sc-surface);
+  color-scheme: light;
+}
+
+body {
+  min-height: 100svh;
+  margin: 0;
+  background: var(--sc-surface);
+  color: var(--sc-content);
+  font-family: var(--sc-body);
+  font-weight: 450; /* BRAND-KIT §5 — base body weight, deliberately not 400 */
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* BRAND-KIT §9 — 양피지 warmth is warm paper plus a 76px hairline grid. This is
+   the ONLY gradient permitted anywhere in the system. Never decorative. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--sc-rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--sc-rule) 1px, transparent 1px);
+  background-size: var(--sc-grid-size) var(--sc-grid-size);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--sc-heavy);
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+}
+
+hr {
+  height: 0;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--sc-rule);
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* BRAND-KIT §13 — never removed. */
+:focus-visible {
+  outline: 3px solid var(--sc-content);
+  outline-offset: 3px;
+}
+
+/* ── Component classes. Five, matching src/components/. ─────────────────── */
+
+/* Micro label — BRAND-KIT §5: mono, 0.61rem, 0.1em tracking, uppercase. */
+.sc-label {
+  display: block;
+  font-family: var(--sc-mono);
+  font-size: 0.61rem;
+  font-weight: 450;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sc-content-muted);
+}
+
+/* Numerals and timecode. BRAND-KIT §5: Jost, tabular. */
+.sc-numeric {
+  font-family: var(--sc-numbers);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* THE one cobalt object. Nothing else in this file may reference --sc-action. */
+.sc-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px; /* BRAND-KIT §13 — touch target ≥ 44px */
+  padding-inline: calc(28px * var(--sc-density));
+  border: 1px solid var(--sc-action-shadow);
+  border-radius: var(--sc-radius);
+  background: var(--sc-action);
+  color: var(--sc-action-content);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: var(--sc-shadow-action);
+  transition:
+    box-shadow var(--sc-fast) var(--sc-ease),
+    transform var(--sc-fast) var(--sc-ease);
+}
+
+.sc-action:hover {
+  box-shadow: var(--sc-shadow-action-hover);
+  transform: var(--sc-lift);
+}
+
+/* Reading column. BRAND-KIT §12 — say it, then stop; the measure enforces it. */
+.sc-prose {
+  max-width: 62ch;
+  color: var(--sc-content);
+  line-height: 1.62;
+}
+
+.sc-prose > * + * {
+  margin-top: calc(18px * var(--sc-density));
+}
+
+/* The Logo component inlines the brand SVG so var(--sc-*) and the self-hosted
+   Jost face resolve. Sizing is driven by the wrapper's height. */
+.sc-logo {
+  display: inline-block;
+}
+
+.sc-logo svg {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+/* Skip link — visible only on keyboard focus. */
+.sc-skip {
+  position: absolute;
+  left: -100vw;
+  top: 0;
+  z-index: 1;
+  padding: calc(12px * var(--sc-density));
+  background: var(--sc-surface-raised);
+  color: var(--sc-content);
+  border: 1px solid var(--sc-content);
+  border-radius: var(--sc-radius);
+}
+
+.sc-skip:focus {
+  left: 0;
+}

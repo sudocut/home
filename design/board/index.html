@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SudoCut · 디자인 랭킹 보드</title>
+<link rel="stylesheet" href="/brand/tokens/tokens.css">
+<link rel="stylesheet" href="board.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-left">
+    <div class="micro" id="roundLabel">ROUND —</div>
+    <h1>디자인 랭킹</h1>
+    <p class="sub" id="sub">변형을 나란히 비교하고, 다섯 기준으로 점수를 매기세요. 모델 이름은 제출 전까지 가려집니다.</p>
+  </div>
+  <div class="top-right">
+    <div class="progress"><span id="progressText">0 / 0</span><div class="bar"><i id="progressBar"></i></div></div>
+    <div class="actions">
+      <button type="button" class="btn" id="btnBlind" aria-pressed="true">🙈 블라인드</button>
+      <button type="button" class="btn" id="btnReset">초기화</button>
+      <!-- the ONE point-colour object on this page -->
+      <button type="button" class="btn-export" id="btnExport">결과 내보내기</button>
+    </div>
+  </div>
+</header>
+
+<div id="notice" class="notice" hidden></div>
+
+<main id="grid" class="grid"></main>
+
+<section class="standings" id="standings" hidden>
+  <h2>순위</h2>
+  <table>
+    <thead><tr><th>#</th><th>변형</th><th>모델</th><th>평균</th><th>메모</th></tr></thead>
+    <tbody id="standingsBody"></tbody>
+  </table>
+</section>
+
+<!-- fullscreen A/B compare -->
+<div class="viewer" id="viewer" hidden>
+  <div class="viewer-bar">
+    <div class="viewer-id"><strong id="viewerLabel">A</strong><span id="viewerModel" class="micro"></span></div>
+    <div class="viewer-score" id="viewerScore"></div>
+    <div class="viewer-nav">
+      <span class="micro hint">←/→ 변형 · 1–5 점수 · esc 닫기</span>
+      <button type="button" class="btn" id="viewerPrev">←</button>
+      <button type="button" class="btn" id="viewerNext">→</button>
+      <button type="button" class="btn" id="viewerClose">esc</button>
+    </div>
+  </div>
+  <iframe id="viewerFrame" title="variant preview"></iframe>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="board.js"></script>
+</body>
+</html>

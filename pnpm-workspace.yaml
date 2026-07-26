@@ -1,0 +1,10 @@
+# Written by `pnpm install`, filled in here. pnpm 11 no longer reads the "pnpm"
+# field in package.json, and it refuses to run any script while a dependency's
+# build script is unapproved — without this, `pnpm run build` dies on
+# ERR_PNPM_IGNORED_BUILDS before Next is ever invoked.
+# Same list as sudocut/web, minus msw (not a dependency here).
+allowBuilds:
+  "@parcel/watcher": true
+  "@swc/core": true
+  "@tailwindcss/oxide": true
+  sharp: true

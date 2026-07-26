@@ -1,0 +1,38 @@
+SudoCut — vendored webfonts
+===========================
+
+Three variable faces are served from this directory. All three are licensed
+under the SIL Open Font License, Version 1.1. Nothing else is permitted here:
+brand/BRAND-KIT.md §5 fixes the type system at exactly these three faces, and
+brand/tokens/tokens.css already declares the matching @font-face rules pointing
+at /fonts/*. Do not add a fourth face, and do not re-declare @font-face in app/.
+
+  Jost-Variable.ttf      Jost           — Latin. Role: --sc-numbers (numerals).
+                         Owen Earl / indestructible type*
+                         https://github.com/indestructible-type/Jost
+                         SIL OFL 1.1
+
+  SUIT-Variable.woff2    SUIT           — Latin + Hangul. Role: --sc-body (UI + Korean).
+                         SUIT Project / Sun Young Oh
+                         https://github.com/sunn-us/SUIT
+                         SIL OFL 1.1
+
+  Hahmlet-Variable.ttf   Hahmlet        — Latin + Hangul. Role: --sc-heavy (display).
+                         Minjoo Ham / Google Fonts
+                         https://github.com/hanken-fonts/hahmlet
+                         SIL OFL 1.1
+
+Provenance
+----------
+Copied byte-for-byte from the sibling product repo, sudocut/web, at
+design/mockups/assets/fonts/. That repo carries the per-face license texts as
+Jost-OFL.txt, SUIT-OFL.txt and Hahmlet-OFL.txt alongside the binaries; the full
+OFL 1.1 text is identical for all three and is reproduced there.
+
+Why not IBM Plex Mono
+---------------------
+The archived Option H exploration mandated "Jost + IBM Plex Mono, never more
+than these two". Neither face sets Hangul, and soul.md mandates Korean-first, so
+that system is disqualified on capability. IBM Plex Mono is deliberately not
+part of this brand. The mono role is the system stack, declared as --sc-mono.
+See brand/SUPERSEDES.md.
