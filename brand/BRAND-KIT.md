@@ -358,6 +358,24 @@ editing the value and re-running `node tools/build-tokens.mjs`.
 
 ---
 
+## 15. Domain and contact
+
+The domain is **`sudocut.io`**. Evidenced by the Option H exploration, which is
+the only artifact in any repo that records it — page 9 footer *"QUESTIONS →
+BRAND@SUDOCUT.IO"*, and the business card mock *"MIRA@SUDOCUT.IO"*. Superseding
+that document's colour and type does **not** supersede its factual content.
+
+| Address | Status |
+|---|---|
+| `brand@sudocut.io` | Evidenced — brand enquiries |
+| `hello@sudocut.io` | **Unconfirmed local part.** Used on the contact page because the site needs an address. The `.io` domain is evidenced; `hello@` is our assumption. Confirm or replace it. |
+
+Recorded here because v1 of this kit dropped the contact details while
+transcribing, and the next writer then invented `hello@sudocut.com` — the wrong
+TLD — from nothing. Facts travel with the kit.
+
+---
+
 ## Files
 
 ```

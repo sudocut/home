@@ -22,9 +22,9 @@
     "intro": "Four hours of footage. One story. Ninety seconds of work.",
     "body": "SudoCut finds the silence, the filler, the retakes and the tangents in your footage. It proposes the cuts. You make the call.",
     "numbers": {
-      "eyebrow": "One project",
+      "eyebrow": "Example",
       "title": "In numbers",
-      "note": "One real project, start to finish. Not an average.",
+      "note": "Illustrative figures from our voice guide. Not measured results.",
       "one": {
         "value": "14:32 → 10:47",
         "label": "Raw to final cut, in a single pass."
@@ -76,7 +76,7 @@
     "lede": "A person writes back.",
     "body": "Product questions, partnerships, hiring, press — they all land at one address. We read every one.",
     "emailLabel": "Email",
-    "email": "hello@sudocut.com",
+    "email": "hello@sudocut.io",
     "cta": {
       "label": "Send an email"
     },

@@ -5,6 +5,11 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
+  // The root layout lives under [locale], so an unmatched path has no layout to
+  // render a not-found inside and Next serves an unstyled, empty-bodied error
+  // shell. app/global-not-found.tsx fixes that, and needs this flag. Verified
+  // working on 16.2.10: /zz and /ko/zzz both return real 404 HTML.
+  experimental: { globalNotFound: true },
   // The Logo component inlines the SVGs from brand/logo/ at render time so that
   // var(--sc-*) and the self-hosted Jost face actually resolve (an <img>-embedded
   // SVG is an isolated document and gets neither). Every route here is statically
