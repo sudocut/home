@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SudoCut closed-beta terms and target launch pricing for Korea.">
+  <title>Pricing — SudoCut</title>
+  <link rel="stylesheet" href="/brand/tokens/tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--sc-surface); }
+    body {
+      position: relative;
+      z-index: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--sc-content);
+      background: transparent;
+      font-family: var(--sc-body);
+      line-height: 1.5;
+    }
+    #bg::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      pointer-events: none;
+      background-image:
+        linear-gradient(var(--sc-rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--sc-rule) 1px, transparent 1px);
+      background-size: var(--sc-grid-size) var(--sc-grid-size);
+    }
+    a { color: inherit; }
+    h1, h2, h3, p { margin-top: 0; }
+    main { overflow: clip; }
+    .shell {
+      width: min(calc(100% - 48px), var(--sc-measure));
+      margin-inline: auto;
+    }
+    .site-header {
+      position: relative;
+      z-index: 2;
+      min-height: 77px;
+      border-bottom: 1px solid var(--sc-rule);
+      background: var(--sc-surface);
+    }
+    .header-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      font-family: var(--sc-numbers);
+      font-size: 21px;
+      font-weight: 650;
+      letter-spacing: -0.04em;
+    }
+    .site-nav, .footer-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .site-nav a, .footer-nav a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      padding-inline: 2px;
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      text-underline-offset: 5px;
+      transition: background-color var(--sc-fast) var(--sc-ease);
+    }
+    .site-nav a { text-decoration: none; }
+    .site-nav a[aria-current="page"] { text-decoration: underline; }
+    .site-nav a:hover, .footer-nav a:hover { background: var(--sc-hover); }
+    .brand:focus-visible,
+    .site-nav a:focus-visible,
+    .footer-nav a:focus-visible {
+      outline: 2px solid var(--sc-content);
+      outline-offset: 4px;
+    }
+    .eyebrow {
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .number {
+      font-family: var(--sc-numbers);
+      font-variant-numeric: tabular-nums;
+    }
+    .page-intro {
+      min-height: 500px;
+      display: grid;
+      align-items: center;
+      padding-block: 92px;
+    }
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 900px);
+      gap: 42px;
+      align-items: start;
+    }
+    .intro-grid .eyebrow {
+      margin: 13px 0 0;
+      color: var(--sc-content-muted);
+    }
+    h1 {
+      max-width: 930px;
+      margin-bottom: 22px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(56px, 6.5vw, 88px);
+      font-weight: 650;
+      letter-spacing: -0.055em;
+      line-height: 0.98;
+    }
+    .intro-copy {
+      max-width: 680px;
+      margin-bottom: 0;
+      color: var(--sc-content-muted);
+      font-size: 20px;
+      line-height: 1.55;
+    }
+    .now {
+      padding-block: 100px;
+      color: var(--sc-surface-raised);
+      background: var(--sc-content);
+    }
+    .now-head {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.15fr);
+      gap: clamp(54px, 8vw, 110px);
+      align-items: end;
+      margin-bottom: 64px;
+    }
+    .now .eyebrow { margin-bottom: 20px; }
+    .now h2 {
+      margin-bottom: 0;
+      font-family: var(--sc-numbers);
+      font-size: clamp(92px, 13vw, 160px);
+      font-weight: 300;
+      letter-spacing: -0.075em;
+      line-height: 0.75;
+      font-variant-numeric: tabular-nums;
+    }
+    .now-copy {
+      max-width: 650px;
+      font-size: 18px;
+      line-height: 1.65;
+    }
+    .now-copy p:last-child { margin-bottom: 0; }
+    .grant {
+      margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--sc-surface-raised);
+    }
+    .grant div {
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 26px;
+    }
+    .grant div + div { border-left: 1px solid var(--sc-surface-raised); }
+    .grant span {
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .grant strong {
+      font-family: var(--sc-numbers);
+      font-size: clamp(29px, 4vw, 46px);
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      font-variant-numeric: tabular-nums;
+    }
+    .packs-label { margin-bottom: 14px; }
+    .packs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-block: 1px solid var(--sc-surface-raised);
+    }
+    .pack {
+      min-height: 116px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 21px;
+    }
+    .pack + .pack { border-left: 1px solid var(--sc-surface-raised); }
+    .pack span { font-size: 14px; }
+    .pack strong {
+      font-family: var(--sc-numbers);
+      font-size: 25px;
+      font-weight: 520;
+      font-variant-numeric: tabular-nums;
+    }
+    .launch {
+      border-bottom: 1px solid var(--sc-rule);
+      padding-block: 100px;
+      background: var(--sc-surface-raised);
+    }
+    .launch-head {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 42px;
+      margin-bottom: 54px;
+    }
+    .launch-head .eyebrow {
+      margin: 9px 0 0;
+      color: var(--sc-content-muted);
+    }
+    .launch h2 {
+      max-width: 820px;
+      margin-bottom: 16px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(43px, 4.8vw, 64px);
+      font-weight: 620;
+      letter-spacing: -0.045em;
+      line-height: 1;
+    }
+    .launch-head p:last-child {
+      max-width: 620px;
+      margin-bottom: 0;
+      color: var(--sc-content-muted);
+      font-size: 18px;
+    }
+    .price-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--sc-content);
+      background: var(--sc-surface-raised);
+    }
+    .price-table th, .price-table td {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--sc-rule);
+      text-align: left;
+      vertical-align: top;
+    }
+    .price-table th {
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .price-table tbody tr:last-child td { border-bottom: 0; }
+    .price-table td:first-child {
+      width: 22%;
+      font-weight: 720;
+    }
+    .price-table td:nth-child(2) {
+      width: 22%;
+      font-family: var(--sc-numbers);
+      font-size: 20px;
+      font-weight: 540;
+      font-variant-numeric: tabular-nums;
+    }
+    .launch-note {
+      margin: 22px 0 0;
+      color: var(--sc-content-muted);
+      font-size: 15px;
+    }
+    .site-footer {
+      border-top: 1px solid var(--sc-rule);
+      padding-block: 30px;
+      background: var(--sc-surface);
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .footer-line {
+      margin: 0;
+      font-size: 14px;
+    }
+    .footer-line strong { font-family: var(--sc-numbers); }
+    .footer-nav a { font-size: 10px; }
+    @media (max-width: 820px) {
+      .shell { width: min(calc(100% - 32px), var(--sc-measure)); }
+      .site-header, .header-inner { min-height: 69px; }
+      .site-nav { gap: 14px; }
+      .page-intro {
+        min-height: auto;
+        padding-block: 80px;
+      }
+      .intro-grid, .launch-head {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      .intro-grid .eyebrow, .launch-head .eyebrow { margin-top: 0; }
+      .now, .launch { padding-block: 80px; }
+      .now-head {
+        grid-template-columns: 1fr;
+        gap: 42px;
+      }
+    }
+    @media (max-width: 620px) {
+      .shell { width: min(calc(100% - 24px), var(--sc-measure)); }
+      .brand { font-size: 18px; }
+      .site-nav { gap: 9px; }
+      .site-nav a {
+        min-height: 44px;
+        font-size: 9px;
+        letter-spacing: 0.03em;
+      }
+      .page-intro { padding-block: 66px; }
+      h1 { font-size: 48px; }
+      .intro-copy { font-size: 17px; }
+      .now, .launch { padding-block: 66px; }
+      .now h2 { font-size: 104px; }
+      .now-copy { font-size: 17px; }
+      .grant, .packs { grid-template-columns: 1fr; }
+      .grant div + div, .pack + .pack {
+        border-top: 1px solid var(--sc-surface-raised);
+        border-left: 0;
+      }
+      .grant div { min-height: 126px; }
+      .pack { min-height: 102px; }
+      .launch h2 { font-size: 40px; }
+      .price-table,
+      .price-table thead,
+      .price-table tbody,
+      .price-table tr,
+      .price-table th,
+      .price-table td {
+        display: block;
+        width: 100%;
+      }
+      .price-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .price-table tr {
+        padding: 20px;
+        border-bottom: 1px solid var(--sc-content);
+      }
+      .price-table tbody tr:last-child { border-bottom: 0; }
+      .price-table td,
+      .price-table td:first-child,
+      .price-table td:nth-child(2) {
+        width: 100%;
+        border: 0;
+        padding: 0;
+      }
+      .price-table td + td { margin-top: 8px; }
+      .price-table td::before {
+        display: block;
+        margin-bottom: 2px;
+        color: var(--sc-content-muted);
+        content: attr(data-label);
+        font-family: var(--sc-mono);
+        font-size: 9px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .footer-nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html">SudoCut</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="about.html">About</a>
+        <a href="team.html">Team</a>
+        <a href="pricing.html" aria-current="page">Pricing</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-intro" aria-labelledby="pricing-title">
+      <div class="shell intro-grid">
+        <p class="eyebrow">Pricing</p>
+        <div>
+          <h1 id="pricing-title">Beta is free. Launch pricing is a target.</h1>
+          <p class="intro-copy">What exists now is separate from what may launch in Q4 2026.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="now" aria-labelledby="now-title">
+      <div class="shell">
+        <div class="now-head">
+          <div>
+            <p class="eyebrow">Now · Closed beta · Aug–Oct 2026 · Korea</p>
+            <h2 id="now-title">₩0</h2>
+          </div>
+          <div class="now-copy">
+            <p>Invite-only. About 10 channels. No subscription.</p>
+            <p>One 600 raw-minute grant arrives on joining. The only payment is an optional one-time credit top-up at ₩100 per raw minute.</p>
+          </div>
+        </div>
+
+        <div class="grant">
+          <div>
+            <span>Joining grant</span>
+            <strong>600 raw min · 10h</strong>
+          </div>
+          <div>
+            <span>Subscription</span>
+            <strong>None</strong>
+          </div>
+        </div>
+
+        <p class="eyebrow packs-label">One-time credit packs</p>
+        <div class="packs" aria-label="Closed-beta credit packs">
+          <div class="pack"><span>300 raw min</span><strong>₩30,000</strong></div>
+          <div class="pack"><span>600 raw min</span><strong>₩60,000</strong></div>
+          <div class="pack"><span>1,200 raw min</span><strong>₩120,000</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="launch" aria-labelledby="launch-title">
+      <div class="shell">
+        <header class="launch-head">
+          <p class="eyebrow">At launch · Target Q4 2026 · Korea</p>
+          <div>
+            <h2 id="launch-title">Nothing here can be bought today.</h2>
+            <p>These are target launch terms, not live plans.</p>
+          </div>
+        </header>
+
+        <table class="price-table">
+          <thead>
+            <tr>
+              <th scope="col">Tier</th>
+              <th scope="col">Price</th>
+              <th scope="col">Included raw time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="Tier">Free</td>
+              <td data-label="Price">₩0</td>
+              <td data-label="Included raw time">60 min/mo + 600 min one-time grant</td>
+            </tr>
+            <tr>
+              <td data-label="Tier">Starter</td>
+              <td data-label="Price">₩14,900</td>
+              <td data-label="Included raw time">600 min (10h)</td>
+            </tr>
+            <tr>
+              <td data-label="Tier">Pro</td>
+              <td data-label="Price">₩49,000</td>
+              <td data-label="Included raw time">1,200 min (20h)</td>
+            </tr>
+            <tr>
+              <td data-label="Tier">Studio</td>
+              <td data-label="Price">₩149,000</td>
+              <td data-label="Included raw time">3,600 min (60h)</td>
+            </tr>
+            <tr>
+              <td data-label="Tier">Managed</td>
+              <td data-label="Price">₩299,000</td>
+              <td data-label="Included raw time">3,600 min (60h) · publish-ready · human QC · priority</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="launch-note">Overage: ₩100 per raw minute. Re-processing the same source is free.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <p class="footer-line"><strong>SudoCut.</strong> Less footage. More story.</p>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="team.html">Team</a>
+        <a href="pricing.html" aria-current="page">Pricing</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+    import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+    import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+    import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+
+    const u = {
+      u_colorFront: col('#e5e6e3'),   // rail grey. NEVER ink — that is the r2 failure.
+      u_colorBack:  col('#f1f1ec'),   // paper
+      u_contrast: 0.10, u_roughness: 0.20, u_fiber: 0.40, u_fiberSize: 0.7,
+      u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+      u_drops: 0, u_seed: 3, u_fade: 0,
+      u_noiseTexture: getShaderNoiseTexture(),
+      u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+      u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+    };
+    await u.u_noiseTexture.decode();
+    new ShaderMount(document.getElementById('bg'),
+                    paperTextureFragmentShader, u, undefined, 0, 0);
+  </script>
+</body>
+</html>

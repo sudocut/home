@@ -101,8 +101,14 @@ function checkVariant(id, html) {
     problems.push('does not link /brand/tokens/tokens.css — it cannot be using the token system');
   }
 
-  // strip comments so commented-out examples don't trip the checks
-  const css = html.replace(/<!--[\s\S]*?-->/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
+  // Strip comments so commented-out examples don't trip the checks, and strip
+  // HTML numeric entities so they don't look like hex colours: `&#8361;` is ₩
+  // (U+20A9), and the colour regex happily matched `#8361` inside it — flagging
+  // a Korean price as an out-of-palette colour.
+  const css = html
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/&#x?[0-9a-fA-F]+;?/g, " ");
 
   for (const hex of css.match(/#[0-9a-fA-F]{3,8}\b/g) || []) {
     const h = hex.toLowerCase();

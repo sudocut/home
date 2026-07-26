@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SudoCut — sudo rm the boring parts.</title>
+<link rel="stylesheet" href="/brand/tokens/tokens.css">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{background:var(--sc-surface)}
+  body{
+    color:var(--sc-content);
+    font-family:var(--sc-body);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  #bg{background:var(--sc-surface)}
+  .grid-overlay{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:
+      linear-gradient(var(--sc-rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--sc-rule) 1px, transparent 1px);
+    background-size:var(--sc-grid-size) var(--sc-grid-size);
+  }
+  .wrap{max-width:1160px;margin:0 auto;padding:0 40px}
+  .mono{font-family:var(--sc-mono)}
+  a{color:inherit}
+
+  /* header */
+  .site-head{border-bottom:1px solid var(--sc-content);background:var(--sc-surface-raised)}
+  .site-head .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:18px;padding-bottom:18px;gap:24px}
+  .wordmark{font-family:var(--sc-heavy);font-weight:700;font-size:22px;text-decoration:none;letter-spacing:-.01em}
+  .site-nav{display:flex;gap:28px;flex-wrap:wrap}
+  .site-nav a{
+    font-family:var(--sc-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+    text-decoration:none;border-bottom:1px solid transparent;
+    transition:border-color var(--sc-fast) var(--sc-ease);
+  }
+  .site-nav a:hover{border-bottom-color:var(--sc-content)}
+  .site-nav a[aria-current="page"]{border-bottom-color:var(--sc-content)}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:1.12fr .88fr;gap:64px;align-items:start;padding-top:88px;padding-bottom:80px}
+  .kicker{font-family:var(--sc-mono);font-size:14px;letter-spacing:.04em}
+  h1{
+    font-family:var(--sc-heavy);font-weight:600;letter-spacing:-.015em;
+    font-size:clamp(38px,4.6vw,58px);line-height:1.08;margin:20px 0 24px;
+  }
+  .lede{font-size:17px;max-width:var(--sc-measure)}
+
+  /* waitlist */
+  .wait{margin-top:44px;border-top:1px solid var(--sc-content);padding-top:22px;max-width:520px}
+  .wait label{font-family:var(--sc-mono);font-size:12px;letter-spacing:.16em}
+  .wait .row{display:flex;gap:12px;margin-top:12px}
+  .wait input{
+    flex:1;min-width:0;border:1px solid var(--sc-content);background:var(--sc-surface-raised);
+    color:var(--sc-content);font-family:var(--sc-body);font-size:15px;
+    padding:12px 14px;border-radius:var(--sc-radius);
+  }
+  .wait input:focus-visible,.btn:focus-visible{outline:2px solid var(--sc-content);outline-offset:2px}
+  .btn{
+    appearance:none;border:1px solid var(--sc-content);border-radius:var(--sc-radius);
+    background:var(--sc-action);color:var(--sc-action-content);
+    font-family:var(--sc-mono);font-size:14px;letter-spacing:.06em;white-space:nowrap;
+    padding:12px 20px;cursor:pointer;
+    box-shadow:var(--sc-shadow-action);
+    transition:box-shadow var(--sc-fast) var(--sc-ease),transform var(--sc-fast) var(--sc-ease);
+  }
+  .btn:hover{box-shadow:var(--sc-shadow-action-hover);transform:translate(-1px,-1px)}
+  .wait .note{margin-top:14px;font-family:var(--sc-mono);font-size:12px;color:var(--sc-content-muted)}
+  .wait .err{margin-top:10px;font-family:var(--sc-mono);font-size:12px;color:var(--sc-status-error);display:none}
+  .wait .ok{margin-top:12px;font-family:var(--sc-mono);font-size:13px;display:none}
+
+  /* proof */
+  .proof{
+    border:2px solid var(--sc-content);background:var(--sc-surface-raised);
+    padding:44px 40px 40px;box-shadow:var(--sc-lift);
+  }
+  .proof .ab{font-family:var(--sc-heavy);font-weight:700;font-size:clamp(84px,9vw,128px);line-height:.95;letter-spacing:-.02em}
+  .proof .claim{font-family:var(--sc-heavy);font-weight:600;font-size:clamp(20px,2vw,26px);line-height:1.25;margin-top:26px}
+  .proof .detail{margin-top:16px;font-size:15px;color:var(--sc-content-muted)}
+  .proof .tagline{margin-top:24px;padding-top:16px;border-top:1px solid var(--sc-content);font-family:var(--sc-mono);font-size:12px;letter-spacing:.12em;color:var(--sc-content-muted)}
+
+  /* 80/20 split */
+  .split{display:grid;grid-template-columns:1fr 1fr;border-top:2px solid var(--sc-content);border-bottom:2px solid var(--sc-content);background:var(--sc-surface-raised)}
+  .split-cell{padding:72px 48px 64px}
+  .split-cell + .split-cell{border-left:1px solid var(--sc-content)}
+  .num{font-family:var(--sc-numbers);font-variant-numeric:tabular-nums;font-size:clamp(96px,12vw,164px);line-height:.9;letter-spacing:-.02em}
+  .split-label{font-family:var(--sc-mono);font-size:12px;letter-spacing:.16em;margin-top:28px}
+  .split-copy{margin-top:12px;font-size:15px;max-width:34ch}
+
+  /* example */
+  .example{padding:56px 0 72px;text-align:center;font-family:var(--sc-mono);font-size:13px;color:var(--sc-content-muted)}
+  .example .n{font-family:var(--sc-numbers);font-variant-numeric:tabular-nums;color:var(--sc-content);font-size:15px}
+
+  /* footer */
+  .site-foot{border-top:1px solid var(--sc-content);background:var(--sc-surface-raised)}
+  .site-foot .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-top:22px;padding-bottom:22px}
+  .site-foot .tag{font-family:var(--sc-mono);font-size:13px}
+  .site-foot .fine{font-family:var(--sc-mono);font-size:12px;color:var(--sc-content-muted)}
+
+  @media (max-width:880px){
+    .wrap{padding:0 22px}
+    .hero{grid-template-columns:1fr;gap:48px;padding-top:56px;padding-bottom:56px}
+    .split{grid-template-columns:1fr}
+    .split-cell + .split-cell{border-left:0;border-top:1px solid var(--sc-content)}
+    .split-cell{padding:56px 28px}
+    .wait .row{flex-direction:column}
+    .site-nav{gap:18px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+<div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
+<div class="grid-overlay" aria-hidden="true"></div>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="wordmark" href="index.html">SudoCut</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="about.html">About</a>
+      <a href="team.html">Team</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="#waitlist">Waitlist</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <p class="kicker">sudo rm the boring parts.</p>
+      <h1>Four hours of footage. One story. Ninety seconds of work.</h1>
+      <p class="lede">SudoCut takes long, raw footage and hands back a cut worth keeping. AI strips the fillers, fumbles, silences, and NG takes. You keep the calls that matter, and finish in your own editor with FCPXML/SRT export. AI proposes. You decide.</p>
+
+      <form class="wait" id="waitlist" novalidate>
+        <label for="email">CLOSED BETA WAITLIST</label>
+        <div class="row">
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@channel.kr" required>
+          <button class="btn" type="submit">Request an invite</button>
+        </div>
+        <p class="err" id="wait-err">That address doesn't parse. One more try.</p>
+        <p class="ok" id="wait-ok">Request received. We'll email you when your invite opens.</p>
+        <p class="note">Invite-only &middot; ~10 channels &middot; Korea first &middot; free during beta</p>
+      </form>
+    </div>
+
+    <aside class="proof" aria-label="Blind test result">
+      <p class="ab">A/B</p>
+      <p class="claim">Viewers couldn't tell the difference.</p>
+      <p class="detail">The same footage, cut twice. Once by a human editor, once by SudoCut. Shipped side by side, nobody called which was which.</p>
+      <p class="tagline">THE PROOF, NOT THE PITCH</p>
+    </aside>
+  </section>
+
+  <section class="split" aria-label="The 80/20 split">
+    <div class="split-cell">
+      <p class="num">80%</p>
+      <p class="split-label">THE CHORE — WE REMOVE IT</p>
+      <p class="split-copy">Fillers, fumbles, dead air, tangents, retakes. Hours of cutting nobody's creativity lives in.</p>
+    </div>
+    <div class="split-cell">
+      <p class="num">20%</p>
+      <p class="split-label">THE STORY — YOU KEEP IT</p>
+      <p class="split-copy">Pacing, tone, what stays in. The last 20% is the creative work, and it stays yours.</p>
+    </div>
+  </section>
+
+  <p class="example">EXAMPLE — <span class="n">14:32 &rarr; 10:47</span>. Nothing you wanted is gone. An illustration, not a promise.</p>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span class="wordmark">SudoCut</span>
+    <span class="tag">sudo rm the boring parts.</span>
+    <span class="fine">&copy; 2026 SudoCut &middot; Korea first</span>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var form=document.getElementById('waitlist');
+    var email=document.getElementById('email');
+    var err=document.getElementById('wait-err');
+    var ok=document.getElementById('wait-ok');
+    form.addEventListener('submit',function(e){
+      e.preventDefault();
+      var v=email.value.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){err.style.display='block';ok.style.display='none';email.focus();return}
+      err.style.display='none';
+      form.querySelector('.row').style.display='none';
+      ok.style.display='block';
+    });
+  })();
+</script>
+<script type="module">
+  import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+  import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+  import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+  import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+
+  const u = {
+    u_colorFront: col('#e5e6e3'),
+    u_colorBack:  col('#f1f1ec'),
+    u_contrast: 0.10, u_roughness: 0.20, u_fiber: 0.40, u_fiberSize: 0.7,
+    u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+    u_drops: 0, u_seed: 3, u_fade: 0,
+    u_noiseTexture: getShaderNoiseTexture(),
+    u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+    u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+  };
+  await u.u_noiseTexture.decode();
+  new ShaderMount(document.getElementById('bg'),
+                  paperTextureFragmentShader, u, undefined, 0, 0);
+</script>
+</body>
+</html>

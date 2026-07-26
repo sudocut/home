@@ -1,0 +1,37 @@
+{
+  "id": "kimi-k3-a",
+  "model": "kimi-k3",
+  "label": "Kimi K3",
+  "modelId": "kimi-k3",
+  "vendor": "Moonshot",
+  "effort": "high",
+  "round": "r4",
+  "seconds": 453,
+  "bytes": 34434,
+  "pages": [
+    "index.html",
+    "about.html",
+    "team.html",
+    "pricing.html"
+  ],
+  "usage": {
+    "input": 6509,
+    "output": 17159,
+    "cacheRead": 44544,
+    "cacheWrite": 0,
+    "normalized": true,
+    "source": "~/.kimi-code/sessions/wd_sc-kimi-k3-6hzxgx_42f95f451f20/session_964fc1cb-a75c-488b-aee1-16d88dcdf855/agents/main/wire.jsonl",
+    "matchedBy": "document",
+    "turns": 2
+  },
+  "costUSD": 0.29027520000000007,
+  "reportedCostUSD": null,
+  "price": {
+    "input": 3,
+    "output": 15,
+    "cacheRead": 0.3,
+    "cacheWrite": 3,
+    "priceSource": "assumed"
+  },
+  "generatedBy": "tools/generate.mjs"
+}

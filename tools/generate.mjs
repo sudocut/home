@@ -185,6 +185,50 @@ function extractHtml(text) {
 }
 
 /**
+ * The model's actual message text, decoded out of whatever JSON envelope the CLI
+ * wrapped it in.
+ *
+ * Every CLI nests the final message somewhere different, so we walk every parsed
+ * value and keep the strings. Escaped candidates lose to unescaped ones: kimi's
+ * session-resume hint echoes a JSON-escaped replay of the exchange that is
+ * LONGER than the real message, and slicing it yields HTML full of literal \n
+ * and \" — valid-looking markup whose stylesheet href never matches.
+ *
+ * Anything that splits or slices model output must start here. Operating on raw
+ * stdout looks like it works — the document is right there in the bytes — and
+ * silently produces escaped HTML. That has now shipped twice.
+ */
+function decodedPayload(text) {
+  const strings = [];
+  const collect = (v) => {
+    if (typeof v === "string") {
+      if (v.length > 40) strings.push(v);
+      return;
+    }
+    if (v && typeof v === "object") Object.values(v).forEach(collect);
+  };
+  for (const line of text.split("\n")) {
+    const t = line.trim();
+    if (!t.startsWith("{") && !t.startsWith("[")) continue;
+    try { collect(JSON.parse(t)); } catch { /* not json */ }
+  }
+  if (!strings.length) {
+    try { collect(JSON.parse(text)); } catch { /* not json */ }
+  }
+  const scored = strings
+    .map((v) => {
+      const esc = (v.match(/\\[nrt"]/g) || []).length;
+      const nl = (v.match(/\n/g) || []).length;
+      return { v, escaped: esc > nl, len: v.length };
+    })
+    .filter((c) => /<!DOCTYPE\s+html/i.test(c.v))
+    .sort((a, b) => (a.escaped !== b.escaped ? (a.escaped ? 1 : -1) : b.len - a.len));
+
+  if (scored.length && !scored[0].escaped) return scored[0].v;
+  return text; // plain-text CLI, or nothing decodable — caller falls back
+}
+
+/**
  * Split a model's output into named files.
  *
  * A round may ask for several pages. The model marks each one with a line
@@ -195,11 +239,12 @@ function extractHtml(text) {
  * Names are flattened to a bare basename — a model that writes
  * `<!-- FILE: ../../../etc/passwd -->` gets `passwd`, not a path traversal.
  */
-function extractFiles(text) {
+function extractFiles(raw) {
+  const text = decodedPayload(raw);
   const marker = /<!--\s*FILE:\s*([^\s>]+?)\s*-->/gi;
   const marks = [...text.matchAll(marker)];
   if (!marks.length) {
-    const doc = extractHtml(text);
+    const doc = extractHtml(raw);
     return doc ? [{ name: "index.html", doc }] : [];
   }
 

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pricing — SudoCut</title>
+<link rel="stylesheet" href="/brand/tokens/tokens.css">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{background:var(--sc-surface)}
+  body{
+    color:var(--sc-content);
+    font-family:var(--sc-body);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  #bg{background:var(--sc-surface)}
+  .grid-overlay{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:
+      linear-gradient(var(--sc-rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--sc-rule) 1px, transparent 1px);
+    background-size:var(--sc-grid-size) var(--sc-grid-size);
+  }
+  .wrap{max-width:1160px;margin:0 auto;padding:0 40px}
+  a{color:inherit}
+
+  .site-head{border-bottom:1px solid var(--sc-content);background:var(--sc-surface-raised)}
+  .site-head .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:18px;padding-bottom:18px;gap:24px}
+  .wordmark{font-family:var(--sc-heavy);font-weight:700;font-size:22px;text-decoration:none;letter-spacing:-.01em}
+  .site-nav{display:flex;gap:28px;flex-wrap:wrap}
+  .site-nav a{
+    font-family:var(--sc-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+    text-decoration:none;border-bottom:1px solid transparent;
+    transition:border-color var(--sc-fast) var(--sc-ease);
+  }
+  .site-nav a:hover{border-bottom-color:var(--sc-content)}
+  .site-nav a[aria-current="page"]{border-bottom-color:var(--sc-content)}
+
+  .page-head{padding-top:80px;padding-bottom:56px}
+  .kicker{font-family:var(--sc-mono);font-size:13px;letter-spacing:.16em}
+  h1{
+    font-family:var(--sc-heavy);font-weight:600;letter-spacing:-.015em;
+    font-size:clamp(34px,4.2vw,52px);line-height:1.1;margin:18px 0 22px;
+  }
+  .lede{font-size:17px;max-width:var(--sc-measure)}
+
+  .block{border:2px solid var(--sc-content);background:var(--sc-surface-raised);margin-bottom:64px}
+  .block > header{
+    display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    border-bottom:1px solid var(--sc-content);padding:22px 32px;
+  }
+  .block h2{font-family:var(--sc-mono);font-size:13px;letter-spacing:.16em;font-weight:400}
+  .block .when{font-family:var(--sc-mono);font-size:13px;color:var(--sc-content-muted)}
+  .block .body{padding:32px}
+  .rows{list-style:none}
+  .rows li{
+    display:grid;grid-template-columns:150px 1fr;gap:24px;
+    padding:16px 0;border-bottom:1px solid var(--sc-content);font-size:15px;
+  }
+  .rows li:last-child{border-bottom:0}
+  .rows .k{font-family:var(--sc-mono);font-size:13px;letter-spacing:.08em;padding-top:2px}
+  .num{font-family:var(--sc-numbers);font-variant-numeric:tabular-nums}
+  .packs{display:flex;gap:0;flex-wrap:wrap;margin-top:10px}
+  .packs span{border:1px solid var(--sc-content);padding:8px 14px;font-family:var(--sc-numbers);font-variant-numeric:tabular-nums;font-size:14px;margin:-1px 0 0 -1px}
+
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:15px;min-width:640px}
+  th,td{text-align:left;padding:14px 20px;border-bottom:1px solid var(--sc-content);vertical-align:top}
+  th{font-family:var(--sc-mono);font-size:12px;letter-spacing:.14em;font-weight:400;color:var(--sc-content-muted)}
+  tr:last-child td{border-bottom:0}
+  td.price{font-family:var(--sc-numbers);font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.included{font-family:var(--sc-numbers);font-variant-numeric:tabular-nums}
+  td .sub{display:block;font-family:var(--sc-body);font-size:13px;color:var(--sc-content-muted);margin-top:2px}
+  .caveat{margin-top:20px;font-size:14px;max-width:var(--sc-measure)}
+  .caveat.mono-note{font-family:var(--sc-mono);font-size:12px;color:var(--sc-content-muted);letter-spacing:.06em}
+
+  .foot-note{padding-bottom:88px;font-family:var(--sc-mono);font-size:12px;color:var(--sc-content-muted)}
+
+  .site-foot{border-top:1px solid var(--sc-content);background:var(--sc-surface-raised)}
+  .site-foot .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-top:22px;padding-bottom:22px}
+  .site-foot .tag{font-family:var(--sc-mono);font-size:13px}
+  .site-foot .fine{font-family:var(--sc-mono);font-size:12px;color:var(--sc-content-muted)}
+
+  @media (max-width:880px){
+    .wrap{padding:0 22px}
+    .page-head{padding-top:56px;padding-bottom:44px}
+    .block > header{padding:18px 22px}
+    .block .body{padding:22px}
+    .rows li{grid-template-columns:1fr;gap:6px}
+    .site-nav{gap:18px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+<div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
+<div class="grid-overlay" aria-hidden="true"></div>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="wordmark" href="index.html">SudoCut</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="about.html">About</a>
+      <a href="team.html">Team</a>
+      <a href="pricing.html" aria-current="page">Pricing</a>
+      <a href="index.html#waitlist">Waitlist</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="page-head">
+    <p class="kicker">PRICING</p>
+    <h1>Beta terms now. A launch card later.</h1>
+    <p class="lede">Two blocks, clearly separated. The first is what exists today. The second is a target — nothing on it can be bought yet.</p>
+  </section>
+
+  <section class="block" aria-label="Closed beta terms">
+    <header>
+      <h2>NOW — CLOSED BETA</h2>
+      <span class="when">Aug–Oct 2026 &middot; Korea</span>
+    </header>
+    <div class="body">
+      <ul class="rows">
+        <li><span class="k">ACCESS</span><span>Invite-only, ~10 channels. Free during beta — no subscription exists yet.</span></li>
+        <li><span class="k">GRANT</span><span><span class="num">600</span> raw minutes (10h) credited when you join.</span></li>
+        <li><span class="k">TOP-UPS</span><span>The only payment that exists: one-time credit packs at <span class="num">&#8361;100</span> per raw minute.
+          <span class="packs"><span>300분 &#8361;30,000</span><span>600분 &#8361;60,000</span><span>1,200분 &#8361;120,000</span></span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" aria-label="Launch pricing target">
+    <header>
+      <h2>AT LAUNCH — TARGET Q4 2026</h2>
+      <span class="when">Korea &middot; a target, not a date</span>
+    </header>
+    <div class="body">
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>TIER</th><th>PRICE</th><th>INCLUDED RAW TIME</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Free</td><td class="price">&#8361;0</td><td class="included">60 min/mo<span class="sub">+ 600 min one-time grant</span></td></tr>
+            <tr><td>Starter</td><td class="price">&#8361;14,900</td><td class="included">600 min (10h)</td></tr>
+            <tr><td>Pro</td><td class="price">&#8361;49,000</td><td class="included">1,200 min (20h)</td></tr>
+            <tr><td>Studio</td><td class="price">&#8361;149,000</td><td class="included">3,600 min (60h)</td></tr>
+            <tr><td>Managed</td><td class="price">&#8361;299,000</td><td class="included">3,600 min (60h)<span class="sub">publish-ready &middot; human QC &middot; priority</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caveat">Overage <span class="num">&#8361;100</span>/raw-min on every tier. Re-processing the same source is free.</p>
+      <p class="caveat mono-note">THIS CARD IS A TARGET. NOTHING HERE CAN BE BOUGHT TODAY.</p>
+    </div>
+  </section>
+
+  <p class="foot-note">Prices in KRW only. Beta invites open from the waitlist on the front page.</p>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span class="wordmark">SudoCut</span>
+    <span class="tag">sudo rm the boring parts.</span>
+    <span class="fine">&copy; 2026 SudoCut &middot; Korea first</span>
+  </div>
+</footer>
+
+<script type="module">
+  import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+  import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+  import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+  import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+
+  const u = {
+    u_colorFront: col('#e5e6e3'),
+    u_colorBack:  col('#f1f1ec'),
+    u_contrast: 0.10, u_roughness: 0.20, u_fiber: 0.40, u_fiberSize: 0.7,
+    u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+    u_drops: 0, u_seed: 3, u_fade: 0,
+    u_noiseTexture: getShaderNoiseTexture(),
+    u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+    u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+  };
+  await u.u_noiseTexture.decode();
+  new ShaderMount(document.getElementById('bg'),
+                  paperTextureFragmentShader, u, undefined, 0, 0);
+</script>
+</body>
+</html>

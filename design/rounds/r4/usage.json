@@ -1,0 +1,115 @@
+{
+  "round": "r4",
+  "totalCostUSD": 6.1896742,
+  "variants": [
+    {
+      "id": "fable5-a",
+      "status": "written",
+      "model": "fable5",
+      "label": "Claude Fable 5",
+      "modelId": "claude-fable-5",
+      "vendor": "Anthropic",
+      "effort": "max",
+      "round": "r4",
+      "seconds": 750,
+      "bytes": 57727,
+      "pages": [
+        "index.html",
+        "about.html",
+        "team.html",
+        "pricing.html"
+      ],
+      "usage": {
+        "input": 8,
+        "output": 65675,
+        "cacheRead": 162674,
+        "cacheWrite": 55444,
+        "normalized": true,
+        "reportedCostUSD": 4.555384
+      },
+      "costUSD": 4.555384,
+      "reportedCostUSD": 4.555384,
+      "price": {
+        "input": 10,
+        "output": 50,
+        "cacheRead": 1,
+        "cacheWrite": 20,
+        "priceSource": "verified"
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "gpt-sol-a",
+      "status": "written",
+      "model": "gpt-sol",
+      "label": "GPT-5.6 Sol",
+      "modelId": "gpt-5.6-sol",
+      "vendor": "OpenAI",
+      "effort": "xhigh",
+      "round": "r4",
+      "seconds": 321,
+      "bytes": 56669,
+      "pages": [
+        "index.html",
+        "about.html",
+        "team.html",
+        "pricing.html"
+      ],
+      "usage": {
+        "input": 76393,
+        "output": 24495,
+        "cacheRead": 454400,
+        "cacheWrite": 0,
+        "normalized": true,
+        "reportedCostUSD": null
+      },
+      "costUSD": 1.344015,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 5,
+        "output": 30,
+        "cacheRead": 0.5,
+        "priceSource": "assumed"
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "kimi-k3-a",
+      "status": "written",
+      "model": "kimi-k3",
+      "label": "Kimi K3",
+      "modelId": "kimi-k3",
+      "vendor": "Moonshot",
+      "effort": "high",
+      "round": "r4",
+      "seconds": 453,
+      "bytes": 34434,
+      "pages": [
+        "index.html",
+        "about.html",
+        "team.html",
+        "pricing.html"
+      ],
+      "usage": {
+        "input": 6509,
+        "output": 17159,
+        "cacheRead": 44544,
+        "cacheWrite": 0,
+        "normalized": true,
+        "source": "~/.kimi-code/sessions/wd_sc-kimi-k3-6hzxgx_42f95f451f20/session_964fc1cb-a75c-488b-aee1-16d88dcdf855/agents/main/wire.jsonl",
+        "matchedBy": "document",
+        "turns": 2
+      },
+      "costUSD": 0.29027520000000007,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 3,
+        "output": 15,
+        "cacheRead": 0.3,
+        "cacheWrite": 3,
+        "priceSource": "assumed"
+      },
+      "generatedBy": "tools/generate.mjs"
+    }
+  ]
+}
