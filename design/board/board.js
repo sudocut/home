@@ -240,15 +240,32 @@
     if (viewer.open) paintViewer();
   }
 
-  /** Format a session's cost + tokens. Only ever called after the blind lifts. */
+  /**
+   * Format a session's cost + tokens. Only ever called after the blind lifts.
+   *
+   * Input is shown split — fresh vs cache-read — because collapsing them is how
+   * a $1.57 session was displayed as $7.10 for a week. One agentic CLI resends
+   * its whole conversation every turn, so its input count runs an order of
+   * magnitude above a single-shot CLI's while costing a tenth as much per
+   * token. A single "1.25M in" figure makes those two look like the same
+   * quantity. They are not, and the split says so on the card.
+   */
   function costLine(id) {
     var m = usage[id];
     if (!m) return "";
     var bits = [];
     if (typeof m.costUSD === "number") bits.push("$" + m.costUSD.toFixed(4));
-    if (m.usage) bits.push((m.usage.output || 0).toLocaleString() + " out");
+    else bits.push("cost unknown");
+    var u = m.usage;
+    if (u) {
+      bits.push((u.input || 0).toLocaleString() + " in");
+      if (u.cacheRead) bits.push(u.cacheRead.toLocaleString() + " cache-read");
+      if (u.cacheWrite) bits.push(u.cacheWrite.toLocaleString() + " cache-write");
+      bits.push((u.output || 0).toLocaleString() + " out");
+    }
     if (m.seconds) bits.push(m.seconds + "s");
     if (m.effort) bits.push("effort " + m.effort);
+    if (m.price && m.price.priceSource === "assumed") bits.push("list rate, unreconciled");
     return bits.join(" · ");
   }
 
@@ -349,6 +366,8 @@
           note: String(r.note || "").trim(),
           costUSD: typeof m.costUSD === "number" ? Number(m.costUSD.toFixed(6)) : null,
           tokens: m.usage || null,
+          price: m.price || null,
+          priceSource: (m.price && m.price.priceSource) || null,
           seconds: m.seconds || null,
           effort: m.effort || null,
         };
@@ -361,20 +380,39 @@
     var table = rows.map(function (x, i) {
       var r = ratingOf(x.v.id);
       var m = usage[x.v.id] || {};
+      var u = m.usage || {};
       var c = typeof m.costUSD === "number" ? "$" + m.costUSD.toFixed(4) : "—";
+      var tok = m.usage
+        ? (u.input || 0).toLocaleString() + " + " + (u.cacheRead || 0).toLocaleString() +
+          "c / " + (u.output || 0).toLocaleString()
+        : "—";
       return "| " + (i + 1) + " | " + x.v.label + " | " + x.v.model + " | " + x.mean.toFixed(1) +
-        " | " + c + " | " + String(r.note || "").replace(/\|/g, "\\|").replace(/\n/g, " ") + " |";
+        " | " + c + " | " + tok +
+        " | " + String(r.note || "").replace(/\|/g, "\\|").replace(/\n/g, " ") + " |";
     }).join("\n");
+
+    var assumed = rows.filter(function (x) {
+      var m = usage[x.v.id] || {};
+      return m.price && m.price.priceSource === "assumed";
+    }).map(function (x) { return x.v.model; });
 
     return "# " + manifest.round + " — ranking\n\n" +
       "Produced by the board (`bash tools/serve.sh`). Validated by `node tools/verify-round.mjs`.\n\n" +
       "**Judged blind** — model identity AND session cost were hidden until the ranking\n" +
       "was submitted. Cost identifies the vendor as surely as the name does.\n\n" +
       "## Result\n\n" +
-      "| Rank | Variant | Model | Mean | Cost | Note |\n|---|---|---|---|---|---|\n" + table + "\n\n" +
+      "| Rank | Variant | Model | Mean | Cost | Tokens (fresh + cached in / out) | Note |\n" +
+      "|---|---|---|---|---|---|---|\n" + table + "\n\n" +
       "Round total: **$" + data.totalCostUSD.toFixed(4) + "** across " + rows.length +
       " session(s). One design = one session, priced at list API rates from `design/models.json`.\n\n" +
-      "## Data\n\n```json\n" + JSON.stringify(data, null, 2) + "\n```\n";
+      "Fresh and cached input are listed separately because they differ by 10x in\n" +
+      "price. An agentic CLI resends its conversation every turn, so a large input\n" +
+      "count is mostly cache and costs far less than the same number of fresh tokens.\n" +
+      (assumed.length
+        ? "\nRates for " + assumed.join(", ") + " are list prices applied by us and not\n" +
+          "reconciled against a vendor-reported cost — only Anthropic's CLI reports one.\n"
+        : "") +
+      "\n## Data\n\n```json\n" + JSON.stringify(data, null, 2) + "\n```\n";
   }
 
   function exportRanking() {

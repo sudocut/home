@@ -13,15 +13,19 @@
     "output": 25810,
     "cacheRead": 242002,
     "cacheWrite": 54460,
+    "normalized": true,
     "reportedCostUSD": 1.3109060000000001
   },
-  "costUSD": 1.106681,
+  "costUSD": 1.3109060000000001,
   "reportedCostUSD": 1.3109060000000001,
   "price": {
     "input": 5,
     "output": 25,
     "cacheRead": 0.5,
-    "cacheWrite": 6.25
+    "cacheWrite": 10,
+    "priceSource": "verified"
   },
-  "generatedBy": "tools/generate.mjs"
+  "generatedBy": "tools/generate.mjs",
+  "usageBasis": "exclusive",
+  "repricedBy": "tools/recost.mjs"
 }

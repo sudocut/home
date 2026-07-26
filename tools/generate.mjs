@@ -15,6 +15,12 @@
  * PRINTS one HTML document to stdout. We extract it and write the file. Models
  * never write files themselves — that keeps three different CLIs interchangeable.
  *
+ * That contract is a sentence in a prompt, not a permission system, and a model
+ * has already broken it: a kimi run overwrote a variant from a finished round.
+ * lib/repo-guard.mjs fingerprints the tree around the fan-out and restores what
+ * a model dirtied uninvited. Run rounds from a CLEAN tree — the guard restores
+ * from HEAD, so it can only save what was committed.
+ *
  * ONE DESIGN = ONE SESSION. Each session's token usage is captured from the CLI's
  * own structured output and priced against design/models.json. Results land in
  * variants/<id>/meta.json and are aggregated into the round's usage.json, which
@@ -28,6 +34,8 @@ import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { auditPrices, costOf, kimiUsage, normalizeUsage, num, usd } from "./lib/cost.mjs";
+import { dirtyPaths, restoreStrays } from "./lib/repo-guard.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -177,13 +185,19 @@ function extractHtml(text) {
 
 /* ---------- usage capture ---------- */
 
-const num = (v) => (typeof v === "number" && Number.isFinite(v) ? v : 0);
-
 /**
  * Extract token usage from a CLI's structured output. Each CLI reports
  * differently, so this is deliberately forgiving: it walks every JSON object it
  * can find and keeps the largest counts seen. Returns nulls (not zeros) when
  * nothing was found, so "unknown" is never silently priced as "free".
+ *
+ * Largest-seen is the right reduction for both shapes we meet: claude reports
+ * one cumulative object per session, codex reports a running cumulative total
+ * per turn. Neither wants summing. (kimi is the exception — it reports per-turn
+ * deltas, on a channel we cannot see at all; see kimiUsage in lib/cost.mjs.)
+ *
+ * The result is RAW — still in whatever basis the CLI uses. normalizeUsage()
+ * converts it to disjoint token classes before anything prices it.
  */
 function parseUsage(model, out) {
   const acc = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, reportedCostUSD: null };
@@ -228,20 +242,20 @@ function parseUsage(model, out) {
   return found ? acc : null;
 }
 
-/** Price a session against the model's list rates. Returns USD. */
-function costOf(model, u) {
-  if (!u) return null;
-  const p = model.price || {};
-  const per = (tokens, rate) => (num(tokens) / 1_000_000) * num(rate);
-  return (
-    per(u.input, p.input) +
-    per(u.output, p.output) +
-    per(u.cacheRead, p.cacheRead ?? p.input) +
-    per(u.cacheWrite, p.cacheWrite ?? p.input)
-  );
+/**
+ * Usage for one session, normalised and ready to price.
+ *
+ * Falls back to the CLI's own session log when stdout carried no counts — kimi
+ * prints none, which made it the one model in the registry whose cost was
+ * permanently unknown. The session is matched by the document it produced, so
+ * a retry that left an older variant file in place cannot be billed the newer
+ * session's tokens.
+ */
+function sessionUsage(model, out, { html, t0, t1 }) {
+  let raw = parseUsage(model, out);
+  if (!raw && model.usageFrom === "kimi-session-log") raw = kimiUsage(ROOT, { html, t0, t1 });
+  return normalizeUsage(model, raw);
 }
-
-const usd = (n) => (n === null || n === undefined ? "—" : `$${n.toFixed(4)}`);
 
 /* ---------- main ---------- */
 
@@ -276,6 +290,12 @@ async function main() {
     for (const m of registry.models.filter((m) => m.available === false)) {
       console.log(`  · ${m.id.padEnd(11)} ${m.label.padEnd(16)} disabled in models.json`);
     }
+    for (const gap of auditPrices(registry.models)) console.warn(`  ! ${gap}`);
+    const assumed = checked.filter((m) => m.price?.priceSource === "assumed").map((m) => m.id);
+    if (assumed.length) {
+      console.log(`\n  rates for ${assumed.join(", ")} are list prices we applied, not reconciled`);
+      console.log("  against a vendor-reported cost. Only Anthropic's CLI reports one.");
+    }
     console.log();
     return;
   }
@@ -305,6 +325,18 @@ async function main() {
   console.log(`\nround ${round} — generating with ${usable.length} model(s) at max effort`);
   console.log(`prompt: ${(prompt.length / 1024).toFixed(1)}kb\n`);
 
+  const cleanBefore = dirtyPaths(ROOT);
+  if (!cleanBefore) console.warn("  ! not a git repo — cannot guard against a model writing files\n");
+  // paths this run is entitled to change
+  const ours = new Set(
+    usable.flatMap((m) => [
+      `design/rounds/${round}/variants/${m.id}-${letter}/index.html`,
+      `design/rounds/${round}/variants/${m.id}-${letter}/meta.json`,
+      `design/rounds/${round}/variants/${m.id}-${letter}/`,
+      `design/rounds/${round}/variants/${m.id}-${letter}`,
+    ]).concat([`design/rounds/${round}/usage.json`]),
+  );
+
   const jobs = usable.map(async (m) => {
     const id = `${m.id}-${letter}`;
     const dir = join(roundDir, "variants", id);
@@ -317,11 +349,15 @@ async function main() {
 
     const t0 = Date.now();
     const r = await runModel(m, prompt);
-    const secs = Math.round((Date.now() - t0) / 1000);
-    const usage = parseUsage(m, r.out + "\n" + r.err);
+    const t1 = Date.now();
+    const secs = Math.round((t1 - t0) / 1000);
+
+    // extract first: the document is how a session-log fallback identifies
+    // which session to bill, so usage has to be computed after it.
+    const html = extractHtml(r.out);
+    const usage = sessionUsage(m, r.out + "\n" + r.err, { html, t0, t1 });
     const cost = costOf(m, usage);
 
-    const html = extractHtml(r.out);
     if (!html) {
       console.error(`  ✗ ${id.padEnd(13)} no HTML in output — ${r.why ?? "exit 0"} (${secs}s)`);
       const snippet = (r.out || r.err).slice(0, 200).replace(/\s+/g, " ");
@@ -350,12 +386,24 @@ async function main() {
     };
     writeFileSync(join(dir, "meta.json"), JSON.stringify(meta, null, 2) + "\n");
 
-    const tok = usage ? `${usage.input + usage.cacheRead + usage.cacheWrite}in/${usage.output}out` : "usage unknown";
-    console.log(`  ✓ ${id.padEnd(13)} ${(html.length / 1024).toFixed(1)}kb  ${String(secs).padStart(4)}s  ${tok.padEnd(22)} ${usd(cost)}`);
+    // Show the classes separately. A single "in" figure is what let a session
+    // whose input was 86% cache reads look like a session that bought 673k
+    // fresh tokens — a 4.5x cost error that nothing on screen contradicted.
+    const tok = usage
+      ? `${usage.input.toLocaleString()}+${usage.cacheRead.toLocaleString()}c in/${usage.output.toLocaleString()} out`
+      : "usage unknown";
+    console.log(`  ✓ ${id.padEnd(13)} ${(html.length / 1024).toFixed(1)}kb  ${String(secs).padStart(4)}s  ${tok.padEnd(32)} ${usd(cost)}`);
+    if (meta.reportedCostUSD !== null && cost !== null) {
+      const drift = Math.abs(cost - meta.reportedCostUSD);
+      if (drift > 0.005 && drift / meta.reportedCostUSD > 0.02) {
+        console.warn(`      ! priced ${usd(cost)} but ${m.vendor} reports ${usd(meta.reportedCostUSD)} — rates in models.json are stale`);
+      }
+    }
     return { id, status: "written", ...meta };
   });
 
   const results = await Promise.all(jobs);
+  restoreStrays(ROOT, cleanBefore, ours);
   const written = results.filter((r) => r.status === "written");
   const failed = results.filter((r) => r.status === "failed");
 

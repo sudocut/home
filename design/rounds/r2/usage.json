@@ -1,6 +1,6 @@
 {
   "round": "r2",
-  "totalCostUSD": 4.202009,
+  "totalCostUSD": 4.689167800000001,
   "variants": [
     {
       "id": "fable5-a",
@@ -18,17 +18,20 @@
         "output": 38458,
         "cacheRead": 45743,
         "cacheWrite": 48572,
+        "normalized": true,
         "reportedCostUSD": 2.940123
       },
-      "costUSD": 2.5758330000000003,
+      "costUSD": 2.9401230000000003,
       "reportedCostUSD": 2.940123,
       "price": {
         "input": 10,
         "output": 50,
         "cacheRead": 1,
-        "cacheWrite": 12.5
+        "cacheWrite": 20,
+        "priceSource": "verified"
       },
-      "generatedBy": "tools/generate.mjs"
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "exclusive"
     },
     {
       "id": "opus5-a",
@@ -46,17 +49,20 @@
         "output": 25810,
         "cacheRead": 242002,
         "cacheWrite": 54460,
+        "normalized": true,
         "reportedCostUSD": 1.3109060000000001
       },
-      "costUSD": 1.106681,
+      "costUSD": 1.3109060000000001,
       "reportedCostUSD": 1.3109060000000001,
       "price": {
         "input": 5,
         "output": 25,
         "cacheRead": 0.5,
-        "cacheWrite": 6.25
+        "cacheWrite": 10,
+        "priceSource": "verified"
       },
-      "generatedBy": "tools/generate.mjs"
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "exclusive"
     },
     {
       "id": "gpt-sol-a",
@@ -70,19 +76,23 @@
       "seconds": 102,
       "bytes": 8159,
       "usage": {
-        "input": 23657,
+        "input": 361,
         "output": 5857,
         "cacheRead": 23296,
         "cacheWrite": 0,
+        "normalized": true,
         "reportedCostUSD": null
       },
-      "costUSD": 0.41047500000000003,
+      "costUSD": 0.189163,
       "reportedCostUSD": null,
       "price": {
         "input": 5,
-        "output": 30
+        "output": 30,
+        "cacheRead": 0.5,
+        "priceSource": "assumed"
       },
-      "generatedBy": "tools/generate.mjs"
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "inclusive"
     },
     {
       "id": "gpt-terra-a",
@@ -96,19 +106,23 @@
       "seconds": 30,
       "bytes": 5038,
       "usage": {
-        "input": 20734,
+        "input": 10238,
         "output": 2063,
         "cacheRead": 10496,
         "cacheWrite": 0,
+        "normalized": true,
         "reportedCostUSD": null
       },
-      "costUSD": 0.10902,
+      "costUSD": 0.05916400000000001,
       "reportedCostUSD": null,
       "price": {
         "input": 2.5,
-        "output": 15
+        "output": 15,
+        "cacheRead": 0.25,
+        "priceSource": "assumed"
       },
-      "generatedBy": "tools/generate.mjs"
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "inclusive"
     },
     {
       "id": "kimi-k3-a",
@@ -121,16 +135,29 @@
       "round": "r2",
       "seconds": 231,
       "bytes": 5542,
-      "usage": null,
-      "costUSD": null,
+      "usage": {
+        "input": 11790,
+        "output": 7731,
+        "cacheRead": 128256,
+        "cacheWrite": 0,
+        "normalized": true,
+        "source": "~/.kimi-code/sessions/wd_geneva_a40cbe5ff746/session_d3818407-efa4-47a6-948d-a3b2cfe29acf/agents/main/wire.jsonl",
+        "matchedBy": "document",
+        "turns": 5
+      },
+      "costUSD": 0.1898118,
       "reportedCostUSD": null,
       "price": {
         "input": 3,
         "output": 15,
-        "cacheRead": 0.3
+        "cacheRead": 0.3,
+        "cacheWrite": 3,
+        "priceSource": "assumed"
       },
       "generatedBy": "tools/generate.mjs",
-      "note": "Output was repaired post-generation: the CLI appended a session-resume hint and an escaped replay of the exchange after </html>, which the extractor originally swallowed. Document sliced at the first </html>. Token usage is unavailable — kimi's stream-json reports none."
+      "note": "Output was repaired post-generation: the CLI appended a session-resume hint and an escaped replay of the exchange after </html>, which the extractor originally swallowed. Document sliced at the first </html>. Token usage is unavailable — kimi's stream-json reports none.",
+      "usageBasis": "exclusive"
     }
-  ]
+  ],
+  "repricedBy": "tools/recost.mjs"
 }

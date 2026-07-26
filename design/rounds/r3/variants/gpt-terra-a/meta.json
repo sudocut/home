@@ -9,17 +9,22 @@
   "seconds": 55,
   "bytes": 12579,
   "usage": {
-    "input": 20843,
+    "input": 10347,
     "output": 4088,
     "cacheRead": 10496,
     "cacheWrite": 0,
+    "normalized": true,
     "reportedCostUSD": null
   },
-  "costUSD": 0.1396675,
+  "costUSD": 0.0898115,
   "reportedCostUSD": null,
   "price": {
     "input": 2.5,
-    "output": 15
+    "output": 15,
+    "cacheRead": 0.25,
+    "priceSource": "assumed"
   },
-  "generatedBy": "tools/generate.mjs"
+  "generatedBy": "tools/generate.mjs",
+  "usageBasis": "inclusive",
+  "repricedBy": "tools/recost.mjs"
 }

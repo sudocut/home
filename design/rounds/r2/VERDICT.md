@@ -39,20 +39,25 @@ disabled is broken no matter how well the fibre is simulated.
 Four of five models used the shader and all four landed in the same grey. That is
 not four bad guesses; it is a shader whose honest settings are wrong for a surface
 that must look active and inviting. The one variant that declined it —
-**GPT-5.6 Terra, also the cheapest at $0.1090** — was right.
+**GPT-5.6 Terra, also the cheapest at $0.0592** — was right.
 
 **Rule D6: no background texture shader.** Warmth comes from the paper colour and
 the 76px grid, as the shipped system always did. The vendored library stays for a
 future round with a real use (a hero-only treatment, a print asset), but it is off
 by default and banned in the brief.
 
-Cost of learning this: **$4.2020**. Worth it — the question had been open since
+Cost of learning this: **$4.6892**. Worth it — the question had been open since
 soul.md was written and had been deferred twice.
+
+> **Costs on this page were corrected 2026-07-26.** Every dollar figure here was
+> first written from a miscounting harness. See `design/README.md` § Cost; re-derive
+> with `node tools/recost.mjs r2`. The verdict itself is unchanged — the cheapest
+> variant was still the one that got the call right, by a wider margin than stated.
 
 ## What to graft from the losers
 
 - **GPT-5.6 Terra** — the restraint call. Flat paper, visible grid, no shader,
-  30s, $0.1090. Cheapest and least wrong.
+  30s, $0.0592. Cheapest and least wrong.
 - **Kimi K3** — the strongest headline: *"지루한 80%는 잘라내고, 이야기만 남깁니다."*
   It states the ratio, which is more concrete than "the boring parts." Carry the
   **80%** forward, in English.
@@ -66,13 +71,13 @@ soul.md was written and had been deferred twice.
 The blind was never lifted because scoring never happened, so these are
 observations about *behaviour*, not quality — and one round is not evidence.
 
-- Spend spread **24×**: Terra $0.1090 → Fable $2.5758. The most expensive variant
+- Spend spread **50×**: Terra $0.0592 → Fable $2.9401. The most expensive variant
   was not the most correct one; the cheapest made the one call that survived.
 - Four of five reached for the new capability. Offering it in the brief read as
   endorsing it, even with "optional" stated twice. **The next brief states the ban
   instead of offering the option.**
-- Kimi's usage is unmeasurable through its CLI, so its cost-effectiveness is
-  unknown — not zero, unknown.
+- Kimi's usage is not printed by its CLI, but it *is* recorded in its session log.
+  Recovered 2026-07-26: **$0.1898** — third cheapest of the five, not unknown.
 
 ## Next brief must say
 

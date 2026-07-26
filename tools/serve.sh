@@ -24,25 +24,67 @@ command -v python3 >/dev/null 2>&1 || {
   exit 1
 }
 
-if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
-  echo "error: port $PORT is already in use. Try: bash tools/serve.sh $((PORT + 1))" >&2
-  exit 1
-fi
-
 ROUND=""
 for d in "$ROOT"/design/rounds/r[0-9]*; do
   [ -d "$d" ] && ROUND="$(basename "$d")"
 done
 
+board_url() {
+  if [ -n "$ROUND" ]; then
+    echo "http://localhost:$1/design/board/?round=$ROUND"
+  else
+    echo "http://localhost:$1/design/board/"
+  fi
+}
+
+# A busy port is usually THIS server, still running from earlier — that is not a
+# failure, it is the board you were about to start. Telling you to pick another
+# port would leave two servers up and the second one is the one you would close.
+# So ask what is answering: fetch a file and compare it to ours byte for byte.
+# Same bytes means same tree (this repo has sibling worktrees, and they differ).
+if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
+  WHO="$(python3 - "$PORT" "$ROOT" <<'PY' 2>/dev/null || true
+import os, sys, urllib.request
+port, root = sys.argv[1], sys.argv[2]
+rel = "design/board/board.js"
+try:
+    served = urllib.request.urlopen(f"http://127.0.0.1:{port}/{rel}", timeout=2).read()
+    local = open(os.path.join(root, rel), "rb").read()
+except Exception:
+    print("foreign")
+else:
+    print("ours" if served == local else "other-tree")
+PY
+)"
+  case "$WHO" in
+    ours)
+      echo
+      echo "  already serving this repo on port $PORT — nothing to start."
+      echo
+      echo "  board →  $(board_url "$PORT")"
+      echo
+      echo "  to restart it:  lsof -ti tcp:$PORT | xargs kill"
+      echo
+      exit 0
+      ;;
+    other-tree)
+      echo "error: port $PORT is serving a DIFFERENT tree (another worktree?)." >&2
+      echo "       Rank there, or start this one elsewhere: bash tools/serve.sh $((PORT + 1))" >&2
+      exit 1
+      ;;
+    *)
+      echo "error: port $PORT is in use by something that is not a board server." >&2
+      echo "       Try: bash tools/serve.sh $((PORT + 1))" >&2
+      exit 1
+      ;;
+  esac
+fi
+
 echo
 echo "  serving $ROOT on http://localhost:$PORT"
 echo
-if [ -n "$ROUND" ]; then
-  echo "  board →  http://localhost:$PORT/design/board/?round=$ROUND"
-else
-  echo "  board →  http://localhost:$PORT/design/board/"
-  echo "  (no rounds yet — bash tools/new-round.sh)"
-fi
+echo "  board →  $(board_url "$PORT")"
+[ -n "$ROUND" ] || echo "  (no rounds yet — bash tools/new-round.sh)"
 echo
 echo "  ctrl-c to stop"
 echo
