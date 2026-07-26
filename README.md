@@ -89,12 +89,14 @@ The site's final layout is what the rounds are for — `r1` is written but not y
   conversion to WOFF2 before launch.
 - **Logo vectors are reconstructed**, not official — rebuilt from the published
   geometry. Exact, but replace them if the originals turn up.
-- **`hello@sudocut.io` is an assumption.** The `sudocut.io` domain is evidenced
-  (`brand@sudocut.io` appears in the Option H exploration), but the `hello@`
-  local part is ours. Confirm it or replace it in `messages/{ko,en}.json`.
-- **The homepage figures are illustrative, not measured.** `14:32 → 10:47`,
-  `6:12`, `7` come from `brand/voice.md`'s examples and are labelled as such.
-  Replace them with a real project's numbers when one is publishable — that
-  would be a much stronger page.
-- **No `Accept-Language` negotiation.** `/` always redirects to `/ko`. Adding it
-  needs a root `middleware.ts`.
+- **The waitlist needs three environment variables or it cannot send.** See
+  `.env.example`. Without them the form does not fake a success — it tells the
+  visitor to email `support@sudo-cut.com` instead — but nothing reaches you, so
+  set them before pointing a domain at this.
+- **The homepage figures are illustrative, not measured.** `14:32 → 10:47` comes
+  from `brand/voice.md`'s examples and is labelled as such on the page. Replace
+  it with a real project's numbers when one is publishable — that would be a
+  much stronger page.
+- **No `Accept-Language` negotiation.** `/` always redirects to `/en`
+  (constitution D5), so a Korean visitor lands on English and has to switch.
+  Adding negotiation needs a root `middleware.ts`.

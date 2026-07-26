@@ -24,11 +24,18 @@
   },
   "waitlist": {
     "label": "Closed beta waitlist",
+    "emailLabel": "Email address",
     "placeholder": "you@channel.kr",
+    "channelLabel": "Your channel link",
+    "channelPlaceholder": "youtube.com/@yourchannel",
     "submit": "Request an invite",
+    "sending": "Sending…",
     "error": "That address doesn't parse. One more try.",
+    "channelError": "That doesn't look like a link. A YouTube, Instagram or podcast URL is fine.",
+    "failed": "That didn't go through. Send us the same two lines and we'll add you by hand:",
     "success": "Request received. We'll email you when your invite opens.",
-    "note": "Invite-only · ~10 channels · Korea first · free during beta"
+    "note": "Invite-only · ~10 channels · Korea first · free during beta",
+    "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
   "home": {
     "kicker": "sudo rm the boring parts.",
@@ -189,8 +196,8 @@
     "title": "Talk to us.",
     "lede": "The fastest way in is the waitlist. For anything else, email works.",
     "emailLabel": "Email",
-    "email": "hello@sudo-cut.com",
-    "note": "hello@ is our assumption, not a confirmed address — see brand/BRAND-KIT.md."
+    "email": "support@sudo-cut.com",
+    "note": "Beta invites are handled from the waitlist, not from this address."
   },
   "notFound": {
     "title": "That page isn't here.",

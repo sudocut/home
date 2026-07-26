@@ -1,72 +1,106 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useId, useState } from "react";
+import { useActionState, useId } from "react";
+import { joinWaitlist, WAITLIST_INITIAL } from "@/actions/waitlist";
 
 /**
  * The closed-beta waitlist — and the single cobalt object on the whole site.
  * Nothing else may use --sc-action while this is on the page.
  *
- * The winning r4 variant was the only one that made this a working control
- * rather than a picture of one, so the validation and success state are part of
- * what was ranked, not an embellishment.
+ * Two fields, because Phase 0 is invite-only at roughly ten channels: the
+ * channel link is not a nice-to-have, it is how those ten get chosen. An email
+ * on its own would leave every decision unmakeable.
  *
- * HONESTY: there is no backend yet. Submitting validates the address and shows
- * the confirmation, but nothing is stored and no email is sent. soul.md's
- * "honesty over polish" applies to us as much as to the demo — wire this to a
- * real list before launch, or the confirmation is a lie. Tracked in README.
+ * The winning r4 variant was the only one that made this a working control
+ * rather than a picture of one, so validation and a success state are part of
+ * what was ranked. What is new here is that it now actually sends something.
+ *
+ * Every failure mode has its own message. In particular an unconfigured server
+ * never renders as success and never blames the visitor — it hands them the
+ * address instead, so a submission is not silently lost.
  */
 export function WaitlistForm() {
   const t = useTranslations("waitlist");
+  const contact = useTranslations("contact");
   const id = useId();
-  const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "error" | "done">("idle");
+  const [state, formAction, pending] = useActionState(joinWaitlist, WAITLIST_INITIAL);
+
+  const email = contact("email");
+  const failed = state.status === "unconfigured" || state.status === "failed";
 
   return (
-    <form
-      className="sc-wait"
-      id="waitlist"
-      noValidate
-      onSubmit={(event) => {
-        event.preventDefault();
-        const value = email.trim();
-        setState(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? "done" : "error");
-      }}
-    >
-      <label htmlFor={id}>{t("label")}</label>
+    <form action={formAction} className="sc-wait" id="waitlist">
+      <label htmlFor={`${id}-email`}>{t("label")}</label>
 
-      {state === "done" ? (
+      {state.status === "ok" ? (
         <p className="sc-wait-ok" role="status">
           {t("success")}
         </p>
       ) : (
-        <div className="sc-wait-row">
+        <>
+          <div className="sc-wait-fields">
+            <input
+              aria-invalid={state.status === "invalidEmail"}
+              aria-label={t("emailLabel")}
+              autoComplete="email"
+              defaultValue=""
+              id={`${id}-email`}
+              name="email"
+              placeholder={t("placeholder")}
+              required
+              type="email"
+            />
+            <input
+              aria-invalid={state.status === "invalidChannel"}
+              aria-label={t("channelLabel")}
+              autoComplete="url"
+              defaultValue=""
+              id={`${id}-channel`}
+              name="channel"
+              placeholder={t("channelPlaceholder")}
+              required
+              type="text"
+            />
+          </div>
+
+          {/* Honeypot: off-screen rather than display:none, which some password
+              managers and bots both skip. Never shown, never tabbed to. */}
           <input
-            aria-describedby={state === "error" ? `${id}-err` : undefined}
-            aria-invalid={state === "error"}
-            autoComplete="email"
-            id={id}
-            name="email"
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder={t("placeholder")}
-            required
-            type="email"
-            value={email}
+            aria-hidden="true"
+            autoComplete="off"
+            className="sc-honey"
+            name="company"
+            tabIndex={-1}
           />
-          {/* The one cobalt object. Do not add a second anywhere in this view. */}
-          <button className="sc-btn" type="submit">
-            {t("submit")}
-          </button>
-        </div>
+
+          <div className="sc-wait-row">
+            {/* The one cobalt object. Do not add a second anywhere in this view. */}
+            <button className="sc-btn" disabled={pending} type="submit">
+              {pending ? t("sending") : t("submit")}
+            </button>
+          </div>
+        </>
       )}
 
-      {state === "error" && (
-        <p className="sc-wait-err" id={`${id}-err`} role="alert">
+      {state.status === "invalidEmail" && (
+        <p className="sc-wait-err" role="alert">
           {t("error")}
+        </p>
+      )}
+      {state.status === "invalidChannel" && (
+        <p className="sc-wait-err" role="alert">
+          {t("channelError")}
+        </p>
+      )}
+      {failed && (
+        <p className="sc-wait-err" role="alert">
+          {t("failed")} <a href={`mailto:${email}`}>{email}</a>
         </p>
       )}
 
       <p className="sc-wait-note">{t("note")}</p>
+      <p className="sc-wait-note">{t("privacy")}</p>
     </form>
   );
 }

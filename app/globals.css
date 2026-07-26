@@ -251,10 +251,31 @@ textarea {
   text-transform: uppercase;
 }
 
+/* Two stacked fields — email, then the channel link. The link is required
+   because invite-only at ~10 channels is decided by looking at the channel. */
+.sc-wait-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
 .sc-wait-row {
   display: flex;
   gap: 12px;
   margin-top: 12px;
+}
+
+/* Honeypot. Positioned off-screen rather than display:none — bots skip hidden
+   fields, and this has to look fillable to them and be invisible to everyone
+   else. Never focusable: tabIndex -1 in the component, and no pointer target. */
+.sc-honey {
+  position: absolute;
+  left: -100vw;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .sc-wait input {
@@ -312,6 +333,11 @@ textarea {
 .sc-btn:hover {
   box-shadow: var(--sc-shadow-action-hover);
   transform: var(--sc-lift);
+}
+
+.sc-btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
 }
 
 /* ── Proof card ─────────────────────────────────────────────────────────── */
