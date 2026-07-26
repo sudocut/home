@@ -24,16 +24,8 @@
   },
   "waitlist": {
     "label": "Closed beta waitlist",
-    "emailLabel": "Email address",
-    "placeholder": "you@channel.kr",
-    "channelLabel": "Your channel link",
-    "channelPlaceholder": "youtube.com/@yourchannel",
-    "submit": "Request an invite",
-    "sending": "Sending…",
-    "error": "That address doesn't parse. One more try.",
-    "channelError": "That doesn't look like a link. A YouTube, Instagram or podcast URL is fine.",
-    "failed": "That didn't go through. Send us the same two lines and we'll add you by hand:",
-    "success": "Request received. We'll email you when your invite opens.",
+    "ask": "Two questions: your email, and a link to the channel you run.",
+    "submit": "Request an invite →",
     "note": "Invite-only · ~10 channels · Korea first · free during beta",
     "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },

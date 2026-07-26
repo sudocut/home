@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { WaitlistForm } from "@/components/WaitlistForm";
+import { WaitlistCta } from "@/components/WaitlistCta";
 
 type LocaleParams = { locale: string };
 
@@ -36,7 +36,7 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
             <h1>{t("title")}</h1>
             <p className="sc-lede">{t("lede")}</p>
             {/* The one cobalt object on this page. */}
-            <WaitlistForm />
+            <WaitlistCta />
           </div>
 
           <aside aria-label={t("proof.label")} className="sc-proof">

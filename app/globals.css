@@ -244,50 +244,34 @@ textarea {
   max-width: 520px;
 }
 
-.sc-wait label {
+.sc-wait-label {
   font-family: var(--sc-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-/* Two stacked fields — email, then the channel link. The link is required
-   because invite-only at ~10 channels is decided by looking at the channel. */
-.sc-wait-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 12px;
+/* Says what the form will ask before the visitor commits to leaving the page.
+   The application lives on a Google Form, so this is the only chance to set the
+   expectation that it is two questions and not a survey. */
+.sc-wait-ask {
+  margin-top: 10px;
+  font-size: 15px;
+  max-width: 46ch;
 }
 
+/* align-items:start stops the single child stretching to the row's full width —
+   the action should be the size of its own label, not the size of the column. */
 .sc-wait-row {
   display: flex;
+  align-items: start;
+  justify-content: start;
   gap: 12px;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
-/* Honeypot. Positioned off-screen rather than display:none — bots skip hidden
-   fields, and this has to look fillable to them and be invisible to everyone
-   else. Never focusable: tabIndex -1 in the component, and no pointer target. */
-.sc-honey {
-  position: absolute;
-  left: -100vw;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.sc-wait input {
-  flex: 1;
-  min-width: 0;
-  border: 1px solid var(--sc-content);
-  border-radius: var(--sc-radius);
-  background: var(--sc-surface-raised);
-  color: var(--sc-content);
-  font-family: var(--sc-body);
-  font-size: 15px;
-  padding: 12px 14px;
+.sc-wait-row > .sc-btn {
+  flex: 0 0 auto;
 }
 
 .sc-wait-note {
@@ -297,22 +281,15 @@ textarea {
   color: var(--sc-content-muted);
 }
 
-.sc-wait-err {
-  margin-top: 10px;
-  font-family: var(--sc-mono);
-  font-size: 12px;
-  color: var(--sc-status-error);
-}
-
-.sc-wait-ok {
-  margin-top: 12px;
-  font-family: var(--sc-mono);
-  font-size: 13px;
-}
-
-/* THE one cobalt object. Nothing else in this file may reference --sc-action. */
+/* THE one cobalt object. Nothing else in this file may reference --sc-action.
+   It is an <a> now that the application lives on a Google Form, so it needs the
+   things a <button> gave for free: centred text, no underline, and a box that
+   grows to the touch target rather than collapsing to the line height. */
 .sc-btn {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--sc-content);
   border-radius: var(--sc-radius);
   background: var(--sc-action);
@@ -321,6 +298,7 @@ textarea {
   font-size: 14px;
   letter-spacing: 0.06em;
   white-space: nowrap;
+  text-decoration: none;
   padding: 12px 20px;
   min-height: 44px; /* BRAND-KIT §13 — touch target */
   cursor: pointer;
@@ -333,11 +311,6 @@ textarea {
 .sc-btn:hover {
   box-shadow: var(--sc-shadow-action-hover);
   transform: var(--sc-lift);
-}
-
-.sc-btn:disabled {
-  cursor: progress;
-  opacity: 0.7;
 }
 
 /* ── Proof card ─────────────────────────────────────────────────────────── */

@@ -27,7 +27,7 @@ export type ActionButtonProps = {
  * house signature (BRAND-KIT §7). Never a blurred shadow.
  *
  * UNUSED as of the r4 port (2026-07-27). The winning variant's only action is the
- * waitlist submit inside WaitlistForm, so nothing renders this today. It was
+ * waitlist link inside WaitlistCta, so nothing renders this today. It was
  * pointing at `.sc-action`, a class the port removed, which would have rendered
  * an unstyled link the first time anyone reached for it — repointed at .sc-btn
  * rather than left as a trap. Delete it, Prose, and Section together if the next
