@@ -337,17 +337,24 @@ Secondary English marketing line: "Less footage. More story."
 
 ---
 
-## 14. Open questions
+## 14. Resolved — 2026-07-26
 
-Not yet rules. Recorded in `docs/open-questions.md`, decided by the founder.
+These five were open. They are now **decided at the recommended value** so work is
+not blocked. Each is a judgement call, not a fact; all five are cheap to reverse
+because every one routes through a single token or file. Revisit any of them by
+editing the value and re-running `node tools/build-tokens.mjs`.
 
-| ID | Question | Shipped default |
-|---|---|---|
-| **Q-RADIUS** | The app is `radius: 0` + hard shadows. But the team's own marketing-ish surface — the ranking catalog, `web/design/mockups/index.html` — uses `radius: 14px`, 999px pills, and the repo's *only* soft shadow (`0 10px 32px rgba(23,24,26,0.08)`). Which governs a company site? | `radius: 0`, behind one token |
-| **Q-DISPLAY-FACE** | Hahmlet display was chosen for a dense app. A marketing surface might want Jost display — colder, more editorial. | Hahmlet, for family continuity |
-| **Q-MARK** | Adopt the Option H cut-point mark as the official SudoCut mark? `sudocut/web` ships no mark today. | Adopted, recolored |
-| **Q-PARCHMENT** | Is warm paper + 76px grid enough 양피지 warmth, or is a real texture wanted? | Grid only — stay honest |
-| **Q-VECTORS** | Can the official SVG/EPS be provided? Ours are reconstructed. | Reconstructed |
+| ID | Decision | Reasoning | Cost to reverse |
+|---|---|---|---|
+| **Q-RADIUS** | **`radius: 0`, hard offset shadows** | The square corner + solid offset *is* the brand signature, and Option H's misuse rules independently agree. The ranking catalog's `14px` was an internal-tool convenience, not a brand decision — it was never reviewed as one. A company site is the brand's front door and should carry the signature, not the convenience. | One token: `--sc-radius` |
+| **Q-DISPLAY-FACE** | **Hahmlet for display** | Family continuity with the selected Round 6 direction. Hahmlet also sets Hangul, so Korean and Latin headlines share one face — Jost display would force a face swap mid-headline on a Korean-first site. | One token: `--sc-heavy` |
+| **Q-MARK** | **Adopt the cut-point mark** | It is `sudo rm the boring parts` rendered as geometry, and `sudocut/web` ships no mark at all, so it is purely additive — nothing is displaced. Strongest idea in the Option H exploration. | Delete `logo/`, revert to wordmark |
+| **Q-PARCHMENT** | **Warm paper + 76px grid. No raster texture.** | This is what the shipped system already does, and soul.md's warmth mandate is satisfied by `#f1f1ec` plus the hairline grid. A raster paper texture would be decoration — and soul.md says subtract by default. | Add one `background-image` |
+| **Q-VECTORS** | **Ship the reconstructed vectors** | Geometry is fully specified, so the reconstruction is exact rather than approximate. Verified arithmetically (22+12+4+12+22 = 72) and by rendering. | Drop in official files |
+
+> **Standing request:** if the official SVG/EPS ever arrive, replace `logo/*.svg`
+> and delete the "reconstructed" notes. Nothing else changes — the geometry is
+> already correct.
 
 ---
 

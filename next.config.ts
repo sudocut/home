@@ -1,0 +1,26 @@
+import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+const nextConfig: NextConfig = {
+  typedRoutes: true,
+  // The Logo component inlines the SVGs from brand/logo/ at render time so that
+  // var(--sc-*) and the self-hosted Jost face actually resolve (an <img>-embedded
+  // SVG is an isolated document and gets neither). Every route here is statically
+  // prerendered, so the read happens at build time — but trace the files anyway so
+  // a future dynamic route cannot 500 on a missing asset.
+  outputFileTracingIncludes: {
+    "/**": ["./brand/logo/*.svg"],
+  },
+  async redirects() {
+    return [
+      // Korean is the default locale (soul.md: "Korean-first is our home").
+      // localePrefix is "always", so the bare root has to land somewhere explicit.
+      // Done here rather than in middleware.ts — see src/i18n/routing.ts.
+      { source: "/", destination: "/ko", permanent: false },
+    ];
+  },
+};
+
+export default withNextIntl(nextConfig);

@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "title": "SudoCut",
+    "titleTemplate": "{page} · SudoCut",
+    "description": "Upload the raw footage, get a cut back. We remove the silence, the filler, the retakes and the tangents."
+  },
+  "nav": {
+    "skipToContent": "Skip to content",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "languageLabel": "Language",
+    "language": {
+      "ko": "한국어",
+      "en": "English"
+    }
+  },
+  "home": {
+    "eyebrow": "Video editing tool",
+    "line": "sudo rm the boring parts.",
+    "lede": "Less footage. More story.",
+    "intro": "Four hours of footage. One story. Ninety seconds of work.",
+    "body": "SudoCut finds the silence, the filler, the retakes and the tangents in your footage. It proposes the cuts. You make the call.",
+    "numbers": {
+      "eyebrow": "One project",
+      "title": "In numbers",
+      "note": "One real project, start to finish. Not an average.",
+      "one": {
+        "value": "14:32 → 10:47",
+        "label": "Raw to final cut, in a single pass."
+      },
+      "two": {
+        "value": "6:12",
+        "label": "Trimmed. Nothing you wanted is gone."
+      },
+      "three": {
+        "value": "7",
+        "label": "Cuts flagged for review. The rest passes straight through."
+      }
+    },
+    "principles": {
+      "title": "How we work",
+      "one": "AI proposes. You decide.",
+      "two": "We shipped a hand-edited cut and an AI-edited cut side by side. Viewers couldn't tell.",
+      "three": "If it doesn't work, we write that down. A demo that looks better than the product is a lie."
+    },
+    "cta": {
+      "label": "Talk to us",
+      "note": "Just the ask."
+    }
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "SudoCut builds one thing.",
+    "lede": "An editor that removes what nobody watches. That's the whole company.",
+    "body": {
+      "one": "It does the pass an editor does by hand: strip the silence, cut the stumbles, drop the tangents. What's left is the part that needs a human.",
+      "two": "Korean is the default. English runs in parallel. Neither is a translation of the other — both are written in their own language.",
+      "three": "Every cut carries its reason on screen: silence, filler, retake, tangent, needs review. Nothing disappears without one."
+    },
+    "principles": {
+      "title": "What we hold to",
+      "one": "Say it, then stop.",
+      "two": "Numbers instead of adjectives. 6:12, not \"significant time savings.\"",
+      "three": "Editor to editor. We don't explain what you already know.",
+      "four": "Honesty over polish. The failures get written down too."
+    },
+    "cta": {
+      "label": "Talk to us",
+      "note": "Product, partnerships, hiring — one address."
+    }
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Just the ask.",
+    "lede": "A person writes back.",
+    "body": "Product questions, partnerships, hiring, press — they all land at one address. We read every one.",
+    "emailLabel": "Email",
+    "email": "hello@sudocut.com",
+    "cta": {
+      "label": "Send an email"
+    },
+    "note": "You can delete one more line before you send it."
+  },
+  "footer": {
+    "tagline": "sudo rm the boring parts.",
+    "rights": "© {year} SudoCut",
+    "colophon": "Hahmlet · SUIT · Jost. All three SIL OFL 1.1."
+  },
+  "notFound": {
+    "title": "Nothing here.",
+    "body": "Check the address.",
+    "back": "Back home"
+  }
+}

@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+out/
+coverage/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+*.log
+.gstack/

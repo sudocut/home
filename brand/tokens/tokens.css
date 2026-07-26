@@ -39,24 +39,26 @@
 }
 
 :root {
+  /* >>> GENERATED FROM tokens.json — DO NOT EDIT BELOW <<< */
+
   /* ===== RAW BRAND VALUES — web-shipped, bauhaus.css body[data-round="6"] ===== */
-  --sc-ink: #24292c;                      /* L2695 */
-  --sc-structure: #656b6f;                /* L2696 */
-  --sc-shadow-grey: #aeb2b3;              /* L2697 */
-  --sc-paper: #f1f1ec;                    /* L2698 — warm, per soul.md */
-  --sc-panel: #fbfaf5;                    /* L2699 */
-  --sc-muted: #666c70;                    /* L2700 */
-  --sc-line: rgba(36, 41, 44, 0.2);       /* L2701 */
-  --sc-accent: #1f55ff;                   /* L2702 — cobalt, THE point color */
-  --sc-accent-ink: #ffffff;               /* L2703 */
-  --sc-accent-soft: #dfe3ec;              /* L2704 */
-  --sc-signal-red: #ff3b2f;               /* L2705 — status only */
-  --sc-signal-yellow: #ffd523;            /* L2706 — status only */
-  --sc-primary-shadow: #000000;           /* L2707 */
-  --sc-rail: #e5e6e3;                     /* L2708 */
-  --sc-rail-hover: #d4d6d4;               /* L2709 */
-  --sc-rail-current: #c9ccca;             /* L2710 */
-  --sc-rail-strong: #676e72;              /* L2711 */
+  --sc-ink: #24292c;
+  --sc-structure: #656b6f;
+  --sc-shadow-grey: #aeb2b3;
+  --sc-paper: #f1f1ec;
+  --sc-panel: #fbfaf5;
+  --sc-muted: #666c70;
+  --sc-line: rgba(36, 41, 44, 0.2);
+  --sc-accent: #1f55ff;
+  --sc-accent-ink: #ffffff;
+  --sc-accent-soft: #dfe3ec;
+  --sc-signal-red: #ff3b2f;
+  --sc-signal-yellow: #ffd523;
+  --sc-primary-shadow: #000000;
+  --sc-rail: #e5e6e3;
+  --sc-rail-hover: #d4d6d4;
+  --sc-rail-current: #c9ccca;
+  --sc-rail-strong: #676e72;
 
   /* ===== TYPEFACES ===== */
   --sc-face-jost: "Jost Local", "SUIT Local", sans-serif;
@@ -65,14 +67,14 @@
   --sc-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   /* ===== TYPE ROLES — Round 6 selected defaults ===== */
-  --sc-heavy: var(--sc-face-hahmlet);     /* display  (runtime default of the selected variant) */
-  --sc-body: var(--sc-face-suit);         /* UI + Korean */
-  --sc-numbers: var(--sc-face-jost);      /* numerals */
+  --sc-heavy: var(--sc-face-hahmlet);
+  --sc-body: var(--sc-face-suit);
+  --sc-numbers: var(--sc-face-jost);
 
   /* ===== GEOMETRY ===== */
-  --sc-radius: 0px;                       /* bauhaus.css L26 — see Q-RADIUS */
-  --sc-density: 1;                        /* L27 — spacing = calc(Npx * var(--sc-density)) */
-  --sc-type: 1;                           /* L28 */
+  --sc-radius: 0px;
+  --sc-density: 1;
+  --sc-type: 1;
   --sc-measure: 1180px;
 
   /* ===== SHADOW LAW — hard offset, zero blur, zero spread ===== */
@@ -84,9 +86,9 @@
   /* ===== MOTION ===== */
   --sc-fast: 140ms;
   --sc-ease: ease;
-  --sc-entrance: 360ms;
+  --sc-entrance: 300ms-520ms;
   --sc-entrance-ease: cubic-bezier(0.16, 0.78, 0.22, 1);
-  --sc-stagger: 32ms;
+  --sc-stagger: 32ms-35ms;
 
   /* ===== SEMANTIC ROLES — components reference THESE, never the raw values ===== */
   --sc-surface: var(--sc-paper);
@@ -94,15 +96,16 @@
   --sc-content: var(--sc-ink);
   --sc-content-muted: var(--sc-muted);
   --sc-rule: var(--sc-line);
-  --sc-action: var(--sc-accent);          /* soul.md: at most ONE per viewport */
+  --sc-action: var(--sc-accent);
   --sc-action-content: var(--sc-accent-ink);
   --sc-action-shadow: var(--sc-primary-shadow);
   --sc-status-error: var(--sc-signal-red);
   --sc-status-warning: var(--sc-signal-yellow);
   --sc-hover: color-mix(in srgb, var(--sc-ink) 5%, transparent);
 
-  /* ===== TEXTURE — how soul.md's 양피지 warmth is actually implemented ===== */
+  /* ===== TEXTURE — how soul.md's 양피지 warmth is implemented ===== */
   --sc-grid-size: 76px;
+  /* >>> END GENERATED <<< */
 }
 
 /* Higher contrast, mirroring bauhaus.css L2664-2666 */
