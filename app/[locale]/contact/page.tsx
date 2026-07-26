@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ActionButton } from "@/components/ActionButton";
-import { Prose } from "@/components/Prose";
-import { Section } from "@/components/Section";
 
 type LocaleParams = { locale: string };
 
@@ -13,13 +10,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const meta = await getTranslations({ locale, namespace: "meta" });
-  const t = await getTranslations({ locale, namespace: "contact" });
-  return {
-    title: meta("titleTemplate", { page: t("eyebrow") }),
-    description: t("body"),
-  };
+  const t = await getTranslations({ locale, namespace: "nav" });
+  return { title: meta("titleTemplate", { page: t("contact") }) };
 }
 
+/**
+ * /contact — NOT part of the r4 winning variant, which has no contact page. Kept
+ * because the route and its copy already existed, rebuilt in the winner's system
+ * so it does not look like a page from a different site, and linked only from the
+ * footer. If the next round decides the waitlist is the only way in, delete this
+ * route, its messages, and the footer link together.
+ *
+ * No cobalt: the waitlist on the front page is where the accent is spent.
+ */
 export default async function ContactPage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -27,32 +30,28 @@ export default async function ContactPage({ params }: { params: Promise<LocalePa
   const email = t("email");
 
   return (
-    <>
-      <section className="mx-auto w-full max-w-[var(--sc-measure)] px-6 py-20 md:px-10 md:py-28">
-        <span className="sc-label mb-6">{t("eyebrow")}</span>
-        <h1 className="text-4xl md:text-5xl">{t("title")}</h1>
-        <p className="mt-6 text-xl text-[color:var(--sc-content-muted)]">{t("lede")}</p>
+    <div className="sc-wrap">
+      <section className="sc-page-head">
+        <p className="sc-kicker">{t("kicker")}</p>
+        <h1>{t("title")}</h1>
+        <p className="sc-lede">{t("lede")}</p>
       </section>
 
-      <Section>
-        <Prose>
-          <p>{t("body")}</p>
-        </Prose>
-
-        <dl className="mt-12">
-          <dt className="sc-label">{t("emailLabel")}</dt>
-          <dd className="sc-numeric mt-3 text-2xl md:text-3xl">
-            <a href={`mailto:${email}`}>{email}</a>
-          </dd>
-        </dl>
-
-        {/* The one cobalt object on this page. The address above is the same
-            link in monochrome — a second cobalt button would be a bug. */}
-        <div className="mt-12 flex flex-col items-start gap-6">
-          <ActionButton href={`mailto:${email}`}>{t("cta.label")}</ActionButton>
-          <p className="sc-label">{t("note")}</p>
+      <div className="sc-numbered">
+        <div className="sc-numbered-item">
+          <p className="sc-label">{t("emailLabel")}</p>
+          <div>
+            <p className="sc-proof-claim">
+              <a href={`mailto:${email}`}>{email}</a>
+            </p>
+            {/* honesty over polish — this address is our assumption, not a
+                confirmed one. See brand/BRAND-KIT.md "Domain and contact". */}
+            <p className="sc-wait-note">{t("note")}</p>
+          </div>
         </div>
-      </Section>
-    </>
+      </div>
+
+      <div className="sc-more" />
+    </div>
   );
 }
