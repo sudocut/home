@@ -117,7 +117,13 @@
 
     var frame = document.createElement("iframe");
     frame.setAttribute("loading", "lazy");
-    frame.setAttribute("sandbox", "allow-same-origin");
+    // allow-scripts is REQUIRED, not a loosening. Variants mount the paper
+    // texture from a <script type="module">, and a sandbox without allow-scripts
+    // blocks it silently — the page still styles correctly, so the board looked
+    // fine while showing every variant with its shader missing. A round was
+    // ranked on that. If a variant's behaviour ever needs to be judged, the board
+    // has to run it. These are our own files, served from our own tree.
+    frame.setAttribute("sandbox", "allow-same-origin allow-scripts");
     frame.src = "../rounds/" + manifest.round + "/" + v.path;
     frame.addEventListener("load", function () { fb.remove(); });
     prev.appendChild(frame);

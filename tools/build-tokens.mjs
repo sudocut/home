@@ -61,6 +61,10 @@ const EMIT = [
   ["--sc-rail-current", "color.raw.railCurrent"],
   ["--sc-rail-strong", "color.raw.railStrong"],
 
+  ["SECTION", "PAPER TEXTURE SHADER INPUTS — not surface colours, see D6"],
+  ["--sc-paper-fibre", "color.raw.paperFibre"],
+  ["--sc-paper-lit", "color.raw.paperLit"],
+
   ["SECTION", "TYPEFACES"],
   ["--sc-face-jost", "type.faces.jost"],
   ["--sc-face-suit", "type.faces.suit"],

@@ -19,10 +19,24 @@ node tools/generate.mjs r1           # 3. fan out to every available model
 node tools/verify-round.mjs r1       # 4. enforce the constitution, index for the board
 bash tools/serve.sh                  # 5. rank blind at the printed URL
 $EDITOR design/rounds/r1/VERDICT.md  # 6. write what the next round must do
+                                     # 7. LAND IT — port the winner into app/
 ```
 
 Steps 3–5 are the loop. Step 6 is the part that makes it iteration rather than
 repetition — skip it and round 2 repeats round 1's mistakes.
+
+**Step 7 is not optional, and skipping it is how this repo went wrong.** r1 through
+r3 all ran, ranked, and produced verdicts, and not one of them was ever ported. For
+three rounds the board showed a proof hero with an inline waitlist while `app/`
+served an unrelated skeleton with neither — so the thing being ranked was not the
+thing being shipped, and the rankings decided nothing.
+
+**r4 is the first round that landed.** `app/` is the kimi-k3-a variant
+(`rounds/r4/VERDICT.md`), and `app/globals.css` now says so at the top instead of
+calling itself a skeleton. Changing the layout there is changing a ranked decision.
+
+A round is finished when `app/` matches the winning variant. Not when the verdict
+is written.
 
 ## Worked example
 

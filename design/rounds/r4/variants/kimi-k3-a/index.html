@@ -72,9 +72,16 @@
   .wait .ok{margin-top:12px;font-family:var(--sc-mono);font-size:13px;display:none}
 
   /* proof */
+  /* COMPLIANCE FIX (2026-07-27): this said `box-shadow:var(--sc-lift)`, but
+     --sc-lift is `translate(-2px,-2px)` — a transform. The declaration was invalid
+     and the browser dropped it, so the card has always rendered with NO shadow.
+     Removed rather than replaced: which shadow was intended is unknowable, and
+     guessing would be designing on the author's behalf mid-round. So the card
+     ranks exactly as it has always looked, and the absent shadow is a real
+     property of this variant rather than a hidden defect. */
   .proof{
     border:2px solid var(--sc-content);background:var(--sc-surface-raised);
-    padding:44px 40px 40px;box-shadow:var(--sc-lift);
+    padding:44px 40px 40px;
   }
   .proof .ab{font-family:var(--sc-heavy);font-weight:700;font-size:clamp(84px,9vw,128px);line-height:.95;letter-spacing:-.02em}
   .proof .claim{font-family:var(--sc-heavy);font-weight:600;font-size:clamp(20px,2vw,26px);line-height:1.25;margin-top:26px}
@@ -201,18 +208,36 @@
   import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
   import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
   import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+  import { emptyPixel } from '/design/vendor/paper-shaders/empty-pixel.js';
+
+  // Constitution D6. Settings are MEASURED (tools/shader-probe.mjs), not chosen:
+  // grain 3.67 against a flat sheet, mean drift +0.34. Do not tune by eye — that
+  // is how the previous settings shipped invisible. Re-run the probe instead.
+  const css = getComputedStyle(document.documentElement);
+  const token = (n) => css.getPropertyValue(n).trim();
+
+  // u_image is required even with nothing to show. ShaderMount only sets
+  // u_imageAspectRatio when u_image is a loaded HTMLImageElement
+  // (shader-mount.js:102,:250), and patternUV — which the fibre, crumples and
+  // folds are all built on — is multiplied by it. Omit it and the aspect stays 0,
+  // patternUV.x collapses, and the fibre renders NOTHING at any setting.
+  const sheet = new Image();
+  sheet.src = emptyPixel;
+  await sheet.decode();
 
   const u = {
-    u_colorFront: col('#e5e6e3'),
-    u_colorBack:  col('#f1f1ec'),
-    u_contrast: 0.10, u_roughness: 0.20, u_fiber: 0.40, u_fiberSize: 0.7,
+    u_colorFront: col(token('--sc-paper-fibre')),
+    u_colorBack:  col(token('--sc-paper-lit')),
+    u_contrast: 0.55, u_roughness: 0.30, u_fiber: 0.70, u_fiberSize: 0.40,
     u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
     u_drops: 0, u_seed: 3, u_fade: 0,
+    u_image: sheet,
     u_noiseTexture: getShaderNoiseTexture(),
     u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
     u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
   };
   await u.u_noiseTexture.decode();
+  // speed 0, frame 0 — static. The brand does not animate its background.
   new ShaderMount(document.getElementById('bg'),
                   paperTextureFragmentShader, u, undefined, 0, 0);
 </script>

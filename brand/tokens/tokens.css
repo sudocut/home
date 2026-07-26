@@ -60,6 +60,10 @@
   --sc-rail-current: #c9ccca;
   --sc-rail-strong: #676e72;
 
+  /* ===== PAPER TEXTURE SHADER INPUTS — not surface colours, see D6 ===== */
+  --sc-paper-fibre: #e0e1dd;
+  --sc-paper-lit: #fffefa;
+
   /* ===== TYPEFACES ===== */
   --sc-face-jost: "Jost Local", "SUIT Local", sans-serif;
   --sc-face-suit: "SUIT Local", "Jost Local", sans-serif;

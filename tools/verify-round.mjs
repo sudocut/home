@@ -26,11 +26,30 @@ const ROUNDS = join(ROOT, "design/rounds");
 
 /* ---------- the constitution, as checks ---------- */
 
+// Derived from brand/tokens/tokens.json, never hand-copied. A second transcription
+// of the palette is a second place for it to drift — and it is the tooling's job to
+// enforce "values enter the codebase in exactly one file", not to break it.
+const TOKEN_COLOURS = (() => {
+  const json = JSON.parse(readFileSync(join(ROOT, "brand/tokens/tokens.json"), "utf8"));
+  const out = new Set();
+  const walk = (node) => {
+    if (!node || typeof node !== "object") return;
+    if (typeof node.value === "string" && node.value.startsWith("#")) {
+      out.add(node.value.toLowerCase());
+    }
+    for (const v of Object.values(node)) walk(v);
+  };
+  walk(json.color);
+  return out;
+})();
+
 const PALETTE = new Set([
-  "#24292c", "#f1f1ec", "#fbfaf5", "#656b6f", "#666c70",
-  "#1f55ff", "#ffffff", "#fff", "#000000", "#000",
-  "#ff3b2f", "#ffd523", "#dfe3ec", "#aeb2b3",
-  "#e5e6e3", "#d4d6d4", "#c9ccca", "#676e72",
+  ...TOKEN_COLOURS,
+  // CSS allows either form of pure black and white.
+  "#ffffff", "#fff", "#000000", "#000",
+  // Inverted-surface shades the shipped Round 6 system sets inline in bauhaus.css
+  // rather than as tokens. Kept explicit so their absence from tokens.json reads
+  // as a known gap rather than an oversight.
   "#172128", "#313d44",
 ]);
 
@@ -93,6 +112,104 @@ function findBlurredShadows(css) {
   return out;
 }
 
+/**
+ * Every `--sc-*: value` in the generated tokens.css, so a check can ask what a
+ * token IS rather than only that it looks like one.
+ */
+const TOKEN_VALUES = (() => {
+  const css = readFileSync(join(ROOT, "brand/tokens/tokens.css"), "utf8");
+  const out = new Map();
+  for (const m of css.matchAll(/(--sc-[a-z0-9-]+)\s*:\s*([^;]+);/gi)) {
+    out.set(m[1], m[2].trim());
+  }
+  return out;
+})();
+
+/**
+ * Rule W5, second half: a `var(--sc-*)` in box-shadow is only compliant if the
+ * token is actually a shadow. `box-shadow: var(--sc-lift)` passed every check we
+ * had, but --sc-lift is `translate(-2px,-2px)` — a transform. The declaration is
+ * invalid, the browser drops it, and the element silently renders with no shadow.
+ * Checking the syntax of a token reference proves nothing about its type.
+ */
+function findMistypedShadowTokens(css) {
+  const out = [];
+  for (const m of css.matchAll(/box-shadow\s*:\s*([^;}]+)/gi)) {
+    for (const ref of m[1].matchAll(/var\(\s*(--sc-[a-z0-9-]+)/gi)) {
+      const name = ref[1];
+      const value = TOKEN_VALUES.get(name);
+      if (value === undefined) {
+        out.push(`box-shadow references ${name}, which is not a token`);
+      } else if (/^(translate|rotate|scale|matrix|skew)/i.test(value)) {
+        out.push(`box-shadow: var(${name}) — that token is a TRANSFORM (${value}); the declaration is invalid and renders no shadow`);
+      } else if (!/\d/.test(value)) {
+        out.push(`box-shadow: var(${name}) — that token is not a shadow (${value})`);
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * Rule S1 counted the wrong thing. It counted how many times the STYLESHEET
+ * mentions cobalt, which is a property of the CSS, not of the rendered page: one
+ * `.signup button` rule reused by two forms is one mention and two cobalt objects.
+ * That is exactly what shipped, and it is the constitution's most important rule.
+ *
+ * This estimates rendered instances instead: find the selectors that paint a
+ * cobalt background, then count how many elements in the document each one hits.
+ * Selector matching is approximated by the left-most class in the selector, which
+ * is right for the shapes that occur here (`.signup button`, `.btn`, `.sc-action`)
+ * and errs toward reporting more rather than fewer.
+ */
+function countCobaltObjects(html) {
+  const body = html.slice(html.search(/<body[\s>]/i));
+  // Comments must go first. A comma inside a comment splits into fake selectors,
+  // and a comment mentioning cobalt makes the rule above it look like a hit.
+  const stripped = html.replace(/<!--[\s\S]*?-->/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
+  const hits = [];
+
+  for (const rule of stripped.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const selector = rule[1].trim();
+    const decls = rule[2];
+    if (selector.startsWith("@") || !decls) continue;
+    // Only a FILLED cobalt object spends the point colour. Cobalt text or border
+    // on an otherwise plain element is not the required action.
+    if (!/background(-color)?\s*:\s*[^;]*(var\(\s*--sc-(action|accent)\b|#1f55ff)/i.test(decls)) continue;
+    // :hover / :focus restate an existing object rather than adding a new one.
+    if (/:(hover|focus|active|visited|focus-visible)/i.test(selector)) continue;
+
+    for (const part of selector.split(",")) {
+      const classes = [...part.trim().matchAll(/\.([a-z0-9_-]+)/gi)].map((m) => m[1]);
+      let n = 0;
+      if (classes.length) {
+        // Class attributes are space-separated token lists, so `\bhero\b` also
+        // matches `hero-grid` — a hyphen is a word boundary. Match whole tokens.
+        const countOf = (cls) => {
+          let c = 0;
+          for (const attr of body.matchAll(/class\s*=\s*["']([^"']*)["']/gi)) {
+            if (attr[1].split(/\s+/).includes(cls)) c++;
+          }
+          return c;
+        };
+        // A descendant chain is bounded by its rarest part: `.hero .signup button`
+        // cannot match more often than `.hero` occurs. Without a DOM this can
+        // under-count when one ancestor holds several matches, so it is a floor,
+        // not a proof — but it is the difference between counting the page and
+        // counting the stylesheet, which is the mistake that mattered.
+        n = Math.min(...classes.map(countOf));
+      } else {
+        const tag = part.trim().match(/^([a-z][a-z0-9]*)/i);
+        if (tag) n = (body.match(new RegExp(`<${tag[1]}[\\s>]`, "gi")) || []).length;
+      }
+      if (n > 0) hits.push({ selector: part.trim(), n });
+    }
+  }
+
+  const total = hits.reduce((s, h) => s + h.n, 0);
+  return { total, hits };
+}
+
 function checkVariant(id, html) {
   const problems = [];
   const warn = [];
@@ -143,11 +260,15 @@ function checkVariant(id, html) {
     }
   }
 
-  // Rule S1: one point colour per view. Cobalt as a *background* is the action.
-  const cobalt = (css.match(/var\(--sc-action\b/g) || []).length
-    + (css.match(/var\(--sc-accent\b/g) || []).length
-    + (css.match(/#1f55ff/gi) || []).length;
-  if (cobalt > 3) warn.push(`cobalt referenced ${cobalt}× — soul.md allows ONE required action per view; check this is not decoration`);
+  for (const s of findMistypedShadowTokens(css)) problems.push(s);
+
+  // Rule S1: one point colour per view — counted as RENDERED OBJECTS, not as
+  // stylesheet mentions. See countCobaltObjects for why that distinction matters.
+  const cobalt = countCobaltObjects(html);
+  if (cobalt.total > 1) {
+    const where = cobalt.hits.map((h) => `${h.selector}×${h.n}`).join(", ");
+    problems.push(`${cobalt.total} cobalt objects (${where}) — soul.md allows ONE required action per view`);
+  }
 
   // Constitution D5 (2026-07-26) reversed this: English first, Korean second.
   if (!/lang\s*=\s*["']en["']/i.test(html)) warn.push('html lang is not "en" — English is the default locale (constitution D5)');
