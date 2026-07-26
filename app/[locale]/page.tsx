@@ -19,7 +19,7 @@ export async function generateMetadata({
  * on 2026-07-27. See design/rounds/r4/VERDICT.md.
  *
  * The hero deliberately does NOT claim the viewport: no 100svh, items aligned to
- * the top, so the 80/20 band arrives while the visitor is still reading. Both
+ * the top, so the figures band arrives while the visitor is still reading. Both
  * variants that pinned a full-height hero placed below this one.
  */
 export default async function HomePage({ params }: { params: Promise<LocaleParams> }) {
@@ -59,12 +59,13 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
       </section>
 
       <div className="sc-wrap">
-        {/* Labelled an illustration, not a promise. soul.md: a demo that looks
-            more capable than the live product breaks trust. */}
+        {/* Names the deliverable, which every r4 variant left unsaid — see the
+            r4 verdict. Replaces an illustrative "14:32 → 10:47" that came from
+            brand/voice.md's examples and measured nothing. */}
         <p className="sc-example">
-          {t("example.before")}
-          <span className="sc-numeric">{t("example.figure")}</span>
-          {t("example.after")}
+          {t("deliverable.before")}
+          <span className="sc-numeric">{t("deliverable.figure")}</span>
+          {t("deliverable.after")}
         </p>
       </div>
     </>

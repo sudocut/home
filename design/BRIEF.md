@@ -8,18 +8,37 @@ what the rules are*.
 
 ## 1. What SudoCut is
 
-We take long, raw footage and hand back a cut worth keeping.
+**Source: the YC application, 2026-07. Nothing in this section may be written
+from anywhere else.** An earlier version of it claimed AI strips "the boring 80%"
+and the creative "20%" stays with the creator. That split exists in no source
+document — not soul.md, not the meta repo, not the application. It was invented
+here, and because every round's brief inherits this file, it reached the shipped
+homepage as the biggest object on the page before the founder caught it. The one
+interview that measures the thing contradicts it
+(`research/user-interviews/.../R2-tech-review-youtuber.md`: simple cut editing is
+"under 20% for complex planned videos, 40–50% for live-format content").
 
-Every long-form creator does the same low-value chore by hand: cutting dead air —
-fillers, fumbles, silences, tangents, NG takes. It's slow, repetitive, and nobody's
-creativity lives there. So we `sudo rm` it. AI strips the boring 80%. The last 20%
-— the creative control — stays with the creator.
+SudoCut turns long spoken footage into a publish-ready video with re-timed
+captions and an editable timeline. A podcast or interview team uploads a
+recording or connects a live stream; SudoCut transcribes it, removes dead air,
+retakes, repetition and tangents with the full context of the conversation, and
+returns an MP4 plus a Premiere or Final Cut project. It can learn a channel's
+style from its existing videos. Every cut can be inspected and restored — not a
+black box.
 
-We shipped a hand-edited cut and an AI-edited cut side by side. Viewers couldn't
-tell the difference. That evidence is why SudoCut is a product and not a pitch.
+The wedge is recurring Korean podcast and interview teams where **one producer
+still spends more than 8 hours finishing each episode.**
 
-We export editor-ready FCPXML/SRT so creators finish in their own tools. **AI
-proposes; humans decide.**
+The proof, stated exactly: we published the same episode two ways on a channel we
+operate — one cut by a human editor, one by SudoCut — and **the AI cut matched it
+on views.** That is a view-count result on one channel. It is **not** a blind test
+of viewers, and must never be written as "viewers couldn't tell the difference";
+that is a different claim and nobody ran it.
+
+What competitors do not have: their user is the editor, and the editor approves
+the result. Ours is the published episode. **AI proposes; humans decide** — and
+the Premiere/Final Cut export is the channel's control, not a required human
+finishing pass.
 
 **For:** long-form spoken-video creators drowning in raw footage — solo YouTubers,
 podcast and interview editors, lecture makers, talk-heavy streamers. Korea first.

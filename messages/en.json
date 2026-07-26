@@ -31,71 +31,84 @@
   },
   "home": {
     "kicker": "sudo rm the boring parts.",
-    "title": "Four hours of footage. One story. Ninety seconds of work.",
-    "lede": "SudoCut takes long, raw footage and hands back a cut worth keeping. AI strips the fillers, fumbles, silences, and NG takes. You keep the calls that matter, and finish in your own editor with FCPXML/SRT export. AI proposes. You decide.",
+    "title": "Upload the recording. Get back a publishable episode.",
+    "lede": "SudoCut transcribes your footage, then cuts dead air, retakes, repetition and tangents with the full context of the conversation. It comes back as a finished MP4 and a Premiere or Final Cut project — so you can open every cut, check it, and put anything back.",
     "proof": {
-      "label": "Blind test result",
+      "label": "A/B result on our own channel",
       "mark": "A/B",
-      "claim": "Viewers couldn't tell the difference.",
-      "detail": "The same footage, cut twice. Once by a human editor, once by SudoCut. Shipped side by side, nobody called which was which.",
-      "tagline": "The proof, not the pitch"
+      "claim": "Same views as the human edit.",
+      "detail": "We published the same episode two ways on a channel we run — one cut by a human editor, one cut by SudoCut. The AI cut matched it on views.",
+      "tagline": "Measured, on one channel"
     },
     "split": {
-      "label": "The 80/20 split",
+      "label": "Where SudoCut sits today",
       "chore": {
-        "value": "80%",
-        "label": "The chore — we remove it",
-        "copy": "Fillers, fumbles, dead air, tangents, retakes. Hours of cutting nobody's creativity lives in."
+        "value": "8h+",
+        "label": "To finish one episode",
+        "copy": "What a producer on a recurring talk show still spends, by hand, after the recording stops."
       },
       "story": {
-        "value": "20%",
-        "label": "The story — you keep it",
-        "copy": "Pacing, tone, what stays in. The last 20% is the creative work, and it stays yours."
+        "value": "4",
+        "label": "Channels publishing with it",
+        "copy": "Real uploads, today. Channels we run or work on — production testbeds, not customers yet."
       }
     },
-    "example": {
-      "before": "Example — ",
-      "figure": "14:32 → 10:47",
-      "after": ". Nothing you wanted is gone. An illustration, not a promise."
+    "deliverable": {
+      "before": "What comes back: ",
+      "figure": "MP4",
+      "after": " for upload, plus a Premiere or Final Cut project you can open and change. Nothing is locked."
     }
   },
   "about": {
     "kicker": "Why we exist",
     "title": "Editing is the work. Scrubbing dead air isn't.",
-    "ledeBefore": "Every long-form creator does the same low-value chore by hand: cutting fillers, fumbles, silences, tangents, NG takes. It's slow, repetitive, and nobody's creativity lives there. So we ",
+    "ledeBefore": "A recurring podcast or interview show records for hours, then one producer spends hours more cutting what nobody wanted to hear. It is slow, repetitive, and no one's judgement is in it. So we ",
     "ledeMono": "sudo rm",
     "ledeAfter": " it.",
     "beliefsLabel": "What we believe",
     "beliefs": {
       "one": {
         "no": "01",
-        "title": "The chore is universal.",
-        "copy": "Solo YouTubers, podcast and interview editors, lecture makers, talk-heavy streamers. Everyone with raw footage pays the same hours before the real edit can start. That payment is not craft. It's tax."
+        "title": "Late is a cost too.",
+        "copy": "An informational episode loses value every day it waits. Editing polish has no natural end point, so a show that chases it publishes less. Cutting the finishing time changes what gets published, not just what it costs."
       },
       "two": {
         "no": "02",
-        "title": "The last 20% is the work.",
-        "copy": "AI strips the boring 80%. Pacing, tone, and the final call stay with the creator, because that's where the creativity lives. AI proposes; humans decide. Every cut we make is a suggestion, never a shipment."
+        "title": "The editor's taste is not the ground truth.",
+        "copy": "Every other tool makes a human editor faster and asks the editor to approve the result. We are judged by the published episode instead. In our own tests producers were never satisfied with an edit they knew was AI-made — and the AI-edited uploads matched the human-edited ones on views anyway."
       },
       "three": {
         "no": "03",
-        "title": "Your tools finish it.",
-        "copy": "We export editor-ready FCPXML and SRT, so the cut lands in the editor you already use. No new timeline to learn, no lock-in. Less footage. More story."
+        "title": "Nothing is a black box.",
+        "copy": "Every cut can be inspected and put back. You get a Premiere or Final Cut project alongside the MP4, so the channel keeps control — as an option, not as a required human finishing pass."
       }
     },
     "proof": {
-      "label": "The proof in full",
+      "label": "The A/B result in full",
       "mark": "A/B",
-      "claim": "Viewers couldn't tell the difference.",
-      "detail": "We shipped the same footage cut twice — once by a human editor, once by SudoCut — and put the two versions in front of viewers side by side. Nobody could call which was which. That evidence is why SudoCut is a product, not a pitch.",
-      "tagline": "The proof, in full"
+      "claim": "Same views as the human edit.",
+      "detail": "We published the same episode two ways on a channel we run — one cut by a human editor, one cut by SudoCut — and the AI cut matched it on views. That is a view-count result on our own channel, not a blind study of viewers. It is the measurement that made us build this rather than an argument for it.",
+      "tagline": "Measured, on one channel"
     },
     "more": "Join the closed-beta waitlist →"
   },
   "team": {
     "kicker": "The team",
-    "title": "How the work gets decided.",
-    "lede": "The roster isn't cleared for publication yet, so this page carries what can be published: the rules we decide by. Four of them. They cover most arguments.",
+    "title": "Two founders. Both write the code.",
+    "lede": "We met in June 2025 at the Hugging Face LeRobot Worldwide Hackathon in Seoul — Jong Hyun ran the Seoul site, Jiho competed in it. Both of us have been full-time on SudoCut since June 2026.",
+    "peopleLabel": "Founders",
+    "people": {
+      "jonghyun": {
+        "name": "Jong Hyun Park",
+        "role": "Co-founder",
+        "copy": "Built the first prototypes, and runs the channel they are tested on — an AI podcast channel of 1.5 years, 10K+ subscribers and over a million views. Started SudoCut in January 2026 after trying the AI editing tools on the market and finishing none of an episode with them."
+      },
+      "jiho": {
+        "name": "Jiho Yang",
+        "role": "Co-founder",
+        "copy": "Builds across the analysis, engine and export services. Competed at the Seoul hackathon where we met, graduated from HKUST in July 2026, and has been full-time on SudoCut since June."
+      }
+    },
     "rulesLabel": "How we decide",
     "rules": {
       "one": {
@@ -119,11 +132,7 @@
         "copy": "Every cut SudoCut makes is a suggestion on a timeline the creator still owns. The moment the tool decides instead of proposing, we've built the wrong product."
       }
     },
-    "roster": {
-      "label": "Roster placeholder",
-      "slot": "Roster — to be published",
-      "why": "Names and faces land here once cleared. Until then, the four rules above are the team."
-    }
+    "note": "We are two. Jinho Kim produces the YouTube channel and Jiyun Lee, a professional video creator, advises on editing — neither has written product code, and neither is listed here because that is their call to make, not ours."
   },
   "pricing": {
     "kicker": "Pricing",
