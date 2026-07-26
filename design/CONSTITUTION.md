@@ -56,7 +56,7 @@ used by the selected *Bauhaus Timeline Proof* direction.
 | D3 | The cut-point mark is adopted as the official mark. | delete `brand/logo/` |
 | D4 | 양피지 warmth = warm paper + 76px grid. No raster texture. | one `background-image` |
 | **D5** | **English first, Korean second.** Reverses S5. | locale default |
-| **D6** | **No background texture shader.** Reverses r2's experiment. | unban in a brief |
+| **D6** | **Paper texture shader allowed at mandated light settings only.** Amended 2026-07-27. | see below |
 
 ### D5 — English first (2026-07-26, founder)
 
@@ -71,18 +71,43 @@ soul.md is updated, that gap is real and is tracked in `docs/open-questions.md`.
 Consequence: `en` is the default locale, `ko` secondary. Korean copy is still
 written as Korean, never machine-translated English.
 
-### D6 — No background texture shader (2026-07-26, founder, from r2)
+### D6 — Paper texture: light settings only (2026-07-26, amended 2026-07-27)
 
-r2 tested `paperTexture` and it failed on legibility, not taste: the page read as
-**greyed-out, the visual language of a disabled control or a modal scrim.** Four
-of five models used it and all four landed in the same grey.
+**r2 banned it. r3 shipped without it. The founder has now asked for it back, and
+a controlled test shows the ban was aimed at the wrong thing.**
 
-Warmth comes from the paper colour plus the 76px grid. `design/vendor/paper-shaders`
-stays vendored for a future round with a real, bounded use — but it is off by
-default, and a brief must explicitly unban it before any variant may use it.
+The failure was never the shader — it was the **fibre colour**. r2's variants set
+`u_colorFront` to ink `#24292c`, which darkens the whole sheet and produces the
+greyed-out, disabled-control look. Rendering the same shader with a *light* fibre
+keeps the page bright and still reads as paper.
 
-This closes **Q-PARCHMENT**, which soul.md opened and which had been deferred twice.
-Full reasoning: `design/rounds/r2/VERDICT.md`.
+Tested 2026-07-27 at 1000×820, four settings side by side:
+
+| | `u_colorFront` | contrast / roughness / fibre | result |
+|---|---|---|---|
+| A | `#24292c` ink | .25 / .35 / .55 | **the r2 failure** — visibly grey, reads disabled |
+| **B** | **`#e5e6e3` rail** | **.10 / .20 / .40** | **grain visible, page stays bright — adopted** |
+| C | `#fbfaf5` panel | .06 / .12 / .30 | invisible; indistinguishable from no shader |
+| D | — | — | flat baseline |
+
+**Mandated settings — B, and only B:**
+
+```js
+u_colorFront: '#e5e6e3'   // rail grey. NEVER ink — that is the r2 failure.
+u_colorBack:  '#f1f1ec'   // paper
+u_contrast: 0.10, u_roughness: 0.20, u_fiber: 0.40, u_fiberSize: 0.7,
+u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0, u_drops: 0
+// speed 0 — static. The brand does not animate its background.
+```
+
+`await u_noiseTexture.decode()` before mounting or `ShaderMount` throws.
+
+**Still banned:** any other shader as a page background, animation, the texture
+carrying the point colour, and `halftone-cmyk` — it is an image filter whose
+`u_colorC/M/Y/K` inks fall outside the closed palette.
+
+If a page ever reads as disabled again, the fibre colour is the first thing to
+check. Full reasoning: `design/rounds/r2/VERDICT.md`.
 
 ---
 

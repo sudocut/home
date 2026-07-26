@@ -235,13 +235,25 @@ let failed = 0;
 const results = [];
 
 for (const id of variantIds) {
-  const file = join(variantsDir, id, "index.html");
+  const vDir = join(variantsDir, id);
+  const file = join(vDir, "index.html");
   if (!existsSync(file)) {
     console.error(`  ✗ ${id}: no index.html`);
     failed++;
     continue;
   }
-  const r = checkVariant(id, readFileSync(file, "utf8"));
+  // A round may ask for several pages. Every one is held to the constitution —
+  // checking only index.html would let a pricing page invent a colour unseen.
+  const pages = readdirSync(vDir).filter((f) => /\.html?$/i.test(f)).sort();
+  const merged = { id, problems: [], warn: [] };
+  for (const page of pages) {
+    const one = checkVariant(id, readFileSync(join(vDir, page), "utf8"));
+    const tag = pages.length > 1 ? `${page}: ` : "";
+    for (const x of one.problems) merged.problems.push(tag + x);
+    for (const x of one.warn) merged.warn.push(tag + x);
+  }
+  const r = merged;
+  if (pages.length > 1) console.log(`  · ${id} — ${pages.length} pages: ${pages.join(", ")}`);
   results.push(r);
   if (r.problems.length) {
     failed++;

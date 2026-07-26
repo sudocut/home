@@ -58,16 +58,29 @@ Full list in `design/CONSTITUTION.md`. The ones that get variants rejected:
    constitution D5. `<html lang="en">`. Korean, where you include it, is written
    as Korean and never as translated English.
 9. **Subtract by default.** If removing something improves the page, remove it.
-10. **No background texture shader.** Constitution D6. r2 tested it and the page
-    read as greyed-out — the visual language of a disabled control. Warmth comes
-    from the paper colour and the 76px hairline grid. Do not import anything from
-    `design/vendor/`.
+10. **Paper texture only at the mandated settings** in §4b — copy them exactly.
+    Ink fibre is what made r2 read as greyed-out. No other shader, ever.
 
 ## 4. Output contract
 
-Write **one complete HTML document** and print it to stdout. Nothing else — no
-explanation, no commentary, no markdown fences around it. Start at `<!DOCTYPE html>`
-and end at `</html>`.
+Print complete HTML documents to stdout. Nothing else — no explanation, no
+commentary, no markdown fences.
+
+**One page:** just print the document, starting at `<!DOCTYPE html>`.
+
+**Several pages:** mark each one with a FILE comment on its own line immediately
+before its doctype. The first is the landing page whatever you name it.
+
+```
+<!-- FILE: index.html -->
+<!DOCTYPE html> … </html>
+<!-- FILE: about.html -->
+<!DOCTYPE html> … </html>
+```
+
+Link between them with plain relative hrefs (`href="pricing.html"`). Every page
+is checked against the constitution independently — a second page may not invent
+a colour the first one avoided.
 
 **You must link the token stylesheet and use only its variables:**
 
@@ -94,23 +107,55 @@ Available: `--sc-surface` `--sc-surface-raised` `--sc-content` `--sc-content-mut
 Fonts are served from `/fonts/` and declared by the token stylesheet. Do **not**
 add `@font-face` or a Google Fonts `<link>`.
 
-**Constraints:** self-contained single file. No JS frameworks, no CDN, no build
-step, no external images. Inline `<style>` is fine. A little vanilla JS is fine if
+**Constraints:** each page is a self-contained file — inline its own `<style>`,
+no shared stylesheet of your own. No JS frameworks, no CDN, no build step, no
+external images. The only permitted import is the paper-texture shader in §4b. Inline `<style>` is fine. A little vanilla JS is fine if
 it earns its place. Assume it is opened at 1280×800 inside an iframe, and must not
 break at 390px.
 
 `tools/verify-round.mjs` mechanically checks rules 1–7. Run it before ranking.
 
-## 4b. The paper texture shader — BANNED (constitution D6)
+## 4b. Paper texture — allowed at MANDATED settings only (constitution D6)
 
-`design/vendor/paper-shaders/` is vendored and r2 tested it. **It failed.** At the
-settings four of five models chose, the page read as greyed-out — the visual
-language of a disabled control or a modal scrim. A landing page whose default
-state looks disabled is broken however well the fibre is simulated.
+r2 tested this shader and the founder rejected it: the page read as greyed-out,
+like a disabled control. A controlled re-test showed the ban was aimed at the
+wrong thing — the failure was the **fibre colour**, not the shader. Ink fibre
+(`#24292c`) darkens the whole sheet. A light fibre does not.
 
-**Do not import anything from `design/vendor/`.** Warmth comes from the paper
-colour plus the 76px hairline grid, as the shipped system always did. A future
-brief may unban it for a bounded use; this one does not.
+**Use these values. Do not tune them.** They were rendered and compared before
+being written here; ink fibre and the two lighter alternatives are recorded in
+`design/CONSTITUTION.md` D6.
+
+```html
+<div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
+<script type="module">
+  import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+  import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+  import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+  import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+
+  const u = {
+    u_colorFront: col('#e5e6e3'),   // rail grey. NEVER ink — that is the r2 failure.
+    u_colorBack:  col('#f1f1ec'),   // paper
+    u_contrast: 0.10, u_roughness: 0.20, u_fiber: 0.40, u_fiberSize: 0.7,
+    u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+    u_drops: 0, u_seed: 3, u_fade: 0,
+    u_noiseTexture: getShaderNoiseTexture(),
+    u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+    u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+  };
+  await u.u_noiseTexture.decode();          // REQUIRED — mounting before the
+  new ShaderMount(document.getElementById('bg'),   // noise decodes throws
+                  paperTextureFragmentShader, u, undefined, 0, 0);
+</script>
+```
+
+Speed `0` — static. The texture never carries the point colour, never animates,
+and the 76px grid still sits on top of it. `halftone-cmyk` stays banned: it is an
+image filter whose CMYK inks fall outside the closed palette.
+
+If your page starts to look greyed-out, the fibre colour is the first thing to
+check.
 
 ## 4c. Moodboard
 

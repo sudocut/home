@@ -29,7 +29,7 @@
  * tokens, which on an agentic CLI are the overwhelming majority of the input.
  */
 
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -118,6 +118,24 @@ export const usd = (n) => (n === null || n === undefined ? "—" : `$${n.toFixed
 
 const KIMI_HOME = join(homedir(), ".kimi-code");
 
+/**
+ * Compare two paths by their resolved identity.
+ *
+ * kimi records the REAL path in its session index: pass it `/tmp/x` on macOS and
+ * the index says `/private/tmp/x`. A string compare silently misses every
+ * session, which is indistinguishable from "this CLI reports no usage" — and
+ * that is exactly the wrong conclusion to draw twice.
+ */
+function samePath(a, b) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  try {
+    return realpathSync(a) === realpathSync(b);
+  } catch {
+    return false;
+  }
+}
+
 /** Sessions this CLI has recorded for `workDir`, newest first. */
 function kimiSessions(workDir) {
   const idx = join(KIMI_HOME, "session_index.jsonl");
@@ -127,7 +145,7 @@ function kimiSessions(workDir) {
       if (!line.trim()) continue;
       try {
         const e = JSON.parse(line);
-        if (e.workDir === workDir && e.sessionDir) dirs.push(e.sessionDir);
+        if (e.sessionDir && samePath(e.workDir, workDir)) dirs.push(e.sessionDir);
       } catch { /* skip */ }
     }
   }

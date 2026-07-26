@@ -31,7 +31,8 @@
  */
 
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { auditPrices, costOf, kimiUsage, normalizeUsage, num, usd } from "./lib/cost.mjs";
@@ -76,13 +77,13 @@ function which(bin) {
 
 /* ---------- run one model ---------- */
 
-function runModel(model, prompt) {
+function runModel(model, prompt, cwd = ROOT) {
   return new Promise((res) => {
     const [bin, ...args] = model.cmd;
     const useStdin = model.promptVia === "stdin";
     const finalArgs = useStdin ? args : [...args, prompt];
 
-    const child = spawn(bin, finalArgs, { cwd: ROOT, stdio: ["pipe", "pipe", "pipe"] });
+    const child = spawn(bin, finalArgs, { cwd, stdio: ["pipe", "pipe", "pipe"] });
     let out = "";
     let err = "";
     const timer = setTimeout(() => {
@@ -183,6 +184,41 @@ function extractHtml(text) {
   return null;
 }
 
+/**
+ * Split a model's output into named files.
+ *
+ * A round may ask for several pages. The model marks each one with a line
+ *   <!-- FILE: pricing.html -->
+ * immediately before its doctype. Unmarked output is a single index.html, so
+ * every earlier round's contract still holds unchanged.
+ *
+ * Names are flattened to a bare basename — a model that writes
+ * `<!-- FILE: ../../../etc/passwd -->` gets `passwd`, not a path traversal.
+ */
+function extractFiles(text) {
+  const marker = /<!--\s*FILE:\s*([^\s>]+?)\s*-->/gi;
+  const marks = [...text.matchAll(marker)];
+  if (!marks.length) {
+    const doc = extractHtml(text);
+    return doc ? [{ name: "index.html", doc }] : [];
+  }
+
+  const out = [];
+  for (let i = 0; i < marks.length; i++) {
+    const start = marks[i].index + marks[i][0].length;
+    const end = i + 1 < marks.length ? marks[i + 1].index : text.length;
+    const doc = extractHtml(text.slice(start, end));
+    if (!doc) continue;
+    let name = marks[i][1].split(/[\\/]/).pop().replace(/[^A-Za-z0-9._-]/g, "");
+    if (!name || name === "." || name === "..") name = `page-${i + 1}.html`;
+    if (!/\.html?$/i.test(name)) name += ".html";
+    if (!out.some((f) => f.name === name)) out.push({ name, doc });
+  }
+  // The landing page is index.html whatever the model called it.
+  if (out.length && !out.some((f) => f.name === "index.html")) out[0].name = "index.html";
+  return out;
+}
+
 /* ---------- usage capture ---------- */
 
 /**
@@ -251,9 +287,9 @@ function parseUsage(model, out) {
  * a retry that left an older variant file in place cannot be billed the newer
  * session's tokens.
  */
-function sessionUsage(model, out, { html, t0, t1 }) {
+function sessionUsage(model, out, { html, t0, t1, workDir }) {
   let raw = parseUsage(model, out);
-  if (!raw && model.usageFrom === "kimi-session-log") raw = kimiUsage(ROOT, { html, t0, t1 });
+  if (!raw && model.usageFrom === "kimi-session-log") raw = kimiUsage(workDir, { html, t0, t1 });
   return normalizeUsage(model, raw);
 }
 
@@ -347,15 +383,22 @@ async function main() {
       return { id, status: "skipped" };
     }
 
+    // Agentic CLIs have file-write tools and the print-to-stdout contract is
+    // only a sentence in a prompt. A kimi run once overwrote a variant from a
+    // finished round. Models flagged `sandbox` are spawned in a scratch dir
+    // instead of the repo, so a stray write lands somewhere harmless.
+    const workDir = m.sandbox ? mkdtempSync(join(tmpdir(), `sc-${m.id}-`)) : ROOT;
+
     const t0 = Date.now();
-    const r = await runModel(m, prompt);
+    const r = await runModel(m, prompt, workDir);
     const t1 = Date.now();
     const secs = Math.round((t1 - t0) / 1000);
 
     // extract first: the document is how a session-log fallback identifies
     // which session to bill, so usage has to be computed after it.
-    const html = extractHtml(r.out);
-    const usage = sessionUsage(m, r.out + "\n" + r.err, { html, t0, t1 });
+    const files = extractFiles(r.out);
+    const html = files.length ? files[0].doc : null;
+    const usage = sessionUsage(m, r.out + "\n" + r.err, { html, t0, t1, workDir });
     const cost = costOf(m, usage);
 
     if (!html) {
@@ -366,7 +409,7 @@ async function main() {
     }
 
     mkdirSync(dir, { recursive: true });
-    writeFileSync(file, html);
+    for (const f of files) writeFileSync(join(dir, f.name), f.doc);
 
     const meta = {
       id,
@@ -377,7 +420,8 @@ async function main() {
       effort: m.effort ?? null,
       round,
       seconds: secs,
-      bytes: html.length,
+      bytes: files.reduce((n, f) => n + f.doc.length, 0),
+      pages: files.map((f) => f.name),
       usage,
       costUSD: cost,
       reportedCostUSD: usage?.reportedCostUSD ?? null,
@@ -392,7 +436,7 @@ async function main() {
     const tok = usage
       ? `${usage.input.toLocaleString()}+${usage.cacheRead.toLocaleString()}c in/${usage.output.toLocaleString()} out`
       : "usage unknown";
-    console.log(`  ✓ ${id.padEnd(13)} ${(html.length / 1024).toFixed(1)}kb  ${String(secs).padStart(4)}s  ${tok.padEnd(32)} ${usd(cost)}`);
+    console.log(`  ✓ ${id.padEnd(13)} ${files.length > 1 ? `${files.length}p ` : ""}${(files.reduce((n, f) => n + f.doc.length, 0) / 1024).toFixed(1)}kb  ${String(secs).padStart(4)}s  ${tok.padEnd(32)} ${usd(cost)}`);
     if (meta.reportedCostUSD !== null && cost !== null) {
       const drift = Math.abs(cost - meta.reportedCostUSD);
       if (drift > 0.005 && drift / meta.reportedCostUSD > 0.02) {
