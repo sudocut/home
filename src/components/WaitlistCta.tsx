@@ -21,16 +21,27 @@ import { useTranslations } from "next-intl";
  * to lie. It is also a plain <a> — no client JavaScript, no server action, so
  * every route stays fully static.
  *
- * If the URL is unset the link falls back to the support address rather than
- * rendering a dead button.
+ * The live form is committed rather than left to environment configuration. It
+ * is a link visitors click, so there is nothing to protect, and a required
+ * variable would mean the site could deploy in a state where the one action on
+ * the page goes nowhere. NEXT_PUBLIC_WAITLIST_FORM_URL still overrides it, which
+ * is what preview deployments and a future Korean-language form would use.
+ *
+ * Verified 2026-07-27: resolves to
+ * docs.google.com/forms/d/e/1FAIpQLScdxjm0nH…/viewform, title "Waitlist".
  */
+const FORM_URL = "https://forms.gle/ee5EnjcggaMHRHGF8";
+
 export function WaitlistCta() {
   const t = useTranslations("waitlist");
   const contact = useTranslations("contact");
 
-  const form = process.env.NEXT_PUBLIC_WAITLIST_FORM_URL;
+  const override = process.env.NEXT_PUBLIC_WAITLIST_FORM_URL;
+  const form = override?.startsWith("https://") ? override : FORM_URL;
   const email = contact("email");
-  const href = form && form.startsWith("https://") ? form : `mailto:${email}`;
+  // Belt and braces: if FORM_URL is ever emptied, fall back to the support
+  // address rather than rendering a dead button.
+  const href = form || `mailto:${email}`;
 
   return (
     <div className="sc-wait" id="waitlist">
@@ -43,7 +54,7 @@ export function WaitlistCta() {
           className="sc-btn"
           href={href}
           rel="noopener noreferrer"
-          target={form ? "_blank" : undefined}
+          target={href.startsWith("http") ? "_blank" : undefined}
         >
           {t("submit")}
         </a>
