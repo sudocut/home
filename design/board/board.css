@@ -135,7 +135,8 @@ h2 { font-family: var(--sc-heavy); font-size: 20px; letter-spacing: -0.01em; mar
 .standings table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .standings th { text-align: left; font-family: var(--sc-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sc-content-muted); padding: 6px 10px 6px 0; border-bottom: 1px solid var(--sc-rule); }
 .standings td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--sc-rule); vertical-align: top; }
-.standings td:nth-child(1), .standings td:nth-child(4) { font-family: var(--sc-numbers); font-variant-numeric: tabular-nums; font-weight: 700; }
+.standings td:nth-child(1), .standings td:nth-child(4), .standings td:nth-child(5) { font-family: var(--sc-numbers); font-variant-numeric: tabular-nums; font-weight: 700; }
+.standings td:nth-child(5) { font-weight: 500; color: var(--sc-content-muted); }
 
 /* ---- fullscreen viewer ---- */
 
@@ -161,3 +162,8 @@ h2 { font-family: var(--sc-heavy); font-size: 20px; letter-spacing: -0.01em; mar
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* session cost — revealed with the model name, never before (price tier
+ * identifies the vendor as surely as the name does) */
+.card-cost { margin-top: 3px; font-size: 10px; letter-spacing: .08em; }
+#totalCost { font-family: var(--sc-mono); }

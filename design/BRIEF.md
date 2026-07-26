@@ -29,9 +29,12 @@ machine that ships a finished film with no human in the loop.
 
 ## 2. What you are designing
 
-**The company website** — `sudocut/home`. Who we are, why we exist, the proof.
-This is **not** the product app and **not** a feature tour. Someone landing here
-should understand what we believe within one screen.
+**The company website** — `sudocut/home`. Not the product app, not a feature tour.
+
+Its job is to turn a stranger into a **closed-beta signup**. Everything else on
+the site — who we are, the proof, the team, what it costs — exists to make that
+one decision easy. A visitor who understands what we do and trusts that it works
+should be able to join in a few seconds.
 
 ## 3. Non-negotiable rules
 
@@ -51,14 +54,33 @@ Full list in `design/CONSTITUTION.md`. The ones that get variants rejected:
 6. **No decorative gradients.** Gradients are permitted only to draw the 76px
    hairline grid.
 7. **Motion 120–200ms `ease`.** Honour `prefers-reduced-motion`.
-8. **Korean-first.** Korean copy primary, English secondary or parallel.
+8. **English first, Korean second.** Reversed 2026-07-26 by the founder — see
+   constitution D5. `<html lang="en">`. Korean, where you include it, is written
+   as Korean and never as translated English.
 9. **Subtract by default.** If removing something improves the page, remove it.
+10. **Paper texture only at the mandated settings** in §4b — copy them exactly.
+    Ink fibre is what made r2 read as greyed-out. No other shader, ever.
 
 ## 4. Output contract
 
-Write **one complete HTML document** and print it to stdout. Nothing else — no
-explanation, no commentary, no markdown fences around it. Start at `<!DOCTYPE html>`
-and end at `</html>`.
+Print complete HTML documents to stdout. Nothing else — no explanation, no
+commentary, no markdown fences.
+
+**One page:** just print the document, starting at `<!DOCTYPE html>`.
+
+**Several pages:** mark each one with a FILE comment on its own line immediately
+before its doctype. The first is the landing page whatever you name it.
+
+```
+<!-- FILE: index.html -->
+<!DOCTYPE html> … </html>
+<!-- FILE: about.html -->
+<!DOCTYPE html> … </html>
+```
+
+Link between them with plain relative hrefs (`href="pricing.html"`). Every page
+is checked against the constitution independently — a second page may not invent
+a colour the first one avoided.
 
 **You must link the token stylesheet and use only its variables:**
 
@@ -85,12 +107,72 @@ Available: `--sc-surface` `--sc-surface-raised` `--sc-content` `--sc-content-mut
 Fonts are served from `/fonts/` and declared by the token stylesheet. Do **not**
 add `@font-face` or a Google Fonts `<link>`.
 
-**Constraints:** self-contained single file. No JS frameworks, no CDN, no build
-step, no external images. Inline `<style>` is fine. A little vanilla JS is fine if
+**Constraints:** each page is a self-contained file — inline its own `<style>`,
+no shared stylesheet of your own. No JS frameworks, no CDN, no build step, no
+external images. The only permitted import is the paper-texture shader in §4b. Inline `<style>` is fine. A little vanilla JS is fine if
 it earns its place. Assume it is opened at 1280×800 inside an iframe, and must not
 break at 390px.
 
 `tools/verify-round.mjs` mechanically checks rules 1–7. Run it before ranking.
+
+## 4b. Paper texture — allowed at MANDATED settings only (constitution D6)
+
+r2 tested this shader and the founder rejected it: the page read as greyed-out,
+like a disabled control. A controlled re-test showed the ban was aimed at the
+wrong thing — the failure was the **fibre colour**, not the shader. Ink fibre
+(`#24292c`) darkens the whole sheet. A light fibre does not.
+
+**Use these values. Do not tune them.** They were rendered and compared before
+being written here; ink fibre and the two lighter alternatives are recorded in
+`design/CONSTITUTION.md` D6.
+
+```html
+<div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
+<script type="module">
+  import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+  import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+  import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+  import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+
+  const u = {
+    u_colorFront: col('#e5e6e3'),   // rail grey. NEVER ink — that is the r2 failure.
+    u_colorBack:  col('#f1f1ec'),   // paper
+    u_contrast: 0.10, u_roughness: 0.20, u_fiber: 0.40, u_fiberSize: 0.7,
+    u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+    u_drops: 0, u_seed: 3, u_fade: 0,
+    u_noiseTexture: getShaderNoiseTexture(),
+    u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+    u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+  };
+  await u.u_noiseTexture.decode();          // REQUIRED — mounting before the
+  new ShaderMount(document.getElementById('bg'),   // noise decodes throws
+                  paperTextureFragmentShader, u, undefined, 0, 0);
+</script>
+```
+
+Speed `0` — static. The texture never carries the point colour, never animates,
+and the 76px grid still sits on top of it. `halftone-cmyk` stays banned: it is an
+image filter whose CMYK inks fall outside the closed palette.
+
+If your page starts to look greyed-out, the fibre colour is the first thing to
+check.
+
+## 4c. Moodboard
+
+34 reference images the team collected live in `design/moodboard/`, with the
+per-image accents recorded in `design/moodboard/SOURCE.md`. Board direction, in
+their own words: *"minimal, generous whitespace, single accent color."*
+
+What the recorded accents actually show: the base is overwhelmingly **near-white
+and off-white** (`#f8f8f8`, `#f3f3f3`, `#efefef`, `#ece8e5`), with a warm
+**taupe/parchment** family recurring (`#cec4bc`, `#d6c5b5`, `#d2d1cf`, `#725d45`)
+and **near-black** as the contrast note (`#2d3039`, `#222223`). Cool slate-greys
+(`#a1aab1`, `#bbc4cb`) appear but never dominate. Almost nothing is saturated.
+
+Read that as a brief for **rhythm, not palette** — our palette is already fixed.
+It says: large quiet fields, type carrying the page, one dark anchor, warmth in
+the neutrals rather than a colour. The images are for the human judge to compare
+against; you are being handed their distilled direction.
 
 ## 5. Voice
 
@@ -108,8 +190,12 @@ Numbers are the argument. Say **6:12**, not "significant time savings." Say
 **14:32 → 10:47**, not "dramatically shorter." If a sentence has no number, ask
 whether it needs to exist.
 
-Korean register: `-습니다`/`-예요`, not `-하십시오`. Numerals stay numerals. Avoid
-외래어 padding (솔루션, 플랫폼, 최적화 are usually deletable).
+**English is the primary voice.** Short declaratives. Numerals stay numerals.
+No hedging, no hype, no em-dash-joined clauses doing the work a full stop should.
+
+If you include Korean, write it *as Korean*: `-습니다`/`-예요`, not `-하십시오`;
+numerals stay numerals; avoid 외래어 padding (솔루션, 플랫폼, 최적화 are usually
+deletable). Never machine-translate the English.
 
 Positioning line: `sudo rm the boring parts.`
 Secondary English line: "Less footage. More story."
@@ -121,11 +207,11 @@ Five criteria, 1–5 each:
 
 | Criterion | Question |
 |---|---|
-| **clarity** | Does a first-time visitor understand what SudoCut does within one screen? |
+| **clarity** | Does a first-time visitor understand what SudoCut does, fast, without jargon? |
 | **hierarchy** | Is there exactly one required action, and does it read first? |
 | **voice** | Direct, numeric, editor-to-editor? Or does it drift into hype? |
 | **restraint** | Would removing anything improve it? Does every element earn its place? |
-| **proof** | Does it show evidence rather than claim capability? |
+| **proof** | Does it show evidence rather than claim capability — and is the evidence *prominent*? |
 
 Design for a judge who will spend thirty seconds on the first impression and then
 look hard for a reason to reject it.

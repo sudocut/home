@@ -1,0 +1,30 @@
+{
+  "id": "gpt-terra-a",
+  "model": "gpt-terra",
+  "label": "GPT-5.6 Terra",
+  "modelId": "gpt-5.6-terra",
+  "vendor": "OpenAI",
+  "effort": "xhigh",
+  "round": "r2",
+  "seconds": 30,
+  "bytes": 5038,
+  "usage": {
+    "input": 10238,
+    "output": 2063,
+    "cacheRead": 10496,
+    "cacheWrite": 0,
+    "normalized": true,
+    "reportedCostUSD": null
+  },
+  "costUSD": 0.05916400000000001,
+  "reportedCostUSD": null,
+  "price": {
+    "input": 2.5,
+    "output": 15,
+    "cacheRead": 0.25,
+    "priceSource": "assumed"
+  },
+  "generatedBy": "tools/generate.mjs",
+  "usageBasis": "inclusive",
+  "repricedBy": "tools/recost.mjs"
+}

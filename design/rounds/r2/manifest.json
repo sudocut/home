@@ -1,0 +1,42 @@
+{
+  "round": "r2",
+  "criteria": [
+    "clarity",
+    "hierarchy",
+    "voice",
+    "restraint",
+    "proof"
+  ],
+  "variants": [
+    {
+      "id": "opus5-a",
+      "model": "opus5",
+      "label": "A",
+      "path": "variants/opus5-a/index.html"
+    },
+    {
+      "id": "gpt-sol-a",
+      "model": "gpt-sol",
+      "label": "B",
+      "path": "variants/gpt-sol-a/index.html"
+    },
+    {
+      "id": "fable5-a",
+      "model": "fable5",
+      "label": "C",
+      "path": "variants/fable5-a/index.html"
+    },
+    {
+      "id": "kimi-k3-a",
+      "model": "kimi-k3",
+      "label": "D",
+      "path": "variants/kimi-k3-a/index.html"
+    },
+    {
+      "id": "gpt-terra-a",
+      "model": "gpt-terra",
+      "label": "E",
+      "path": "variants/gpt-terra-a/index.html"
+    }
+  ]
+}

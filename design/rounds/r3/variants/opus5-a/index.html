@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>SudoCut — Less footage. More story.</title>
+<meta name="description" content="We cut the boring 80% of your footage. You keep the 20% that matters. Export FCPXML or SRT and finish in your own editor. Closed beta.">
+<link rel="icon" href="/brand/logo/favicon.svg">
+<link rel="stylesheet" href="/brand/tokens/tokens.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--sc-surface);
+    color: var(--sc-content);
+    font-family: var(--sc-body);
+    font-size: 1rem;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* --- the 76px hairline grid: the page's only texture (constitution D6) --- */
+  .grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--sc-grid-size));
+    grid-template-rows: 100%;
+    grid-auto-rows: 0;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .grid i { border-left: 1px solid color-mix(in srgb, var(--sc-rule) 50%, transparent); }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--sc-measure);
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  section { position: relative; z-index: 1; }
+
+  .vh {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---------- type roles ---------- */
+  .label {
+    font-family: var(--sc-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sc-content-muted);
+    margin: 0 0 32px;
+  }
+
+  h1, h2 {
+    font-family: var(--sc-heavy);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  h1 { font-size: clamp(1.9rem, 8vw, 5rem); max-width: 21ch; }
+  h2 { font-size: clamp(1.6rem, 4.4vw, 3.1rem); line-height: 1.08; max-width: 26ch; }
+
+  .lede {
+    font-size: clamp(1rem, 1.35vw, 1.1875rem);
+    line-height: 1.6;
+    color: var(--sc-content-muted);
+    max-width: 46ch;
+    margin: 36px 0 0;
+  }
+
+  .num {
+    font-family: var(--sc-numbers);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+
+  a { color: inherit; }
+
+  :where(a, button, input):focus-visible {
+    outline: 2px solid var(--sc-content);
+    outline-offset: 3px;
+  }
+
+  /* ---------- nav ---------- */
+  header { border-bottom: 1px solid var(--sc-rule); }
+  header .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    height: 76px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .brand img { display: block; height: 22px; width: auto; }
+  .brand span {
+    font-family: var(--sc-numbers);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  nav { display: flex; gap: 28px; }
+  nav a {
+    font-size: 0.9375rem;
+    color: var(--sc-content-muted);
+    text-decoration: none;
+    transition: color var(--sc-fast) var(--sc-ease);
+  }
+  nav a:hover { color: var(--sc-content); text-decoration: underline; text-underline-offset: 4px; }
+
+  /* ---------- hero ---------- */
+  .hero { padding: clamp(72px, 11vh, 152px) 0 clamp(96px, 13vh, 152px); }
+  .kicker {
+    font-family: var(--sc-mono);
+    font-size: 0.8125rem;
+    color: var(--sc-content-muted);
+    margin: 0 0 44px;
+  }
+
+  /* ---------- the one action ---------- */
+  .signup { margin: 52px 0 0; max-width: 470px; }
+  .row {
+    display: flex;
+    border: 1px solid var(--sc-content);
+    background: var(--sc-surface-raised);
+    border-radius: var(--sc-radius);
+    box-shadow: var(--sc-shadow-action);
+    transition: box-shadow var(--sc-fast) var(--sc-ease), transform var(--sc-fast) var(--sc-ease);
+  }
+  .row:hover, .row:focus-within {
+    box-shadow: var(--sc-shadow-action-hover);
+    transform: var(--sc-lift);
+  }
+  .row input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: none;
+    border-radius: var(--sc-radius);
+    padding: 19px 20px;
+    font-family: var(--sc-body);
+    font-size: 1rem;
+    color: var(--sc-content);
+  }
+  .row input::placeholder { color: color-mix(in srgb, var(--sc-content) 42%, transparent); }
+  .row input:focus-visible { outline-offset: -3px; }
+  .row button {
+    flex: 0 0 auto;
+    border: 0;
+    border-left: 1px solid var(--sc-content);
+    border-radius: var(--sc-radius);
+    background: var(--sc-action);
+    color: var(--sc-action-content);
+    padding: 19px 30px;
+    font-family: var(--sc-body);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .hint {
+    margin: 18px 0 0;
+    font-size: 0.875rem;
+    color: var(--sc-content-muted);
+  }
+  .said {
+    margin: 18px 0 0;
+    font-size: 0.9375rem;
+    max-width: 40ch;
+  }
+  .said:empty { display: none; }
+
+  /* ---------- proof: the one dark anchor ---------- */
+  .proof {
+    background: var(--sc-content);
+    color: var(--sc-surface);
+    padding: clamp(88px, 12vh, 152px) 0;
+  }
+  .proof .label { color: color-mix(in srgb, var(--sc-surface) 60%, var(--sc-content)); }
+  .proof h2 { max-width: 24ch; }
+  .evidence {
+    margin: clamp(48px, 6vw, 76px) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 clamp(32px, 5vw, 76px);
+    border-top: 1px solid color-mix(in srgb, var(--sc-surface) 28%, transparent);
+  }
+  .evidence div { padding: 32px 0 0; }
+  .evidence dt {
+    font-family: var(--sc-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--sc-surface) 58%, var(--sc-content));
+    margin: 0 0 14px;
+  }
+  .evidence dd {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    max-width: 34ch;
+  }
+  .earned {
+    margin: clamp(40px, 5vw, 64px) 0 0;
+    font-size: 0.875rem;
+    max-width: 52ch;
+    color: color-mix(in srgb, var(--sc-surface) 62%, var(--sc-content));
+  }
+
+  /* ---------- how it works ---------- */
+  .how { padding: clamp(88px, 13vh, 152px) 0; }
+  .transcript {
+    margin: clamp(44px, 5vw, 64px) 0 0;
+    padding: 0;
+    border-left: 1px solid var(--sc-rule);
+    padding-left: clamp(20px, 3vw, 38px);
+    font-family: var(--sc-mono);
+    font-size: clamp(0.8125rem, 1.05vw, 0.9375rem);
+    line-height: 2.05;
+    max-width: 62ch;
+  }
+  .transcript s {
+    color: color-mix(in srgb, var(--sc-content-muted) 68%, transparent);
+    text-decoration-thickness: 1px;
+  }
+  .transcript figcaption {
+    margin: 26px 0 0;
+    font-family: var(--sc-body);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--sc-content-muted);
+  }
+  .delta {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin: 8px 0 0;
+    font-family: var(--sc-numbers);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    letter-spacing: -0.01em;
+  }
+  .delta s { color: var(--sc-content-muted); text-decoration-thickness: 1px; }
+
+  .steps {
+    list-style: none;
+    margin: clamp(64px, 8vw, 100px) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(28px, 4vw, 60px);
+    border-top: 1px solid var(--sc-rule);
+  }
+  .steps li { padding: 30px 0 0; }
+  .steps b {
+    display: block;
+    font-family: var(--sc-numbers);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: var(--sc-content-muted);
+    margin-bottom: 12px;
+  }
+  .steps p { margin: 0; font-size: 1.0625rem; max-width: 24ch; }
+  .decide {
+    margin: clamp(44px, 5vw, 64px) 0 0;
+    font-family: var(--sc-heavy);
+    font-size: clamp(1.125rem, 1.9vw, 1.5rem);
+    letter-spacing: -0.01em;
+    max-width: 30ch;
+  }
+
+  /* ---------- close ---------- */
+  .close { padding: clamp(88px, 13vh, 152px) 0; border-top: 1px solid var(--sc-rule); }
+  .close .signup { margin-top: 44px; }
+  .truth {
+    margin: 40px 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--sc-content-muted);
+    max-width: 44ch;
+  }
+
+  /* ---------- footer ---------- */
+  footer { border-top: 1px solid var(--sc-rule); padding: 44px 0; }
+  footer .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px 40px;
+    font-size: 0.875rem;
+    color: var(--sc-content-muted);
+  }
+  footer p { margin: 0; }
+  footer .ko { font-size: 0.8125rem; }
+
+  @media (max-width: 860px) {
+    .evidence { grid-template-columns: 1fr; }
+    .evidence div:last-child { border-top: 1px solid color-mix(in srgb, var(--sc-surface) 18%, transparent); margin-top: 32px; }
+    .steps { grid-template-columns: 1fr; }
+    .steps li + li { border-top: 1px solid var(--sc-rule); }
+  }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 0 24px; }
+    header .wrap { height: 64px; }
+    nav { gap: 18px; }
+    nav a { font-size: 0.875rem; }
+    .row { flex-direction: column; }
+    .row button { border-left: 0; border-top: 1px solid var(--sc-content); }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="/">
+      <img src="/brand/logo/mark.svg" alt="SudoCut">
+      <span>sudocut</span>
+    </a>
+    <nav>
+      <a href="/team">Team</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="kicker">sudo rm the boring parts.</p>
+      <h1>We cut the boring 80%. You keep the 20% that matters.</h1>
+      <p class="lede">
+        Give SudoCut your raw talking-head footage. It strips the dead air —
+        fillers, fumbles, silences, NG takes — and hands back a cut. You export
+        FCPXML or SRT and finish it in your own editor.
+      </p>
+
+      <form class="signup" novalidate>
+        <div class="row">
+          <label class="vh" for="email-top">Email address</label>
+          <input id="email-top" type="email" name="email" inputmode="email"
+                 autocomplete="email" placeholder="you@example.com" required>
+          <button type="submit">Join the closed beta</button>
+        </div>
+        <p class="hint">Closed beta. Free. One email when a seat opens.</p>
+        <p class="said" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="proof">
+    <div class="wrap">
+      <p class="label">Proof</p>
+      <h2>Viewers couldn’t tell which cut the machine made.</h2>
+      <dl class="evidence">
+        <div>
+          <dt>The test</dt>
+          <dd>Same raw footage, cut twice. Once by a human editor, once by SudoCut. Shown blind, side by side.</dd>
+        </div>
+        <div>
+          <dt>The result</dt>
+          <dd>Nobody could reliably pick the machine’s. That is why SudoCut is a product and not a pitch.</dd>
+        </div>
+      </dl>
+      <p class="earned">It is the one capability claim we have earned, so it is the only one on this page.</p>
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="wrap">
+      <p class="label">How it works</p>
+      <h2>Four hours of footage. One story.</h2>
+
+      <figure class="transcript">
+        <p>So, <s>um,</s> the thing I wanted to show you today <s>is — uh —</s> <s>[4.2s]</s> this one right here. <s>Sorry, let me start again.</s> This one right here.</p>
+        <p class="delta"><s>14:32</s> <span aria-hidden="true">→</span> <span class="num">10:47</span></p>
+        <figcaption>An illustrative example, not a measured benchmark. Your footage decides the number.</figcaption>
+      </figure>
+
+      <ol class="steps">
+        <li><b>01</b><p>Upload the raw file.</p></li>
+        <li><b>02</b><p>Review every proposed cut.</p></li>
+        <li><b>03</b><p>Export FCPXML or SRT.</p></li>
+      </ol>
+
+      <p class="decide">AI proposes. You decide. Nothing goes without your say.</p>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="wrap">
+      <h2>Cut it shorter.</h2>
+
+      <form class="signup" novalidate>
+        <div class="row">
+          <label class="vh" for="email-bottom">Email address</label>
+          <input id="email-bottom" type="email" name="email" inputmode="email"
+                 autocomplete="email" placeholder="you@example.com" required>
+          <button type="submit">Join the closed beta</button>
+        </div>
+        <p class="hint">Closed beta. Free. One email when a seat opens.</p>
+        <p class="said" role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="truth">
+        The beta is closed, so this is a waitlist — not instant access. There is no
+        pricing yet. While it is a beta, it is free.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Less footage. More story.</p>
+    <p class="ko" lang="ko">한국어 영상을 먼저 다루고 있습니다.</p>
+    <p><span class="num">©</span> <span class="num">2026</span> SudoCut</p>
+  </div>
+</footer>
+
+<script>
+  const forms = document.querySelectorAll('.signup');
+  forms.forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const field = form.querySelector('input');
+      if (!field.value.includes('@') || !field.value.includes('.')) {
+        field.focus();
+        form.querySelector('.said').textContent = 'That address looks incomplete.';
+        return;
+      }
+      forms.forEach((f) => {
+        f.querySelector('.row').hidden = true;
+        f.querySelector('.hint').hidden = true;
+        f.querySelector('.said').textContent = 'On the list. We email you when a seat opens.';
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

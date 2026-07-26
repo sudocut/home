@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SudoCut closed beta is free and invite-only, Aug–Oct 2026 in Korea. Launch pricing is a target for Q4 2026 and cannot be bought today.">
+  <title>Pricing — SudoCut</title>
+  <link rel="icon" href="/brand/logo/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/brand/tokens/tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--sc-surface); scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--sc-content);
+      font-family: var(--sc-body);
+      line-height: 1.5;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(var(--sc-rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--sc-rule) 1px, transparent 1px);
+      background-size: var(--sc-grid-size) var(--sc-grid-size);
+    }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3, p { margin-top: 0; }
+    table { border-collapse: collapse; }
+    .shell { width: min(calc(100% - 48px), var(--sc-measure)); margin-inline: auto; }
+    .num { font-family: var(--sc-numbers); font-variant-numeric: tabular-nums; }
+    a:focus-visible {
+      outline: 2px solid var(--sc-content);
+      outline-offset: 3px;
+    }
+    .site-header { border-bottom: 1px solid var(--sc-rule); }
+    .header-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-family: var(--sc-numbers);
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+    .brand img { width: 22px; height: 27px; }
+    .site-nav { display: flex; align-items: center; gap: 26px; }
+    .site-nav a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      padding-inline: 4px;
+      font-family: var(--sc-mono);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 5px;
+      transition: background-color var(--sc-fast) var(--sc-ease);
+    }
+    .site-nav a:hover { background: var(--sc-hover); }
+    .site-nav a[aria-current="page"] { font-weight: 750; text-decoration-thickness: 2px; }
+    .kicker {
+      margin: 0 0 18px;
+      color: var(--sc-content-muted);
+      font-family: var(--sc-mono);
+      font-size: 12px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .page-head { padding-block: clamp(72px, 9vw, 120px) clamp(40px, 5vw, 56px); }
+    .page-head h1 {
+      max-width: 900px;
+      margin-bottom: 20px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(44px, 5.4vw, 72px);
+      font-weight: 650;
+      letter-spacing: -0.05em;
+      line-height: 0.98;
+    }
+    .dek {
+      max-width: 640px;
+      margin-bottom: 0;
+      color: var(--sc-content-muted);
+      font-size: clamp(17px, 1.6vw, 20px);
+      line-height: 1.55;
+    }
+    .phase { padding-block: clamp(48px, 6vw, 72px); }
+    .phase--launch { border-top: 1px solid var(--sc-rule); }
+    .phase-head { margin-bottom: 30px; }
+    .phase-head h2 {
+      margin-bottom: 8px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(32px, 3.6vw, 46px);
+      font-weight: 650;
+      letter-spacing: -0.035em;
+    }
+    .phase-tag {
+      margin: 0;
+      color: var(--sc-content-muted);
+      font-family: var(--sc-mono);
+      font-size: 12px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .phase-note {
+      max-width: 620px;
+      margin: 12px 0 0;
+      color: var(--sc-content-muted);
+      font-size: 15px;
+    }
+    .beta-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+      gap: 1px;
+      border: 1px solid var(--sc-content);
+      background: var(--sc-content);
+    }
+    .beta-main, .beta-packs {
+      padding: clamp(26px, 3.5vw, 44px);
+      background: var(--sc-surface-raised);
+    }
+    .beta-price {
+      margin-bottom: 20px;
+      font-family: var(--sc-numbers);
+      font-size: clamp(64px, 8vw, 108px);
+      font-weight: 300;
+      letter-spacing: -0.06em;
+      line-height: 0.8;
+    }
+    .beta-line { max-width: 46ch; margin-bottom: 22px; font-size: 17px; }
+    .facts {
+      max-width: 560px;
+      list-style: none;
+      margin: 0 0 30px;
+      padding: 0;
+    }
+    .facts li {
+      padding-block: 12px;
+      border-top: 1px solid var(--sc-rule);
+      font-size: 15px;
+    }
+    .quiet-cta {
+      display: inline-flex;
+      align-items: center;
+      min-height: 52px;
+      border: 2px solid var(--sc-content);
+      border-radius: var(--sc-radius);
+      padding: 0 22px;
+      font-weight: 750;
+      text-decoration: none;
+      transition: background-color var(--sc-fast) var(--sc-ease);
+    }
+    .quiet-cta:hover { background: var(--sc-hover); }
+    .quiet-cta::after { content: " →"; font-family: var(--sc-numbers); white-space: pre; }
+    .packs-title {
+      margin: 0 0 18px;
+      color: var(--sc-content-muted);
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .packs { width: 100%; }
+    .packs td {
+      padding-block: 16px;
+      border-top: 1px solid var(--sc-rule);
+      font-family: var(--sc-numbers);
+      font-variant-numeric: tabular-nums;
+      font-size: 20px;
+    }
+    .packs td:last-child { text-align: right; }
+    .packs-note {
+      margin: 18px 0 0;
+      color: var(--sc-content-muted);
+      font-size: 13px;
+    }
+    .tiers {
+      width: 100%;
+      border: 1px solid var(--sc-content);
+      background: var(--sc-surface-raised);
+    }
+    .tiers th {
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--sc-content);
+      color: var(--sc-content-muted);
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .tiers th:nth-child(2) { text-align: right; }
+    .tiers td {
+      padding: 18px 22px;
+      border-top: 1px solid var(--sc-rule);
+      vertical-align: top;
+    }
+    .tiers tbody tr:first-child td { border-top: 0; }
+    .tier-name {
+      font-family: var(--sc-heavy);
+      font-size: 18px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+    .tiers .price {
+      font-family: var(--sc-numbers);
+      font-variant-numeric: tabular-nums;
+      font-size: 21px;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .tiers .inc { color: var(--sc-content-muted); font-size: 15px; }
+    .tier-note {
+      display: block;
+      margin-top: 4px;
+      font-size: 13px;
+    }
+    .footnote {
+      margin: 18px 0 0;
+      color: var(--sc-content-muted);
+      font-family: var(--sc-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    .site-footer { border-top: 1px solid var(--sc-rule); padding-block: 34px; margin-top: clamp(40px, 5vw, 64px); }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .footer-line { margin: 0; font-size: 14px; }
+    .footer-line strong { font-family: var(--sc-numbers); }
+    .footer-nav { display: flex; gap: 24px; }
+    .footer-nav a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      text-underline-offset: 4px;
+      text-transform: uppercase;
+    }
+    @media (max-width: 860px) {
+      .shell { width: min(calc(100% - 32px), var(--sc-measure)); }
+      .header-inner { min-height: 64px; }
+      .site-nav { gap: 12px; }
+      .site-nav a { font-size: 10px; }
+      .page-head h1 { font-size: clamp(36px, 10vw, 48px); }
+      .beta-card { grid-template-columns: 1fr; }
+      .beta-price { font-size: 64px; }
+      .tiers th, .tiers td { padding: 12px 14px; }
+      .tiers .price { font-size: 17px; }
+      .tiers .inc { font-size: 13px; }
+      .tier-name { font-size: 16px; }
+      .footer-inner { align-items: flex-start; }
+    }
+    @media (max-width: 460px) {
+      .brand { gap: 9px; font-size: 17px; }
+      .brand img { width: 18px; height: 22px; }
+      .site-nav { gap: 7px; }
+      .site-nav a { padding-inline: 2px; font-size: 9px; }
+      .tiers th, .tiers td { padding: 10px 10px; }
+      .packs td { font-size: 17px; }
+      .footer-inner { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
+  <script type="module">
+    import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+    import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+    import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+    import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+    import { emptyPixel } from '/design/vendor/paper-shaders/empty-pixel.js';
+
+    // Constitution D6. Settings are MEASURED (tools/shader-probe.mjs), not chosen:
+    // grain 3.67 against a flat sheet, mean drift +0.34. Do not tune by eye — that
+    // is how the previous settings shipped invisible. Re-run the probe instead.
+    const css = getComputedStyle(document.documentElement);
+    const token = (n) => css.getPropertyValue(n).trim();
+
+    // u_image is required even with nothing to show. ShaderMount only sets
+    // u_imageAspectRatio when u_image is a loaded HTMLImageElement
+    // (shader-mount.js:102,:250), and patternUV — which the fibre, crumples and
+    // folds are all built on — is multiplied by it. Omit it and the aspect stays 0,
+    // patternUV.x collapses, and the fibre renders NOTHING at any setting.
+    const sheet = new Image();
+    sheet.src = emptyPixel;
+    await sheet.decode();
+
+    const u = {
+      u_colorFront: col(token('--sc-paper-fibre')),
+      u_colorBack:  col(token('--sc-paper-lit')),
+      u_contrast: 0.55, u_roughness: 0.30, u_fiber: 0.70, u_fiberSize: 0.40,
+      u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+      u_drops: 0, u_seed: 3, u_fade: 0,
+      u_image: sheet,
+      u_noiseTexture: getShaderNoiseTexture(),
+      u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+      u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+    };
+    await u.u_noiseTexture.decode();
+    // speed 0, frame 0 — static. The brand does not animate its background.
+    new ShaderMount(document.getElementById('bg'),
+                    paperTextureFragmentShader, u, undefined, 0, 0);
+  </script>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html" aria-label="SudoCut home">
+        <img src="/brand/logo/mark-mono.svg" alt="" aria-hidden="true">
+        <span>SudoCut</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="about.html">About</a>
+        <a href="team.html">Team</a>
+        <a href="pricing.html" aria-current="page">Pricing</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head shell">
+      <p class="kicker">Pricing</p>
+      <h1>Free now. Priced at launch.</h1>
+      <p class="dek">Two blocks: the beta you can join today, and the launch card we are aiming at.</p>
+    </section>
+
+    <section class="phase shell" aria-labelledby="now-title">
+      <header class="phase-head">
+        <h2 id="now-title">Now</h2>
+        <p class="phase-tag">Closed beta · Aug–Oct 2026 · Korea</p>
+      </header>
+      <div class="beta-card">
+        <div class="beta-main">
+          <p class="beta-price num">₩0</p>
+          <p class="beta-line">Invite-only, about <span class="num">10</span> channels. Free for the whole beta. No subscription.</p>
+          <ul class="facts">
+            <li>One <span class="num">600</span> raw-minute (<span class="num">10</span> h) grant on joining</li>
+            <li>The only payment that exists: one-time credit top-ups at <span class="num">₩100</span> per raw minute</li>
+            <li>Re-processing the same source is free</li>
+          </ul>
+          <a class="quiet-cta" href="index.html#waitlist">Join the waitlist</a>
+        </div>
+        <aside class="beta-packs" aria-label="One-time credit top-ups">
+          <h3 class="packs-title">One-time top-ups · ₩100 / raw minute</h3>
+          <table class="packs">
+            <tbody>
+              <tr><td lang="ko">300분</td><td>₩30,000</td></tr>
+              <tr><td lang="ko">600분</td><td>₩60,000</td></tr>
+              <tr><td lang="ko">1,200분</td><td>₩120,000</td></tr>
+            </tbody>
+          </table>
+          <p class="packs-note">분 — raw minutes of footage in, not minutes of cut out.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="phase phase--launch shell" aria-labelledby="launch-title">
+      <header class="phase-head">
+        <h2 id="launch-title">At launch</h2>
+        <p class="phase-tag">Target · Q4 2026 · Korea</p>
+        <p class="phase-note">A target, not a promise. Nothing on this card can be bought today.</p>
+      </header>
+      <table class="tiers">
+        <thead>
+          <tr>
+            <th scope="col">Tier</th>
+            <th scope="col">Price</th>
+            <th scope="col">Included raw time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tier-name">Free</td>
+            <td class="price">₩0</td>
+            <td class="inc"><span class="num">60</span> min/mo + <span class="num">600</span> min one-time grant</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Starter</td>
+            <td class="price">₩14,900</td>
+            <td class="inc"><span class="num">600</span> min (<span class="num">10</span> h)</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Pro</td>
+            <td class="price">₩49,000</td>
+            <td class="inc"><span class="num">1,200</span> min (<span class="num">20</span> h)</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Studio</td>
+            <td class="price">₩149,000</td>
+            <td class="inc"><span class="num">3,600</span> min (<span class="num">60</span> h)</td>
+          </tr>
+          <tr>
+            <td class="tier-name">Managed</td>
+            <td class="price">₩299,000</td>
+            <td class="inc"><span class="num">3,600</span> min (<span class="num">60</span> h)<span class="tier-note">Publish-ready. Human QC. Priority.</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="footnote">overage ₩100/raw-min · re-processing the same source is free · prices in ₩ only</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <p class="footer-line"><strong>SudoCut.</strong> Less footage. More story.</p>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="about.html">About</a>
+        <a href="team.html">Team</a>
+        <a href="pricing.html">Pricing</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

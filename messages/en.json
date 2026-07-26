@@ -1,13 +1,16 @@
 {
   "meta": {
-    "title": "SudoCut",
-    "titleTemplate": "{page} · SudoCut",
-    "description": "Upload the raw footage, get a cut back. We remove the silence, the filler, the retakes and the tangents."
+    "title": "SudoCut — sudo rm the boring parts.",
+    "titleTemplate": "{page} — SudoCut",
+    "description": "SudoCut removes the boring parts from long spoken footage. Join the closed-beta waitlist."
   },
   "nav": {
     "skipToContent": "Skip to content",
     "home": "Home",
     "about": "About",
+    "team": "Team",
+    "pricing": "Pricing",
+    "waitlist": "Waitlist",
     "contact": "Contact",
     "languageLabel": "Language",
     "language": {
@@ -15,81 +18,183 @@
       "en": "English"
     }
   },
+  "footer": {
+    "tagline": "sudo rm the boring parts.",
+    "rights": "© {year} SudoCut · Korea first"
+  },
+  "waitlist": {
+    "label": "Closed beta waitlist",
+    "placeholder": "you@channel.kr",
+    "submit": "Request an invite",
+    "error": "That address doesn't parse. One more try.",
+    "success": "Request received. We'll email you when your invite opens.",
+    "note": "Invite-only · ~10 channels · Korea first · free during beta"
+  },
   "home": {
-    "eyebrow": "Video editing tool",
-    "line": "sudo rm the boring parts.",
-    "lede": "Less footage. More story.",
-    "intro": "Four hours of footage. One story. Ninety seconds of work.",
-    "body": "SudoCut finds the silence, the filler, the retakes and the tangents in your footage. It proposes the cuts. You make the call.",
-    "numbers": {
-      "eyebrow": "Example",
-      "title": "In numbers",
-      "note": "Illustrative figures from our voice guide. Not measured results.",
-      "one": {
-        "value": "14:32 → 10:47",
-        "label": "Raw to final cut, in a single pass."
+    "kicker": "sudo rm the boring parts.",
+    "title": "Four hours of footage. One story. Ninety seconds of work.",
+    "lede": "SudoCut takes long, raw footage and hands back a cut worth keeping. AI strips the fillers, fumbles, silences, and NG takes. You keep the calls that matter, and finish in your own editor with FCPXML/SRT export. AI proposes. You decide.",
+    "proof": {
+      "label": "Blind test result",
+      "mark": "A/B",
+      "claim": "Viewers couldn't tell the difference.",
+      "detail": "The same footage, cut twice. Once by a human editor, once by SudoCut. Shipped side by side, nobody called which was which.",
+      "tagline": "The proof, not the pitch"
+    },
+    "split": {
+      "label": "The 80/20 split",
+      "chore": {
+        "value": "80%",
+        "label": "The chore — we remove it",
+        "copy": "Fillers, fumbles, dead air, tangents, retakes. Hours of cutting nobody's creativity lives in."
       },
-      "two": {
-        "value": "6:12",
-        "label": "Trimmed. Nothing you wanted is gone."
-      },
-      "three": {
-        "value": "7",
-        "label": "Cuts flagged for review. The rest passes straight through."
+      "story": {
+        "value": "20%",
+        "label": "The story — you keep it",
+        "copy": "Pacing, tone, what stays in. The last 20% is the creative work, and it stays yours."
       }
     },
-    "principles": {
-      "title": "How we work",
-      "one": "AI proposes. You decide.",
-      "two": "We shipped a hand-edited cut and an AI-edited cut side by side. Viewers couldn't tell.",
-      "three": "If it doesn't work, we write that down. A demo that looks better than the product is a lie."
-    },
-    "cta": {
-      "label": "Talk to us",
-      "note": "Just the ask."
+    "example": {
+      "before": "Example — ",
+      "figure": "14:32 → 10:47",
+      "after": ". Nothing you wanted is gone. An illustration, not a promise."
     }
   },
   "about": {
-    "eyebrow": "About",
-    "title": "SudoCut builds one thing.",
-    "lede": "An editor that removes what nobody watches. That's the whole company.",
-    "body": {
-      "one": "It does the pass an editor does by hand: strip the silence, cut the stumbles, drop the tangents. What's left is the part that needs a human.",
-      "two": "Korean is the default. English runs in parallel. Neither is a translation of the other — both are written in their own language.",
-      "three": "Every cut carries its reason on screen: silence, filler, retake, tangent, needs review. Nothing disappears without one."
+    "kicker": "Why we exist",
+    "title": "Editing is the work. Scrubbing dead air isn't.",
+    "ledeBefore": "Every long-form creator does the same low-value chore by hand: cutting fillers, fumbles, silences, tangents, NG takes. It's slow, repetitive, and nobody's creativity lives there. So we ",
+    "ledeMono": "sudo rm",
+    "ledeAfter": " it.",
+    "beliefsLabel": "What we believe",
+    "beliefs": {
+      "one": {
+        "no": "01",
+        "title": "The chore is universal.",
+        "copy": "Solo YouTubers, podcast and interview editors, lecture makers, talk-heavy streamers. Everyone with raw footage pays the same hours before the real edit can start. That payment is not craft. It's tax."
+      },
+      "two": {
+        "no": "02",
+        "title": "The last 20% is the work.",
+        "copy": "AI strips the boring 80%. Pacing, tone, and the final call stay with the creator, because that's where the creativity lives. AI proposes; humans decide. Every cut we make is a suggestion, never a shipment."
+      },
+      "three": {
+        "no": "03",
+        "title": "Your tools finish it.",
+        "copy": "We export editor-ready FCPXML and SRT, so the cut lands in the editor you already use. No new timeline to learn, no lock-in. Less footage. More story."
+      }
     },
-    "principles": {
-      "title": "What we hold to",
-      "one": "Say it, then stop.",
-      "two": "Numbers instead of adjectives. 6:12, not \"significant time savings.\"",
-      "three": "Editor to editor. We don't explain what you already know.",
-      "four": "Honesty over polish. The failures get written down too."
+    "proof": {
+      "label": "The proof in full",
+      "mark": "A/B",
+      "claim": "Viewers couldn't tell the difference.",
+      "detail": "We shipped the same footage cut twice — once by a human editor, once by SudoCut — and put the two versions in front of viewers side by side. Nobody could call which was which. That evidence is why SudoCut is a product, not a pitch.",
+      "tagline": "The proof, in full"
     },
-    "cta": {
-      "label": "Talk to us",
-      "note": "Product, partnerships, hiring — one address."
+    "more": "Join the closed-beta waitlist →"
+  },
+  "team": {
+    "kicker": "The team",
+    "title": "How the work gets decided.",
+    "lede": "The roster isn't cleared for publication yet, so this page carries what can be published: the rules we decide by. Four of them. They cover most arguments.",
+    "rulesLabel": "How we decide",
+    "rules": {
+      "one": {
+        "no": "01",
+        "title": "We are not artists.",
+        "copy": "There is art in editing. Our part of it isn't the art. We remove a chore so the creator's part can start sooner, and we don't confuse the two."
+      },
+      "two": {
+        "no": "02",
+        "title": "Direction over perfection.",
+        "copy": "A cut that ships this week beats a perfect pipeline next year. We pick a direction, move, and let real footage correct us."
+      },
+      "three": {
+        "no": "03",
+        "title": "Honesty over polish.",
+        "copy": "If the cut is wrong, we say it's wrong. Demos show real footage and real numbers, including the ones that don't flatter us."
+      },
+      "four": {
+        "no": "04",
+        "title": "AI proposes, humans decide.",
+        "copy": "Every cut SudoCut makes is a suggestion on a timeline the creator still owns. The moment the tool decides instead of proposing, we've built the wrong product."
+      }
+    },
+    "roster": {
+      "label": "Roster placeholder",
+      "slot": "Roster — to be published",
+      "why": "Names and faces land here once cleared. Until then, the four rules above are the team."
     }
   },
-  "contact": {
-    "eyebrow": "Contact",
-    "title": "Just the ask.",
-    "lede": "A person writes back.",
-    "body": "Product questions, partnerships, hiring, press — they all land at one address. We read every one.",
-    "emailLabel": "Email",
-    "email": "hello@sudocut.io",
-    "cta": {
-      "label": "Send an email"
+  "pricing": {
+    "kicker": "Pricing",
+    "title": "Beta terms now. A launch card later.",
+    "lede": "Two blocks, clearly separated. The first is what exists today. The second is a target — nothing on it can be bought yet.",
+    "now": {
+      "label": "Closed beta terms",
+      "title": "Now — closed beta",
+      "when": "Aug–Oct 2026 · Korea",
+      "access": {
+        "key": "Access",
+        "value": "Invite-only, ~10 channels. Free during beta — no subscription exists yet."
+      },
+      "grant": {
+        "key": "Grant",
+        "figure": "600",
+        "value": " raw minutes (10h) credited when you join."
+      },
+      "topups": {
+        "key": "Top-ups",
+        "before": "The only payment that exists: one-time credit packs at ",
+        "rate": "₩100",
+        "after": " per raw minute.",
+        "packs": ["300분 ₩30,000", "600분 ₩60,000", "1,200분 ₩120,000"]
+      }
     },
-    "note": "You can delete one more line before you send it."
+    "launch": {
+      "label": "Launch pricing target",
+      "title": "At launch — target Q4 2026",
+      "when": "Korea · a target, not a date",
+      "columns": {
+        "tier": "Tier",
+        "price": "Price",
+        "included": "Included raw time"
+      },
+      "tiers": [
+        {
+          "name": "Free",
+          "price": "₩0",
+          "included": "60 min/mo",
+          "sub": "+ 600 min one-time grant"
+        },
+        { "name": "Starter", "price": "₩14,900", "included": "600 min (10h)", "sub": "" },
+        { "name": "Pro", "price": "₩49,000", "included": "1,200 min (20h)", "sub": "" },
+        { "name": "Studio", "price": "₩149,000", "included": "3,600 min (60h)", "sub": "" },
+        {
+          "name": "Managed",
+          "price": "₩299,000",
+          "included": "3,600 min (60h)",
+          "sub": "publish-ready · human QC · priority"
+        }
+      ],
+      "overageBefore": "Overage ",
+      "overageRate": "₩100",
+      "overageAfter": "/raw-min on every tier. Re-processing the same source is free.",
+      "target": "This card is a target. Nothing here can be bought today."
+    },
+    "footNote": "Prices in KRW only. Beta invites open from the waitlist on the front page."
   },
-  "footer": {
-    "tagline": "sudo rm the boring parts.",
-    "rights": "© {year} SudoCut",
-    "colophon": "Hahmlet · SUIT · Jost. All three SIL OFL 1.1."
+  "contact": {
+    "kicker": "Contact",
+    "title": "Talk to us.",
+    "lede": "The fastest way in is the waitlist. For anything else, email works.",
+    "emailLabel": "Email",
+    "email": "hello@sudo-cut.com",
+    "note": "hello@ is our assumption, not a confirmed address — see brand/BRAND-KIT.md."
   },
   "notFound": {
-    "title": "Nothing here.",
-    "body": "Check the address.",
-    "back": "Back home"
+    "title": "That page isn't here.",
+    "body": "The link may be old, or the page may have moved.",
+    "back": "Back to the front page"
   }
 }

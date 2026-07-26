@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ActionButton } from "@/components/ActionButton";
-import { Prose } from "@/components/Prose";
-import { Section } from "@/components/Section";
-import { getPathname } from "@/i18n/navigation";
+import { WaitlistForm } from "@/components/WaitlistForm";
 
 type LocaleParams = { locale: string };
-
-const FIGURES = ["one", "two", "three"] as const;
-const PRINCIPLES = ["one", "two", "three"] as const;
 
 export async function generateMetadata({
   params,
@@ -20,58 +14,59 @@ export async function generateMetadata({
   return { title: meta("title"), description: meta("description") };
 }
 
+/**
+ * Front page — r4 winner (kimi-k3-a), ranked blind and selected by the founder
+ * on 2026-07-27. See design/rounds/r4/VERDICT.md.
+ *
+ * The hero deliberately does NOT claim the viewport: no 100svh, items aligned to
+ * the top, so the 80/20 band arrives while the visitor is still reading. Both
+ * variants that pinned a full-height hero placed below this one.
+ */
 export default async function HomePage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("home");
 
-  // Resolved here rather than inside ActionButton so the component stays a
-  // plain anchor that works for both internal routes and mailto:.
-  const contactHref = getPathname({ href: "/contact", locale });
-
   return (
     <>
-      <section className="mx-auto w-full max-w-[var(--sc-measure)] px-6 py-20 md:px-10 md:py-28">
-        <span className="sc-label mb-6">{t("eyebrow")}</span>
-        <h1 className="text-4xl md:text-6xl">{t("line")}</h1>
-        <p className="mt-6 text-xl text-[color:var(--sc-content-muted)] md:text-2xl">{t("lede")}</p>
-        <Prose className="mt-12">
-          <p className="sc-numeric text-lg md:text-xl">{t("intro")}</p>
-          <p>{t("body")}</p>
-        </Prose>
+      <div className="sc-wrap">
+        <section className="sc-hero">
+          <div>
+            <p className="sc-kicker">{t("kicker")}</p>
+            <h1>{t("title")}</h1>
+            <p className="sc-lede">{t("lede")}</p>
+            {/* The one cobalt object on this page. */}
+            <WaitlistForm />
+          </div>
+
+          <aside aria-label={t("proof.label")} className="sc-proof">
+            <p className="sc-proof-ab">{t("proof.mark")}</p>
+            <p className="sc-proof-claim">{t("proof.claim")}</p>
+            <p className="sc-proof-detail">{t("proof.detail")}</p>
+            <p className="sc-proof-tagline">{t("proof.tagline")}</p>
+          </aside>
+        </section>
+      </div>
+
+      <section aria-label={t("split.label")} className="sc-split">
+        {(["chore", "story"] as const).map((cell) => (
+          <div className="sc-split-cell" key={cell}>
+            <p className="sc-num">{t(`split.${cell}.value`)}</p>
+            <p className="sc-split-label">{t(`split.${cell}.label`)}</p>
+            <p className="sc-split-copy">{t(`split.${cell}.copy`)}</p>
+          </div>
+        ))}
       </section>
 
-      <Section label={t("numbers.eyebrow")} title={t("numbers.title")}>
-        <dl className="grid gap-12 md:grid-cols-3">
-          {FIGURES.map((figure) => (
-            <div key={figure}>
-              <dt className="sc-numeric text-3xl md:text-4xl">{t(`numbers.${figure}.value`)}</dt>
-              <dd className="mt-3 text-[color:var(--sc-content-muted)]">
-                {t(`numbers.${figure}.label`)}
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <p className="sc-label mt-12">{t("numbers.note")}</p>
-      </Section>
-
-      <Section title={t("principles.title")}>
-        <ul className="grid gap-10 md:grid-cols-3">
-          {PRINCIPLES.map((principle) => (
-            <li key={principle} className="max-w-[38ch]">
-              {t(`principles.${principle}`)}
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      {/* The one cobalt object on this page. Do not add a second. */}
-      <Section>
-        <div className="flex flex-col items-start gap-6">
-          <p className="sc-label">{t("cta.note")}</p>
-          <ActionButton href={contactHref}>{t("cta.label")}</ActionButton>
-        </div>
-      </Section>
+      <div className="sc-wrap">
+        {/* Labelled an illustration, not a promise. soul.md: a demo that looks
+            more capable than the live product breaks trust. */}
+        <p className="sc-example">
+          {t("example.before")}
+          <span className="sc-numeric">{t("example.figure")}</span>
+          {t("example.after")}
+        </p>
+      </div>
     </>
   );
 }

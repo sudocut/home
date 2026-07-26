@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SudoCut removes dead air, fillers, fumbles, tangents, and NG takes from long spoken footage. Join the closed-beta waitlist.">
+  <title>SudoCut — Less footage. More story.</title>
+  <link rel="stylesheet" href="/brand/tokens/tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--sc-surface); }
+    body {
+      position: relative;
+      z-index: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--sc-content);
+      background: transparent;
+      font-family: var(--sc-body);
+      line-height: 1.5;
+    }
+    #bg::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      pointer-events: none;
+      background-image:
+        linear-gradient(var(--sc-rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--sc-rule) 1px, transparent 1px);
+      background-size: var(--sc-grid-size) var(--sc-grid-size);
+    }
+    a { color: inherit; }
+    button, input { font: inherit; }
+    button { appearance: none; }
+    h1, h2, h3, p { margin-top: 0; }
+    main { overflow: clip; }
+    .shell {
+      width: min(calc(100% - 48px), var(--sc-measure));
+      margin-inline: auto;
+    }
+    .site-header {
+      position: relative;
+      z-index: 2;
+      min-height: 77px;
+      border-bottom: 1px solid var(--sc-rule);
+      background: var(--sc-surface);
+    }
+    .header-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      font-family: var(--sc-numbers);
+      font-size: 21px;
+      font-weight: 650;
+      letter-spacing: -0.04em;
+    }
+    .site-nav, .footer-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .site-nav a, .footer-nav a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      padding-inline: 2px;
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      text-underline-offset: 5px;
+      transition: background-color var(--sc-fast) var(--sc-ease);
+    }
+    .site-nav a { text-decoration: none; }
+    .site-nav a[aria-current="page"] { text-decoration: underline; }
+    .site-nav a:hover, .footer-nav a:hover { background: var(--sc-hover); }
+    .brand:focus-visible,
+    .site-nav a:focus-visible,
+    .footer-nav a:focus-visible {
+      outline: 2px solid var(--sc-content);
+      outline-offset: 4px;
+    }
+    .landing-hero {
+      min-height: calc(100svh - 77px);
+      display: grid;
+      align-items: center;
+      padding-block: 46px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(390px, 0.92fr);
+      gap: clamp(32px, 5vw, 72px);
+      align-items: stretch;
+    }
+    .pitch {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-block: 12px;
+    }
+    .kicker, .eyebrow, .form-label {
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .kicker {
+      margin-bottom: 20px;
+      color: var(--sc-content-muted);
+      text-transform: lowercase;
+    }
+    h1 {
+      max-width: 720px;
+      margin-bottom: 22px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(54px, 5.6vw, 78px);
+      font-weight: 650;
+      letter-spacing: -0.055em;
+      line-height: 0.98;
+    }
+    .number {
+      font-family: var(--sc-numbers);
+      font-variant-numeric: tabular-nums;
+    }
+    .dek {
+      max-width: 630px;
+      margin-bottom: 30px;
+      color: var(--sc-content-muted);
+      font-size: clamp(17px, 1.5vw, 20px);
+      line-height: 1.55;
+    }
+    .signup { max-width: 620px; }
+    .form-label {
+      display: block;
+      margin-bottom: 9px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+    .signup input {
+      width: 100%;
+      min-height: 56px;
+      border: 2px solid var(--sc-content);
+      border-radius: var(--sc-radius);
+      padding-inline: 16px;
+      color: var(--sc-content);
+      background: var(--sc-surface-raised);
+      outline: 0;
+    }
+    .signup input::placeholder {
+      color: var(--sc-content-muted);
+      opacity: 1;
+    }
+    .signup input:focus-visible {
+      outline: 2px solid var(--sc-content);
+      outline-offset: 3px;
+    }
+    .signup button {
+      min-height: 56px;
+      border: 2px solid var(--sc-content);
+      border-radius: var(--sc-radius);
+      padding-inline: 24px;
+      color: var(--sc-action-content);
+      background: var(--sc-action);
+      box-shadow: var(--sc-shadow-action);
+      font-weight: 750;
+      cursor: pointer;
+      transition:
+        transform var(--sc-fast) var(--sc-ease),
+        box-shadow var(--sc-fast) var(--sc-ease);
+    }
+    .signup button:hover {
+      transform: var(--sc-lift);
+      box-shadow: var(--sc-shadow-action-hover);
+    }
+    .signup button:focus-visible {
+      outline: 2px solid var(--sc-content);
+      outline-offset: 5px;
+    }
+    .form-note {
+      margin: 13px 0 0;
+      color: var(--sc-content-muted);
+      font-size: 13px;
+    }
+    .proof {
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid var(--sc-content);
+      border-radius: var(--sc-radius);
+      padding: clamp(30px, 3.7vw, 48px);
+      color: var(--sc-surface-raised);
+      background: var(--sc-content);
+    }
+    .proof .eyebrow { margin-bottom: 18px; }
+    .proof-mark {
+      margin: auto 0;
+      font-family: var(--sc-numbers);
+      font-size: clamp(92px, 10vw, 140px);
+      font-weight: 300;
+      letter-spacing: -0.09em;
+      line-height: 0.78;
+      font-variant-numeric: tabular-nums;
+    }
+    .proof h2 {
+      max-width: 430px;
+      margin-bottom: 13px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(35px, 3.3vw, 47px);
+      font-weight: 620;
+      letter-spacing: -0.045em;
+      line-height: 1.04;
+    }
+    .proof p:last-child {
+      max-width: 410px;
+      margin-bottom: 0;
+      font-size: 16px;
+    }
+    .division {
+      border-block: 1px solid var(--sc-rule);
+      padding-block: 104px;
+      background: var(--sc-surface-raised);
+    }
+    .section-heading {
+      display: grid;
+      grid-template-columns: 170px minmax(0, 720px);
+      gap: 38px;
+      margin-bottom: 56px;
+    }
+    .section-heading .eyebrow {
+      margin: 8px 0 0;
+      color: var(--sc-content-muted);
+    }
+    .section-heading h2 {
+      margin-bottom: 13px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(43px, 4.7vw, 64px);
+      font-weight: 620;
+      letter-spacing: -0.045em;
+      line-height: 1;
+    }
+    .section-heading p {
+      margin-bottom: 0;
+      color: var(--sc-content-muted);
+      font-size: 18px;
+    }
+    .ratio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--sc-content);
+    }
+    .ratio-card {
+      min-height: 330px;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(28px, 4vw, 50px);
+      background: var(--sc-surface-raised);
+    }
+    .ratio-card + .ratio-card { border-left: 1px solid var(--sc-content); }
+    .ratio-card--human {
+      color: var(--sc-surface-raised);
+      background: var(--sc-content);
+    }
+    .ratio-value {
+      margin-bottom: auto;
+      font-family: var(--sc-numbers);
+      font-size: clamp(92px, 11vw, 146px);
+      font-weight: 300;
+      letter-spacing: -0.075em;
+      line-height: 0.72;
+      font-variant-numeric: tabular-nums;
+    }
+    .ratio-card h3 {
+      margin-bottom: 9px;
+      font-family: var(--sc-heavy);
+      font-size: 29px;
+      font-weight: 620;
+      letter-spacing: -0.025em;
+    }
+    .ratio-card p {
+      max-width: 500px;
+      margin-bottom: 0;
+      color: var(--sc-content-muted);
+      font-size: 16px;
+    }
+    .ratio-card--human p { color: inherit; }
+    .workflow {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-block: 1px solid var(--sc-rule);
+      background: var(--sc-surface);
+    }
+    .workflow div {
+      min-height: 112px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 21px;
+    }
+    .workflow div + div { border-left: 1px solid var(--sc-rule); }
+    .step {
+      color: var(--sc-content-muted);
+      font-family: var(--sc-numbers);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+    .workflow strong {
+      font-size: 15px;
+      font-weight: 680;
+    }
+    .site-footer {
+      border-top: 1px solid var(--sc-rule);
+      padding-block: 30px;
+      background: var(--sc-surface);
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .footer-line {
+      margin: 0;
+      font-size: 14px;
+    }
+    .footer-line strong { font-family: var(--sc-numbers); }
+    .footer-nav a { font-size: 10px; }
+    @media (max-width: 820px) {
+      .shell { width: min(calc(100% - 32px), var(--sc-measure)); }
+      .site-header, .header-inner { min-height: 69px; }
+      .site-nav { gap: 14px; }
+      .landing-hero {
+        min-height: auto;
+        padding-block: 46px 64px;
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 34px;
+      }
+      .pitch { padding-block: 0; }
+      h1 { font-size: clamp(44px, 10vw, 60px); }
+      .proof { min-height: 390px; }
+      .division { padding-block: 80px; }
+      .section-heading {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-bottom: 44px;
+      }
+      .section-heading h2 { font-size: 45px; }
+      .ratio-card { min-height: 300px; }
+      .workflow { grid-template-columns: 1fr 1fr; }
+      .workflow div:nth-child(3) { border-left: 0; }
+      .workflow div:nth-child(n + 3) { border-top: 1px solid var(--sc-rule); }
+    }
+    @media (max-width: 560px) {
+      .shell { width: min(calc(100% - 24px), var(--sc-measure)); }
+      .brand { font-size: 18px; }
+      .site-nav { gap: 9px; }
+      .site-nav a {
+        min-height: 44px;
+        font-size: 9px;
+        letter-spacing: 0.03em;
+      }
+      .landing-hero { padding-block: 38px 54px; }
+      .kicker { margin-bottom: 15px; }
+      h1 {
+        margin-bottom: 17px;
+        font-size: 42px;
+      }
+      .dek {
+        margin-bottom: 24px;
+        font-size: 16px;
+      }
+      .form-row { gap: 7px; }
+      .signup input { padding-inline: 11px; }
+      .signup button {
+        padding-inline: 12px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+      .proof {
+        min-height: 320px;
+        padding: 26px;
+      }
+      .proof-mark { font-size: 82px; }
+      .proof h2 { font-size: 34px; }
+      .division { padding-block: 66px; }
+      .section-heading h2 { font-size: 40px; }
+      .ratio-grid { grid-template-columns: 1fr; }
+      .ratio-card + .ratio-card {
+        border-top: 1px solid var(--sc-content);
+        border-left: 0;
+      }
+      .ratio-card { min-height: 280px; }
+      .ratio-value { font-size: 102px; }
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .footer-nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html" aria-current="page">SudoCut</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="about.html">About</a>
+        <a href="team.html">Team</a>
+        <a href="pricing.html">Pricing</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="landing-hero" aria-labelledby="hero-title">
+      <div class="shell hero-grid">
+        <div class="pitch">
+          <p class="kicker">sudo rm the boring parts.</p>
+          <h1 id="hero-title">Cut the boring <span class="number">80%</span>. Keep the creative <span class="number">20%</span>.</h1>
+          <p class="dek">Dead air. Fillers. Fumbles. Tangents. NG takes. SudoCut removes the first-pass chores and hands the cut back to you.</p>
+
+          <form class="signup" action="/waitlist" method="post">
+            <label class="form-label" for="waitlist-email">Closed beta waitlist</label>
+            <div class="form-row">
+              <input id="waitlist-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-describedby="waitlist-note" required>
+              <button type="submit">Join waitlist</button>
+            </div>
+            <p class="form-note" id="waitlist-note">Invite-only. Free during beta.</p>
+          </form>
+        </div>
+
+        <article class="proof" aria-labelledby="proof-title">
+          <p class="eyebrow">Blind A/B result</p>
+          <div class="proof-mark" aria-hidden="true">A/B</div>
+          <div>
+            <h2 id="proof-title">Viewers couldn't tell the difference.</h2>
+            <p>We shipped a hand-edited cut and an AI-edited cut side by side.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="division" aria-labelledby="division-title">
+      <div class="shell">
+        <header class="section-heading">
+          <p class="eyebrow">The split</p>
+          <div>
+            <h2 id="division-title">AI proposes. You decide.</h2>
+            <p>The chore goes first. Your taste stays to the end.</p>
+          </div>
+        </header>
+
+        <div class="ratio-grid">
+          <article class="ratio-card">
+            <div class="ratio-value">80%</div>
+            <h3>The first pass</h3>
+            <p>Dead air. Fillers. Fumbles. Silences. Tangents. NG takes.</p>
+          </article>
+          <article class="ratio-card ratio-card--human">
+            <div class="ratio-value">20%</div>
+            <h3>The final call</h3>
+            <p>Story. Timing. Emphasis. Everything worth keeping.</p>
+          </article>
+        </div>
+
+        <div class="workflow" aria-label="SudoCut handoff">
+          <div><span class="step">01</span><strong>Long spoken footage</strong></div>
+          <div><span class="step">02</span><strong>AI cut proposal</strong></div>
+          <div><span class="step">03</span><strong>FCPXML + SRT</strong></div>
+          <div><span class="step">04</span><strong>Your editor</strong></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <p class="footer-line"><strong>SudoCut.</strong> Less footage. More story.</p>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="team.html">Team</a>
+        <a href="pricing.html">Pricing</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+    import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+    import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+    import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+    import { emptyPixel } from '/design/vendor/paper-shaders/empty-pixel.js';
+
+    // Constitution D6. Settings are MEASURED (tools/shader-probe.mjs), not chosen:
+    // grain 3.67 against a flat sheet, mean drift +0.34. Do not tune by eye — that
+    // is how the previous settings shipped invisible. Re-run the probe instead.
+    const css = getComputedStyle(document.documentElement);
+    const token = (n) => css.getPropertyValue(n).trim();
+
+    // u_image is required even with nothing to show. ShaderMount only sets
+    // u_imageAspectRatio when u_image is a loaded HTMLImageElement
+    // (shader-mount.js:102,:250), and patternUV — which the fibre, crumples and
+    // folds are all built on — is multiplied by it. Omit it and the aspect stays 0,
+    // patternUV.x collapses, and the fibre renders NOTHING at any setting.
+    const sheet = new Image();
+    sheet.src = emptyPixel;
+    await sheet.decode();
+
+    const u = {
+      u_colorFront: col(token('--sc-paper-fibre')),
+      u_colorBack:  col(token('--sc-paper-lit')),
+      u_contrast: 0.55, u_roughness: 0.30, u_fiber: 0.70, u_fiberSize: 0.40,
+      u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+      u_drops: 0, u_seed: 3, u_fade: 0,
+      u_image: sheet,
+      u_noiseTexture: getShaderNoiseTexture(),
+      u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+      u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+    };
+    await u.u_noiseTexture.decode();
+    // speed 0, frame 0 — static. The brand does not animate its background.
+    new ShaderMount(document.getElementById('bg'),
+                    paperTextureFragmentShader, u, undefined, 0, 0);
+  </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SudoCut — 지루한 부분은 지웁니다.</title>
+<link rel="stylesheet" href="/brand/tokens/tokens.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { margin: 0; }
+
+  /* No background on <html>: body's paper propagates to the canvas, so the
+     shader layer at z-index:-1 sits above it. If WebGL fails, the flat
+     token colour is what remains — the page is never broken, only quieter. */
+  body {
+    margin: 0;
+    background: var(--sc-surface);
+    color: var(--sc-content);
+    font-family: var(--sc-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  #paper { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+
+  .sheet {
+    --step: var(--sc-grid-size);
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-width: var(--sc-measure);
+    margin: 0 auto;
+    padding: clamp(28px, 6.2vh, var(--step)) clamp(24px, 6vw, calc(var(--step) * 1.06));
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: clamp(26px, 5vh, 52px);
+  }
+
+  /* Lockup 6 — single ink. brand/logo/README.md: mark-mono is the correct mark
+     for "any view that already spends its one point color." This view spends it
+     on the button, so the cobalt cut line would be a second point colour.
+     Geometry copied unchanged from /brand/logo/mark-mono.svg. */
+  .masthead { display: flex; align-items: center; gap: 10px; color: var(--sc-content); }
+  .masthead svg { display: block; height: 30px; width: auto; }
+  .wordmark {
+    font-family: var(--sc-numbers);
+    font-size: 20px; font-weight: 400;
+    letter-spacing: -0.03em;
+  }
+
+  .say { align-self: center; }
+
+  .cmd {
+    margin: 0 0 clamp(14px, 2.2vh, 20px);
+    font-family: var(--sc-mono);
+    font-size: clamp(11.5px, 1.02vw, 13px);
+    letter-spacing: 0.1em;
+    color: var(--sc-content-muted);
+  }
+
+  h1 {
+    margin: 0;
+    font-family: var(--sc-heavy);
+    font-weight: 600;
+    font-size: clamp(2.6rem, 7vw, 5.35rem);
+    line-height: 1.06;
+    letter-spacing: -0.022em;
+    word-break: keep-all;
+  }
+
+  .lede {
+    margin: clamp(24px, 4vh, 38px) 0 0;
+    max-width: calc(var(--step) * 8.6);
+    font-size: clamp(15px, 1.48vw, 18.5px);
+    line-height: 1.85;
+    color: var(--sc-content-muted);
+    word-break: keep-all;
+  }
+
+  .proof {
+    margin: 0 0 clamp(20px, 3.2vh, 30px);
+    max-width: calc(var(--step) * 7.4);
+    font-size: clamp(13px, 1.12vw, 14.5px);
+    line-height: 1.72;
+    word-break: keep-all;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    background: var(--sc-action);
+    color: var(--sc-action-content);
+    font-family: var(--sc-body);
+    font-size: clamp(15.5px, 1.35vw, 17px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    padding: clamp(16px, 2.4vh, 21px) clamp(28px, 3.2vw, 42px);
+    border: 0;
+    border-radius: var(--sc-radius);
+    box-shadow: var(--sc-shadow-action);
+    transition: transform var(--sc-fast) var(--sc-ease),
+                box-shadow var(--sc-fast) var(--sc-ease);
+  }
+  .cta:hover { transform: var(--sc-lift); box-shadow: var(--sc-shadow-action-hover); }
+  .cta:active { transform: none; box-shadow: var(--sc-shadow-action); }
+  .cta:focus-visible { outline: 3px solid var(--sc-content); outline-offset: 4px; }
+
+  @media (max-width: 560px) {
+    .sheet { gap: 24px; }
+    h1 { letter-spacing: -0.01em; }
+  }
+</style>
+</head>
+<body>
+
+<div id="paper" aria-hidden="true"></div>
+
+<main class="sheet">
+
+  <header class="masthead">
+    <svg viewBox="0 0 72 88" role="img" aria-label="SudoCut">
+      <rect x="0"  y="0" width="22" height="88" fill="currentColor"/>
+      <rect x="34" y="0" width="4"  height="88" fill="currentColor"/>
+      <rect x="50" y="0" width="22" height="88" fill="currentColor"/>
+    </svg>
+    <span class="wordmark">sudocut</span>
+  </header>
+
+  <div class="say">
+    <p class="cmd">sudo rm the boring parts.</p>
+    <h1>지루한 부분은<br>지웁니다.</h1>
+    <p class="lede">몇 시간짜리 녹화본에서 공백과 더듬은 말, NG 테이크를 걷어내고, 쓰던 편집 프로그램에서 바로 열리는 파일로 돌려드립니다. 남길지 지울지는 편집자가 정합니다.</p>
+  </div>
+
+  <footer>
+    <p class="proof">손으로 자른 컷과 AI가 자른 컷을 나란히 공개했습니다. 시청자는 구분하지 못했습니다.</p>
+    <a class="cta" href="#compare">직접 구분해 보세요</a>
+  </footer>
+
+</main>
+
+<script type="module">
+  /* paperTexture — the 양피지 warmth soul.md asks for, rendered rather than
+     approximated. Static (speed 0), palette-only, and set below the brief's
+     reference values: it is the tooth of the sheet, not an element on it.
+     Colours are read from the tokens, never hand-picked. Any failure — no
+     WebGL, no CSSOM — leaves the flat paper colour and nothing else changes. */
+  try {
+    const { ShaderMount } = await import('/design/vendor/paper-shaders/shader-mount.js');
+    const { paperTextureFragmentShader } = await import('/design/vendor/paper-shaders/shaders/paper-texture.js');
+    const { getShaderColorFromString } = await import('/design/vendor/paper-shaders/get-shader-color-from-string.js');
+    const { getShaderNoiseTexture } = await import('/design/vendor/paper-shaders/get-shader-noise-texture.js');
+
+    const cs = getComputedStyle(document.documentElement);
+    const token = (name) => cs.getPropertyValue(name).trim();
+    const fibre = token('--sc-content');
+    const sheet = token('--sc-surface');
+
+    if (fibre && sheet) {
+      const u = {
+        u_colorFront: getShaderColorFromString(fibre),
+        u_colorBack:  getShaderColorFromString(sheet),
+        u_contrast: 0.08, u_roughness: 0.18, u_fiber: 0.34, u_fiberSize: 0.6,
+        u_crumples: 0.07, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+        u_drops: 0, u_seed: 3, u_fade: 0,
+        u_noiseTexture: getShaderNoiseTexture(),
+        u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+        u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+      };
+      await u.u_noiseTexture.decode();
+      new ShaderMount(document.getElementById('paper'), paperTextureFragmentShader, u, undefined, 0, 0);
+    }
+  } catch (e) {
+    /* flat paper is a correct answer too */
+  }
+</script>
+
+</body>
+</html>
+{"is_error":false,"duration_api_ms":367328,"num_turns":13,"stop_reason":"end_turn","session_id":"1d10e2e8-e067-4cff-85dc-f50c7dc5807d","total_cost_usd":1.3109060000000001,"usage":{"input_tokens":11,"cache_creation_input_tokens":54460,"cache_read_input_tokens":242002,"output_tokens":25810,"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":54460,"ephemeral_5m_input_tokens":0},"inference_geo":"not_available","iterations":[{"input_tokens":2,"output_tokens":5402,"cache_read_input_tokens":54682,"cache_creation_input_tokens":15271,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":15271},"type":"message"}],"speed":"standard"},"modelUsage":{"claude-opus-5":{"inputTokens":11,"outputTokens":25810,"cacheReadInputTokens":242002,"cacheCreationInputTokens":54460,"webSearchRequests":0,"costUSD":1.3109060000000001,"contextWindow":1000000,"maxOutputTokens":64000,"canonicalModel":"claude-opus-5","provider":"firstParty"}},"permission_denials":[{"tool_name":"Bash","tool_use_id":"toolu_01Xr3mTpgQz84Lr2Bkod5aHF","tool_input":{"command":"for f in mark.svg lockup-horizontal.svg lockup-stacked.svg mark-mono.svg; do echo \"=== $f ===\"; cat brand/logo/$f; echo; done","description":"Inspect logo SVG sources"}}],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"sdk_opt_in_required","subtype":"success","api_error_status":null,"result":"<!DOCTYPE html>\n<html lang=\"ko\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>SudoCut — 지루한 부분은 지웁니다.</title>\n<link rel=\"stylesheet\" href=\"/brand/tokens/tokens.css\">\n<style>\n  *, *::before, *::after { box-sizing: border-box; }\n  html { margin: 0; }\n\n  /* No background on <html>: body's paper propagates to the canvas, so the\n     shader layer at z-index:-1 sits above it. If WebGL fails, the flat\n     token colour is what remains — the page is never broken, only quieter. */\n  body {\n    margin: 0;\n    background: var(--sc-surface);\n    color: var(--sc-content);\n    font-family: var(--sc-body);\n    -webkit-font-smoothing: antialiased;\n    text-rendering: optimizeLegibility;\n  }\n\n  #paper { position: fixed; inset: 0; z-index: -1; pointer-events: none; }\n\n  .sheet {\n    --step: var(--sc-grid-size);\n    min-height: 100vh;\n    min-height: 100dvh;\n    max-width: var(--sc-measure);\n    margin: 0 auto;\n    padding: clamp(28px, 6.2vh, var(--step)) clamp(24px, 6vw, calc(var(--step) * 1.06));\n    display: grid;\n    grid-template-rows: auto 1fr auto;\n    gap: clamp(26px, 5vh, 52px);\n  }\n\n  /* Lockup 6 — single ink. brand/logo/README.md: mark-mono is the correct mark\n     for \"any view that already spends its one point color.\" This view spends it\n     on the button, so the cobalt cut line would be a second point colour.\n     Geometry copied unchanged from /brand/logo/mark-mono.svg. */\n  .masthead { display: flex; align-items: center; gap: 10px; color: var(--sc-content); }\n  .masthead svg { display: block; height: 30px; width: auto; }\n  .wordmark {\n    font-family: var(--sc-numbers);\n    font-size: 20px; font-weight: 400;\n    letter-spacing: -0.03em;\n  }\n\n  .say { align-self: center; }\n\n  .cmd {\n    margin: 0 0 clamp(14px, 2.2vh, 20px);\n    font-family: var(--sc-mono);\n    font-size: clamp(11.5px, 1.02vw, 13px);\n    letter-spacing: 0.1em;\n    color: var(--sc-content-muted);\n  }\n\n  h1 {\n    margin: 0;\n    font-family: var(--sc-heavy);\n    font-weight: 600;\n    font-size: clamp(2.6rem, 7vw, 5.35rem);\n    line-height: 1.06;\n    letter-spacing: -0.022em;\n    word-break: keep-all;\n  }\n\n  .lede {\n    margin: clamp(24px, 4vh, 38px) 0 0;\n    max-width: calc(var(--step) * 8.6);\n    font-size: clamp(15px, 1.48vw, 18.5px);\n    line-height: 1.85;\n    color: var(--sc-content-muted);\n    word-break: keep-all;\n  }\n\n  .proof {\n    margin: 0 0 clamp(20px, 3.2vh, 30px);\n    max-width: calc(var(--step) * 7.4);\n    font-size: clamp(13px, 1.12vw, 14.5px);\n    line-height: 1.72;\n    word-break: keep-all;\n  }\n\n  .cta {\n    display: inline-flex;\n    align-items: center;\n    background: var(--sc-action);\n    color: var(--sc-action-content);\n    font-family: var(--sc-body);\n    font-size: clamp(15.5px, 1.35vw, 17px);\n    font-weight: 600;\n    letter-spacing: -0.01em;\n    text-decoration: none;\n    padding: clamp(16px, 2.4vh, 21px) clamp(28px, 3.2vw, 42px);\n    border: 0;\n    border-radius: var(--sc-radius);\n    box-shadow: var(--sc-shadow-action);\n    transition: transform var(--sc-fast) var(--sc-ease),\n                box-shadow var(--sc-fast) var(--sc-ease);\n  }\n  .cta:hover { transform: var(--sc-lift); box-shadow: var(--sc-shadow-action-hover); }\n  .cta:active { transform: none; box-shadow: var(--sc-shadow-action); }\n  .cta:focus-visible { outline: 3px solid var(--sc-content); outline-offset: 4px; }\n\n  @media (max-width: 560px) {\n    .sheet { gap: 24px; }\n    h1 { letter-spacing: -0.01em; }\n  }\n</style>\n</head>\n<body>\n\n<div id=\"paper\" aria-hidden=\"true\"></div>\n\n<main class=\"sheet\">\n\n  <header class=\"masthead\">\n    <svg viewBox=\"0 0 72 88\" role=\"img\" aria-label=\"SudoCut\">\n      <rect x=\"0\"  y=\"0\" width=\"22\" height=\"88\" fill=\"currentColor\"/>\n      <rect x=\"34\" y=\"0\" width=\"4\"  height=\"88\" fill=\"currentColor\"/>\n      <rect x=\"50\" y=\"0\" width=\"22\" height=\"88\" fill=\"currentColor\"/>\n    </svg>\n    <span class=\"wordmark\">sudocut</span>\n  </header>\n\n  <div class=\"say\">\n    <p class=\"cmd\">sudo rm the boring parts.</p>\n    <h1>지루한 부분은<br>지웁니다.</h1>\n    <p class=\"lede\">몇 시간짜리 녹화본에서 공백과 더듬은 말, NG 테이크를 걷어내고, 쓰던 편집 프로그램에서 바로 열리는 파일로 돌려드립니다. 남길지 지울지는 편집자가 정합니다.</p>\n  </div>\n\n  <footer>\n    <p class=\"proof\">손으로 자른 컷과 AI가 자른 컷을 나란히 공개했습니다. 시청자는 구분하지 못했습니다.</p>\n    <a class=\"cta\" href=\"#compare\">직접 구분해 보세요</a>\n  </footer>\n\n</main>\n\n<script type=\"module\">\n  /* paperTexture — the 양피지 warmth soul.md asks for, rendered rather than\n     approximated. Static (speed 0), palette-only, and set below the brief's\n     reference values: it is the tooth of the sheet, not an element on it.\n     Colours are read from the tokens, never hand-picked. Any failure — no\n     WebGL, no CSSOM — leaves the flat paper colour and nothing else changes. */\n  try {\n    const { ShaderMount } = await import('/design/vendor/paper-shaders/shader-mount.js');\n    const { paperTextureFragmentShader } = await import('/design/vendor/paper-shaders/shaders/paper-texture.js');\n    const { getShaderColorFromString } = await import('/design/vendor/paper-shaders/get-shader-color-from-string.js');\n    const { getShaderNoiseTexture } = await import('/design/vendor/paper-shaders/get-shader-noise-texture.js');\n\n    const cs = getComputedStyle(document.documentElement);\n    const token = (name) => cs.getPropertyValue(name).trim();\n    const fibre = token('--sc-content');\n    const sheet = token('--sc-surface');\n\n    if (fibre && sheet) {\n      const u = {\n        u_colorFront: getShaderColorFromString(fibre),\n        u_colorBack:  getShaderColorFromString(sheet),\n        u_contrast: 0.08, u_roughness: 0.18, u_fiber: 0.34, u_fiberSize: 0.6,\n        u_crumples: 0.07, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,\n        u_drops: 0, u_seed: 3, u_fade: 0,\n        u_noiseTexture: getShaderNoiseTexture(),\n        u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,\n        u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,\n      };\n      await u.u_noiseTexture.decode();\n      new ShaderMount(document.getElementById('paper'), paperTextureFragmentShader, u, undefined, 0, 0);\n    }\n  } catch (e) {\n    /* flat paper is a correct answer too */\n  }\n</script>\n\n</body>\n</html>

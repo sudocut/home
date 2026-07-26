@@ -12,3 +12,10 @@ build/
 next-env.d.ts
 *.log
 .gstack/
+
+# design round render output (variants + rankings ARE the git record)
+design/rounds/*/renders/
+
+# shader-probe screenshots (`--keep`). The MEASUREMENTS belong in D6's table,
+# the PNGs are scratch.
+.probe/

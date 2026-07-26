@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Footer } from "@/components/Footer";
 import { Nav } from "@/components/Nav";
+import { PaperTexture } from "@/components/PaperTexture";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -57,6 +58,10 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body>
         <NextIntlClientProvider>
+          {/* The 양피지 sheet, constitution D6. Fixed behind everything, below
+              the 76px grid drawn on body::before. Client-only; the page is
+              complete without it. */}
+          <PaperTexture />
           <a className="sc-skip" href="#main">
             {t("skipToContent")}
           </a>

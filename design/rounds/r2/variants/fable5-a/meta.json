@@ -1,0 +1,31 @@
+{
+  "id": "fable5-a",
+  "model": "fable5",
+  "label": "Claude Fable 5",
+  "modelId": "claude-fable-5",
+  "vendor": "Anthropic",
+  "effort": "max",
+  "round": "r2",
+  "seconds": 569,
+  "bytes": 12615,
+  "usage": {
+    "input": 4,
+    "output": 38458,
+    "cacheRead": 45743,
+    "cacheWrite": 48572,
+    "normalized": true,
+    "reportedCostUSD": 2.940123
+  },
+  "costUSD": 2.9401230000000003,
+  "reportedCostUSD": 2.940123,
+  "price": {
+    "input": 10,
+    "output": 50,
+    "cacheRead": 1,
+    "cacheWrite": 20,
+    "priceSource": "verified"
+  },
+  "generatedBy": "tools/generate.mjs",
+  "usageBasis": "exclusive",
+  "repricedBy": "tools/recost.mjs"
+}

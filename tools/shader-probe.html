@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>shader probe</title>
+<!--
+  shader-probe.html — render paperTexture full-bleed at settings given by query
+  string, so tools/shader-probe.mjs can MEASURE the result instead of eyeballing it.
+
+  D6's first settings table was written from four screenshots and my own eyes. It
+  claimed the adopted setting had "grain visible". Measured, that setting moved the
+  page by at most 4/255 — it was invisible, and the claim was wrong. This file
+  exists so no shader claim in the constitution is ever unmeasured again.
+
+  Query params (all optional, defaults = the D6 settings under test):
+    front, back   hex colours          contrast, roughness, fiber, fiberSize
+    crumples, crumpleSize, seed        flat=1  → skip the shader, paint back only
+-->
+<style>
+  html, body { margin: 0; height: 100%; }
+  #bg { position: fixed; inset: 0; }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<script type="module">
+  import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+  import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+  import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+  import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+  import { emptyPixel } from '/design/vendor/paper-shaders/empty-pixel.js';
+
+  const q = new URLSearchParams(location.search);
+  const num = (k, d) => (q.has(k) ? Number.parseFloat(q.get(k)) : d);
+  const str = (k, d) => q.get(k) ?? d;
+
+  const back = str('back', '#f1f1ec');
+
+  // The flat baseline every setting is compared against. Painting it with CSS
+  // rather than the shader is deliberate: it is what the page looks like with the
+  // shader absent, which is exactly the control we need.
+  if (q.get('flat') === '1') {
+    document.getElementById('bg').style.background = back;
+    document.title = 'ready';
+  } else {
+    const u = {
+      u_colorFront: col(str('front', '#e5e6e3')),
+      u_colorBack: col(back),
+      u_contrast: num('contrast', 0.10),
+      u_roughness: num('roughness', 0.20),
+      u_fiber: num('fiber', 0.40),
+      u_fiberSize: num('fiberSize', 0.7),
+      u_crumples: num('crumples', 0.10),
+      u_crumpleSize: num('crumpleSize', 0.5),
+      u_folds: 0, u_foldCount: 0, u_drops: 0,
+      u_seed: num('seed', 3), u_fade: 0,
+      // u_image is not optional even when there is no image to show. ShaderMount
+      // only sets u_imageAspectRatio when u_image is an HTMLImageElement
+      // (shader-mount.js:102, :250) — and patternUV, which the fibre, crumples and
+      // folds are ALL built on, is multiplied by it. Omit u_image and the aspect
+      // stays 0, patternUV.x collapses, and every pattern term renders nothing;
+      // only the screen-space roughness term survives. The vendor ships a 1x1
+      // transparent GIF for exactly this: aspect 1, and image.a = 0 so the frame
+      // term contributes no artefact.
+      u_image: await (async () => {
+        if (q.get('aspect') === '0') return undefined; // reproduce the shipped bug
+        const img = new Image();
+        img.src = emptyPixel;
+        await img.decode();
+        return img;
+      })(),
+      u_noiseTexture: getShaderNoiseTexture(),
+      u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+      u_originX: 0.5, u_originY: 0.5,
+      u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+    };
+    // Throws if the noise image has not decoded before mount.
+    await u.u_noiseTexture.decode();
+    new ShaderMount(document.getElementById('bg'), paperTextureFragmentShader, u, undefined, 0, 0);
+    // Signals the driver that the first frame is committed, so a screenshot taken
+    // after this cannot catch an empty canvas.
+    requestAnimationFrame(() => requestAnimationFrame(() => { document.title = 'ready'; }));
+  }
+</script>
+</body>
+</html>

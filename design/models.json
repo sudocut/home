@@ -2,57 +2,201 @@
   "_comment": [
     "Model registry for the design-iteration harness.",
     "",
-    "Contract: every model is invoked non-interactively, receives the brief on stdin,",
-    "and PRINTS a complete HTML document to stdout. The runner extracts the document",
-    "and writes it to disk. Models never write files themselves — that keeps the",
-    "invocation uniform across four different CLIs and avoids tool-permission setup.",
+    "Contract: every model is invoked non-interactively at MAXIMUM reasoning effort,",
+    "receives the brief, and PRINTS a complete HTML document to stdout. The runner",
+    "extracts the document and writes it to disk. Models never write files themselves —",
+    "that keeps the invocation uniform across three different CLIs.",
     "",
-    "'available' is verified, not assumed. Re-check with: node tools/generate.mjs --check",
-    "Verified 2026-07-26 on this machine."
+    "'available' and the invocation flags are VERIFIED on this machine, not assumed.",
+    "Re-check with: node tools/generate.mjs --check",
+    "Verified 2026-07-26.",
+    "",
+    "PRICING is list API price per 1M tokens, used to cost each session. One design =",
+    "one session. Prices move — re-check them before quoting these numbers anywhere",
+    "that matters. Sources recorded in design/README.md.",
+    "",
+    "'usageBasis' says what the CLI means by the word 'input'. 'inclusive' = its",
+    "input_tokens ALREADY CONTAINS the cached tokens (codex). 'exclusive' = the",
+    "classes are disjoint (claude, kimi). tools/lib/cost.mjs normalises everything",
+    "to disjoint before pricing. Getting this wrong bills cached tokens twice at",
+    "the full input rate — which is exactly what r2 and r3 did until 2026-07-26,",
+    "inflating GPT-5.6 Sol's r3 session from $1.57 to $7.10.",
+    "",
+    "'priceSource' on each rate block: 'verified' = reconciled against a cost the",
+    "vendor itself reported; 'assumed' = list price applied by us, unreconciled."
   ],
-
-  "criteria": ["clarity", "hierarchy", "voice", "restraint", "proof"],
-
+  "criteria": [
+    "clarity",
+    "hierarchy",
+    "voice",
+    "restraint",
+    "proof"
+  ],
   "models": [
     {
-      "id": "opus",
-      "label": "Claude Opus",
-      "cmd": ["claude", "-p", "--model", "opus"],
+      "id": "opus5",
+      "label": "Claude Opus 5",
+      "modelId": "claude-opus-5",
+      "vendor": "Anthropic",
+      "cmd": [
+        "claude",
+        "-p",
+        "--model",
+        "opus",
+        "--effort",
+        "max",
+        "--output-format",
+        "json"
+      ],
       "promptVia": "stdin",
+      "parse": "claude-json",
+      "effort": "max",
+      "usageBasis": "exclusive",
+      "price": {
+        "input": 5.0,
+        "output": 25.0,
+        "cacheRead": 0.5,
+        "cacheWrite": 10.0,
+        "priceSource": "verified"
+      },
       "available": true,
-      "note": "claude 2.1.220. -p prints the response and exits."
+      "note": "claude 2.1.220. --effort max is the ceiling. --output-format json reports usage AND total_cost_usd, so this model's rates are the only ones in the registry reconciled against a vendor figure. cacheWrite is 10.00 = 2x input, the 1-HOUR cache rate — not 6.25 (=1.25x, the 5-minute rate) as first assumed. Reconciled to the cent on four sessions: r2 opus 1.310906, r2 fable 2.940123, r3 opus 0.7818835, r3 fable 2.789226 all match exactly at 2x and are short at 1.25x.",
+      "reportsUsage": true
     },
     {
-      "id": "fable",
-      "label": "Claude Fable",
-      "cmd": ["claude", "-p", "--model", "claude-fable-5"],
+      "id": "fable5",
+      "label": "Claude Fable 5",
+      "modelId": "claude-fable-5",
+      "vendor": "Anthropic",
+      "cmd": [
+        "claude",
+        "-p",
+        "--model",
+        "claude-fable-5",
+        "--effort",
+        "max",
+        "--output-format",
+        "json"
+      ],
       "promptVia": "stdin",
+      "parse": "claude-json",
+      "effort": "max",
+      "usageBasis": "exclusive",
+      "price": {
+        "input": 10.0,
+        "output": 50.0,
+        "cacheRead": 1.0,
+        "cacheWrite": 20.0,
+        "priceSource": "verified"
+      },
       "available": true,
-      "note": "Same CLI as opus, different --model. If the alias is rejected, the runner reports it rather than silently falling back."
+      "note": "Thinking is always on for Fable 5; depth is controlled by effort. Priced above Opus tier — it has been the most expensive variant in both rounds it ran, on output alone. cacheWrite is 20.00 = 2x input (1-hour cache), same correction as opus5; see that entry for the reconciliation.",
+      "reportsUsage": true
     },
     {
-      "id": "gpt",
-      "label": "OpenAI (Codex CLI)",
-      "cmd": ["codex", "exec"],
+      "id": "gpt-sol",
+      "label": "GPT-5.6 Sol",
+      "modelId": "gpt-5.6-sol",
+      "vendor": "OpenAI",
+      "cmd": [
+        "codex",
+        "exec",
+        "--json",
+        "-c",
+        "model=\"gpt-5.6-sol\"",
+        "-c",
+        "model_reasoning_effort=\"xhigh\""
+      ],
       "promptVia": "stdin",
+      "parse": "jsonl",
+      "effort": "xhigh",
+      "usageBasis": "inclusive",
+      "price": {
+        "input": 5.0,
+        "output": 30.0,
+        "cacheRead": 0.5,
+        "priceSource": "assumed"
+      },
       "available": true,
-      "note": "codex-cli 0.144.3, authed via ~/.codex/auth.json. 'exec' is the non-interactive mode. Output includes session chatter, so the runner extracts the HTML document from it."
+      "note": "codex-cli 0.144.3, authed via ~/.codex/auth.json. Flagship tier. TWO THINGS MAKE THIS ONE EASY TO MIS-COST. (1) usageBasis is inclusive: total_token_usage.input_tokens CONTAINS cached_input_tokens — proven from a rollout where turn 1 reads {input 23637, cached 0, output 416, total 24053}, i.e. total == input + output, so cached is a subset. (2) codex exec is an AGENT with repo access and a skills directory, and Sol USES them — unpredictably. r2: 1 turn, 0 tool calls, $0.19. r3: 12 turns, 10 tool calls, 673k cumulative input, $1.57 — it spent its first three turns reading 76KB of ~/.codex/skills/gstack/design-html/SKILL.md, unrelated to this repo, then read the tree, then ran tools/verify-round.mjs against its own draft. Every turn resends the whole conversation, so turn count drives input superlinearly. gpt-terra on the identical prompt made 0 tool calls in both rounds. So a costly Sol session is a BEHAVIOURAL outlier, not a property of the tier — do not generalise from one round. cacheRead 0.50 is the published 10% cached-input discount, ASSUMED not verified — codex reports no cost of its own (this machine is on a Pro subscription, rate_limits.plan_type='pro'), so there is nothing to reconcile against.",
+      "reportsUsage": true
     },
     {
-      "id": "kimi",
-      "label": "Kimi",
-      "cmd": ["kimi", "-p", "--auto"],
+      "id": "gpt-terra",
+      "label": "GPT-5.6 Terra",
+      "modelId": "gpt-5.6-terra",
+      "vendor": "OpenAI",
+      "cmd": [
+        "codex",
+        "exec",
+        "--json",
+        "-c",
+        "model=\"gpt-5.6-terra\"",
+        "-c",
+        "model_reasoning_effort=\"xhigh\""
+      ],
+      "promptVia": "stdin",
+      "parse": "jsonl",
+      "effort": "xhigh",
+      "usageBasis": "inclusive",
+      "price": {
+        "input": 2.5,
+        "output": 15.0,
+        "cacheRead": 0.25,
+        "priceSource": "assumed"
+      },
+      "available": true,
+      "note": "Mid tier, ~half of Sol. Included specifically to test whether a cheaper tier designs as well against a tightly-specified brief — it has, twice, at a fiftieth of the round's most expensive variant. Same inclusive usageBasis and same assumed 10% cacheRead discount as gpt-sol; see that entry.",
+      "reportsUsage": true
+    },
+    {
+      "id": "kimi-k3",
+      "label": "Kimi K3",
+      "modelId": "kimi-k3",
+      "vendor": "Moonshot",
+      "cmd": [
+        "kimi",
+        "-m",
+        "kimi-code/k3",
+        "--output-format",
+        "stream-json",
+        "-p"
+      ],
       "promptVia": "arg",
+      "parse": "jsonl",
+      "effort": "high",
+      "usageBasis": "exclusive",
+      "usageFrom": "kimi-session-log",
+      "price": {
+        "input": 3.0,
+        "output": 15.0,
+        "cacheRead": 0.3,
+        "cacheWrite": 3.0,
+        "priceSource": "assumed"
+      },
       "available": true,
-      "note": "kimi -p takes the prompt as a flag VALUE, not stdin. --auto runs fully autonomously without asking questions."
+      "note": "kimi -p takes the prompt as its flag VALUE, so -p MUST be last here — the runner appends the prompt after it. --auto is deliberately absent: kimi rejects '--prompt with --auto'. WARNING, corrected 2026-07-26: the previous note here claimed our contract 'needs no tool permissions anyway'. That was wrong. Without --auto kimi still carries its full tool set, and a run asked for a NEW variant instead OVERWROTE design/rounds/r3/variants/kimi-k3-a/index.html — a variant from a finished, committed round. Rounds are supposed to be immutable. tools/lib/repo-guard.mjs now fingerprints the tree around every fan-out and restores anything a model dirtied that it was not asked to touch. Thinking effort is 'high' in ~/.kimi-code/config.toml, its ceiling — there is no per-invocation effort flag, so this one is not literally comparable to the others' max. USAGE: --output-format stream-json prints no token counts, which is why r2 and r3 first recorded cost null. But the CLI does record them — it writes them to its own session log, not to stdout: ~/.kimi-code/sessions/wd_<slug>/session_<uuid>/agents/main/wire.jsonl, as {'type':'usage.record','usage':{inputOther,output,inputCacheRead,inputCacheCreation},'usageScope':'turn'}. Scope is per-turn so these SUM. tools/lib/cost.mjs reads them and matches the session to the run by its created_at. reportsUsage stays false because it reports nothing on the channel we invoke it on. cacheWrite rate is a placeholder — no observed turn has had a non-zero inputCacheCreation. SANDBOXED: kimi is an agent with file-write tools and it once overwrote a variant from a finished round, so generate.mjs spawns it in a scratch dir rather than the repo. Verified 2026-07-26: it still prints the document to stdout and writes nothing. Its usage is read back from the session index, which records the REAL path — matching needs realpath (macOS /tmp -> /private/tmp), which is why its cost looked unrecoverable twice.",
+      "reportsUsage": false,
+      "sandbox": true
     },
     {
       "id": "opencode",
       "label": "OpenCode",
-      "cmd": ["opencode", "run"],
+      "modelId": "(router)",
+      "vendor": "multi",
+      "cmd": [
+        "opencode",
+        "run"
+      ],
       "promptVia": "arg",
+      "parse": "text",
+      "price": {
+        "input": 0,
+        "output": 0
+      },
       "available": false,
-      "note": "Installed but not enabled by default — it is a multi-provider router, so which model actually answers is ambiguous, which defeats the point of comparing models. Flip available to true and pin a provider if you want it in the pool."
+      "note": "Installed but disabled — it routes across providers, so which model answered would be ambiguous, defeating the comparison. Flip to true and pin a provider to include it.",
+      "reportsUsage": true
     }
   ]
 }

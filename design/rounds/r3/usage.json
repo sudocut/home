@@ -1,0 +1,162 @@
+{
+  "round": "r3",
+  "totalCostUSD": 5.5058818,
+  "variants": [
+    {
+      "id": "opus5-a",
+      "status": "written",
+      "model": "opus5",
+      "label": "Claude Opus 5",
+      "modelId": "claude-opus-5",
+      "vendor": "Anthropic",
+      "effort": "max",
+      "round": "r3",
+      "seconds": 251,
+      "bytes": 13854,
+      "usage": {
+        "input": 8,
+        "output": 19608,
+        "cacheRead": 115767,
+        "cacheWrite": 23376,
+        "normalized": true,
+        "reportedCostUSD": 0.7818835
+      },
+      "costUSD": 0.7818835,
+      "reportedCostUSD": 0.7818835,
+      "price": {
+        "input": 5,
+        "output": 25,
+        "cacheRead": 0.5,
+        "cacheWrite": 10,
+        "priceSource": "verified"
+      },
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "exclusive"
+    },
+    {
+      "id": "fable5-a",
+      "status": "written",
+      "model": "fable5",
+      "label": "Claude Fable 5",
+      "modelId": "claude-fable-5",
+      "vendor": "Anthropic",
+      "effort": "max",
+      "round": "r3",
+      "seconds": 696,
+      "bytes": 14646,
+      "usage": {
+        "input": 2,
+        "output": 49581,
+        "cacheRead": 15476,
+        "cacheWrite": 14734,
+        "normalized": true,
+        "reportedCostUSD": 2.789226
+      },
+      "costUSD": 2.789226,
+      "reportedCostUSD": 2.789226,
+      "price": {
+        "input": 10,
+        "output": 50,
+        "cacheRead": 1,
+        "cacheWrite": 20,
+        "priceSource": "verified"
+      },
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "exclusive"
+    },
+    {
+      "id": "gpt-sol-a",
+      "status": "written",
+      "model": "gpt-sol",
+      "label": "GPT-5.6 Sol",
+      "modelId": "gpt-5.6-sol",
+      "vendor": "OpenAI",
+      "effort": "xhigh",
+      "round": "r3",
+      "seconds": 385,
+      "bytes": 18127,
+      "usage": {
+        "input": 90963,
+        "output": 27383,
+        "cacheRead": 581888,
+        "cacheWrite": 0,
+        "normalized": true,
+        "reportedCostUSD": null
+      },
+      "costUSD": 1.567249,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 5,
+        "output": 30,
+        "cacheRead": 0.5,
+        "priceSource": "assumed"
+      },
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "inclusive"
+    },
+    {
+      "id": "gpt-terra-a",
+      "status": "written",
+      "model": "gpt-terra",
+      "label": "GPT-5.6 Terra",
+      "modelId": "gpt-5.6-terra",
+      "vendor": "OpenAI",
+      "effort": "xhigh",
+      "round": "r3",
+      "seconds": 55,
+      "bytes": 12579,
+      "usage": {
+        "input": 10347,
+        "output": 4088,
+        "cacheRead": 10496,
+        "cacheWrite": 0,
+        "normalized": true,
+        "reportedCostUSD": null
+      },
+      "costUSD": 0.0898115,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 2.5,
+        "output": 15,
+        "cacheRead": 0.25,
+        "priceSource": "assumed"
+      },
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "inclusive"
+    },
+    {
+      "id": "kimi-k3-a",
+      "status": "written",
+      "model": "kimi-k3",
+      "label": "Kimi K3",
+      "modelId": "kimi-k3",
+      "vendor": "Moonshot",
+      "effort": "high",
+      "round": "r3",
+      "seconds": 405,
+      "bytes": 12493,
+      "usage": {
+        "input": 17459,
+        "output": 12278,
+        "cacheRead": 137216,
+        "cacheWrite": 0,
+        "normalized": true,
+        "source": "~/.kimi-code/sessions/wd_geneva_a40cbe5ff746/session_9306b3f9-bc92-46c7-a08d-bba8d22dbf4e/agents/main/wire.jsonl",
+        "matchedBy": "document",
+        "turns": 5
+      },
+      "costUSD": 0.2777118,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 3,
+        "output": 15,
+        "cacheRead": 0.3,
+        "cacheWrite": 3,
+        "priceSource": "assumed"
+      },
+      "generatedBy": "tools/generate.mjs",
+      "usageBasis": "exclusive"
+    }
+  ],
+  "repricedBy": "tools/recost.mjs"
+}

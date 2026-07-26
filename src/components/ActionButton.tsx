@@ -22,13 +22,20 @@ export type ActionButtonProps = {
  * monochrome link — not another one of these. The header logo is single-ink for
  * the same reason (see Logo).
  *
- * Styling lives in .sc-action in app/globals.css: radius var(--sc-radius) = 0,
- * and the hard 6px/9px zero-blur offset shadow with the paired -2px lift, which
- * is the house signature (BRAND-KIT §7). Never a blurred shadow.
+ * Styling lives in .sc-btn in app/globals.css: radius var(--sc-radius) = 0, and
+ * the hard 6px/9px zero-blur offset shadow with the paired lift, which is the
+ * house signature (BRAND-KIT §7). Never a blurred shadow.
+ *
+ * UNUSED as of the r4 port (2026-07-27). The winning variant's only action is the
+ * waitlist submit inside WaitlistForm, so nothing renders this today. It was
+ * pointing at `.sc-action`, a class the port removed, which would have rendered
+ * an unstyled link the first time anyone reached for it — repointed at .sc-btn
+ * rather than left as a trap. Delete it, Prose, and Section together if the next
+ * round confirms they are not coming back.
  */
 export function ActionButton({ href, children }: ActionButtonProps) {
   return (
-    <a className="sc-action" href={href}>
+    <a className="sc-btn" href={href}>
       {children}
     </a>
   );

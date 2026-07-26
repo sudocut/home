@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Why SudoCut exists: remove the first-pass editing chore while creators keep the final decision.">
+  <title>About — SudoCut</title>
+  <link rel="stylesheet" href="/brand/tokens/tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--sc-surface); }
+    body {
+      position: relative;
+      z-index: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--sc-content);
+      background: transparent;
+      font-family: var(--sc-body);
+      line-height: 1.5;
+    }
+    #bg::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      pointer-events: none;
+      background-image:
+        linear-gradient(var(--sc-rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--sc-rule) 1px, transparent 1px);
+      background-size: var(--sc-grid-size) var(--sc-grid-size);
+    }
+    a { color: inherit; }
+    h1, h2, h3, p { margin-top: 0; }
+    main { overflow: clip; }
+    .shell {
+      width: min(calc(100% - 48px), var(--sc-measure));
+      margin-inline: auto;
+    }
+    .site-header {
+      position: relative;
+      z-index: 2;
+      min-height: 77px;
+      border-bottom: 1px solid var(--sc-rule);
+      background: var(--sc-surface);
+    }
+    .header-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      font-family: var(--sc-numbers);
+      font-size: 21px;
+      font-weight: 650;
+      letter-spacing: -0.04em;
+    }
+    .site-nav, .footer-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .site-nav a, .footer-nav a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      padding-inline: 2px;
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      text-underline-offset: 5px;
+      transition: background-color var(--sc-fast) var(--sc-ease);
+    }
+    .site-nav a { text-decoration: none; }
+    .site-nav a[aria-current="page"] { text-decoration: underline; }
+    .site-nav a:hover, .footer-nav a:hover { background: var(--sc-hover); }
+    .brand:focus-visible,
+    .site-nav a:focus-visible,
+    .footer-nav a:focus-visible {
+      outline: 2px solid var(--sc-content);
+      outline-offset: 4px;
+    }
+    .eyebrow {
+      font-family: var(--sc-mono);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .page-intro {
+      min-height: 520px;
+      display: grid;
+      align-items: center;
+      padding-block: 92px;
+    }
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 900px);
+      gap: 42px;
+      align-items: start;
+    }
+    .intro-grid .eyebrow {
+      margin: 13px 0 0;
+      color: var(--sc-content-muted);
+    }
+    h1 {
+      max-width: 900px;
+      margin-bottom: 22px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(56px, 6.5vw, 88px);
+      font-weight: 650;
+      letter-spacing: -0.055em;
+      line-height: 0.98;
+    }
+    .intro-copy {
+      max-width: 680px;
+      margin-bottom: 0;
+      color: var(--sc-content-muted);
+      font-size: 20px;
+      line-height: 1.55;
+    }
+    .reason {
+      border-block: 1px solid var(--sc-rule);
+      padding-block: 100px;
+      background: var(--sc-surface-raised);
+    }
+    .reason-grid, .handoff-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+      gap: clamp(54px, 8vw, 110px);
+    }
+    .reason h2, .handoff h2 {
+      margin-bottom: 0;
+      font-family: var(--sc-heavy);
+      font-size: clamp(43px, 4.8vw, 64px);
+      font-weight: 620;
+      letter-spacing: -0.045em;
+      line-height: 1;
+    }
+    .prose {
+      max-width: 660px;
+      font-size: 19px;
+      line-height: 1.65;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+    .proof-band {
+      padding-block: 104px;
+      color: var(--sc-surface-raised);
+      background: var(--sc-content);
+    }
+    .proof-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+      gap: clamp(52px, 9vw, 130px);
+      align-items: center;
+    }
+    .proof-mark {
+      font-family: var(--sc-numbers);
+      font-size: clamp(108px, 16vw, 190px);
+      font-weight: 300;
+      letter-spacing: -0.09em;
+      line-height: 0.78;
+      font-variant-numeric: tabular-nums;
+    }
+    .proof-band .eyebrow { margin-bottom: 22px; }
+    .proof-band h2 {
+      max-width: 660px;
+      margin-bottom: 20px;
+      font-family: var(--sc-heavy);
+      font-size: clamp(45px, 5.2vw, 70px);
+      font-weight: 620;
+      letter-spacing: -0.045em;
+      line-height: 1;
+    }
+    .proof-band p:last-child {
+      max-width: 610px;
+      margin-bottom: 0;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .handoff {
+      border-bottom: 1px solid var(--sc-rule);
+      padding-block: 100px;
+      background: var(--sc-surface);
+    }
+    .formats {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--sc-content);
+    }
+    .format {
+      min-height: 150px;
+      display: flex;
+      align-items: flex-end;
+      padding: 24px;
+      font-family: var(--sc-numbers);
+      font-size: clamp(30px, 4vw, 46px);
+      font-weight: 500;
+      letter-spacing: -0.035em;
+    }
+    .format + .format { border-left: 1px solid var(--sc-content); }
+    .site-footer {
+      border-top: 1px solid var(--sc-rule);
+      padding-block: 30px;
+      background: var(--sc-surface);
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .footer-line {
+      margin: 0;
+      font-size: 14px;
+    }
+    .footer-line strong { font-family: var(--sc-numbers); }
+    .footer-nav a { font-size: 10px; }
+    @media (max-width: 820px) {
+      .shell { width: min(calc(100% - 32px), var(--sc-measure)); }
+      .site-header, .header-inner { min-height: 69px; }
+      .site-nav { gap: 14px; }
+      .page-intro {
+        min-height: auto;
+        padding-block: 80px;
+      }
+      .intro-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      .intro-grid .eyebrow { margin-top: 0; }
+      .reason, .proof-band, .handoff { padding-block: 80px; }
+      .reason-grid, .handoff-grid, .proof-grid {
+        grid-template-columns: 1fr;
+        gap: 42px;
+      }
+      .proof-mark { font-size: 130px; }
+    }
+    @media (max-width: 560px) {
+      .shell { width: min(calc(100% - 24px), var(--sc-measure)); }
+      .brand { font-size: 18px; }
+      .site-nav { gap: 9px; }
+      .site-nav a {
+        min-height: 44px;
+        font-size: 9px;
+        letter-spacing: 0.03em;
+      }
+      .page-intro { padding-block: 66px; }
+      h1 { font-size: 48px; }
+      .intro-copy, .prose { font-size: 17px; }
+      .reason, .proof-band, .handoff { padding-block: 66px; }
+      .reason h2, .handoff h2, .proof-band h2 { font-size: 40px; }
+      .proof-mark { font-size: 104px; }
+      .formats { grid-template-columns: 1fr; }
+      .format { min-height: 110px; }
+      .format + .format {
+        border-top: 1px solid var(--sc-content);
+        border-left: 0;
+      }
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .footer-nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="bg" style="position:fixed;inset:0;z-index:-1"></div>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html">SudoCut</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="about.html" aria-current="page">About</a>
+        <a href="team.html">Team</a>
+        <a href="pricing.html">Pricing</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-intro" aria-labelledby="about-title">
+      <div class="shell intro-grid">
+        <p class="eyebrow">Why we exist</p>
+        <div>
+          <h1 id="about-title">The first <span class="number">80%</span> is a chore. The last <span class="number">20%</span> is the edit.</h1>
+          <p class="intro-copy">Long-form creators repeat the same low-value cuts by hand. Creativity starts after that work is gone.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reason" aria-labelledby="reason-title">
+      <div class="shell reason-grid">
+        <h2 id="reason-title">The chore is real.</h2>
+        <div class="prose">
+          <p>Dead air. Fillers. Fumbles. Silences. Tangents. NG takes. Every long spoken-video edit starts with the same pass.</p>
+          <p>SudoCut removes that pass for review. The story, timing, emphasis, and final decision stay with the creator.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof-band" aria-labelledby="about-proof-title">
+      <div class="shell proof-grid">
+        <div class="proof-mark" aria-hidden="true">A/B</div>
+        <div>
+          <p class="eyebrow">The evidence</p>
+          <h2 id="about-proof-title">Viewers couldn't tell the difference.</h2>
+          <p>We shipped a hand-edited cut and an AI-edited cut side by side. That result is why SudoCut is a product, not a pitch.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="handoff" aria-labelledby="handoff-title">
+      <div class="shell handoff-grid">
+        <div>
+          <p class="eyebrow">The handoff</p>
+          <h2 id="handoff-title">Finish in your own tools.</h2>
+        </div>
+        <div class="prose">
+          <p>SudoCut exports editor-ready FCPXML and SRT. The proposed cut moves into the tools you already use.</p>
+          <p>AI proposes. Humans decide.</p>
+          <div class="formats" aria-label="Export formats">
+            <div class="format">FCPXML</div>
+            <div class="format">SRT</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <p class="footer-line"><strong>SudoCut.</strong> Less footage. More story.</p>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html" aria-current="page">About</a>
+        <a href="team.html">Team</a>
+        <a href="pricing.html">Pricing</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+    import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+    import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+    import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+    import { emptyPixel } from '/design/vendor/paper-shaders/empty-pixel.js';
+
+    // Constitution D6. Settings are MEASURED (tools/shader-probe.mjs), not chosen:
+    // grain 3.67 against a flat sheet, mean drift +0.34. Do not tune by eye — that
+    // is how the previous settings shipped invisible. Re-run the probe instead.
+    const css = getComputedStyle(document.documentElement);
+    const token = (n) => css.getPropertyValue(n).trim();
+
+    // u_image is required even with nothing to show. ShaderMount only sets
+    // u_imageAspectRatio when u_image is a loaded HTMLImageElement
+    // (shader-mount.js:102,:250), and patternUV — which the fibre, crumples and
+    // folds are all built on — is multiplied by it. Omit it and the aspect stays 0,
+    // patternUV.x collapses, and the fibre renders NOTHING at any setting.
+    const sheet = new Image();
+    sheet.src = emptyPixel;
+    await sheet.decode();
+
+    const u = {
+      u_colorFront: col(token('--sc-paper-fibre')),
+      u_colorBack:  col(token('--sc-paper-lit')),
+      u_contrast: 0.55, u_roughness: 0.30, u_fiber: 0.70, u_fiberSize: 0.40,
+      u_crumples: 0.10, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+      u_drops: 0, u_seed: 3, u_fade: 0,
+      u_image: sheet,
+      u_noiseTexture: getShaderNoiseTexture(),
+      u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+      u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+    };
+    await u.u_noiseTexture.decode();
+    // speed 0, frame 0 — static. The brand does not animate its background.
+    new ShaderMount(document.getElementById('bg'),
+                    paperTextureFragmentShader, u, undefined, 0, 0);
+  </script>
+</body>
+</html>

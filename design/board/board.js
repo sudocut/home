@@ -19,6 +19,11 @@
  * is already shuffled deterministically upstream, so screen position carries no
  * signal about which model produced what.
  *
+ * COST IS ALSO BLIND. tools/generate.mjs records each session's tokens and price
+ * in the round's usage.json, but the price tiers differ per vendor — showing
+ * "$0.41" next to a variant would identify the model as surely as its name. So
+ * usage is loaded up front and rendered only after the blind is lifted.
+ *
  * Zero dependencies. Must be served over HTTP (tools/serve.sh) because it
  * fetches the manifest and iframes the variants.
  */
@@ -32,6 +37,7 @@
 
   var state = { round: round, blind: true, judge: "", ratings: {} };
   var manifest = null;
+  var usage = {};      // variant id -> { costUSD, usage, seconds, label, effort }
   var LS_KEY = "";
 
   var viewer = { open: false, index: 0, crit: 0 };
@@ -111,7 +117,13 @@
 
     var frame = document.createElement("iframe");
     frame.setAttribute("loading", "lazy");
-    frame.setAttribute("sandbox", "allow-same-origin");
+    // allow-scripts is REQUIRED, not a loosening. Variants mount the paper
+    // texture from a <script type="module">, and a sandbox without allow-scripts
+    // blocks it silently — the page still styles correctly, so the board looked
+    // fine while showing every variant with its shader missing. A round was
+    // ranked on that. If a variant's behaviour ever needs to be judged, the board
+    // has to run it. These are our own files, served from our own tree.
+    frame.setAttribute("sandbox", "allow-same-origin allow-scripts");
     frame.src = "../rounds/" + manifest.round + "/" + v.path;
     frame.addEventListener("load", function () { fb.remove(); });
     prev.appendChild(frame);
@@ -122,7 +134,8 @@
     head.className = "card-head";
     head.innerHTML =
       '<div><div class="card-label">' + esc(v.label) + '</div>' +
-      '<div class="card-model" data-model>' + (state.blind ? "가려짐" : esc(v.model)) + "</div></div>" +
+      '<div class="card-model" data-model>' + (state.blind ? "가려짐" : esc(v.model)) + "</div>" +
+      '<div class="card-cost micro" data-cost></div></div>' +
       '<div class="card-mean" data-mean>—</div>';
     card.appendChild(head);
 
@@ -214,9 +227,14 @@
     if (!rows.length) { sec.hidden = true; return; }
     sec.hidden = false;
     $("#standingsBody").innerHTML = rows.map(function (x, i) {
+      var m = usage[x.v.id];
+      var costCell = state.blind
+        ? '<span class="micro">가려짐</span>'
+        : (m && typeof m.costUSD === "number" ? "$" + m.costUSD.toFixed(4) : "—");
       return "<tr><td>" + (i + 1) + "</td><td>" + esc(x.v.label) + "</td><td>" +
         (state.blind ? '<span class="micro">가려짐</span>' : esc(x.v.model)) + "</td><td>" +
-        x.mean.toFixed(1) + "</td><td>" + esc(ratingOf(x.v.id).note || "") + "</td></tr>";
+        x.mean.toFixed(1) + "</td><td>" + costCell + "</td><td>" +
+        esc(ratingOf(x.v.id).note || "") + "</td></tr>";
     }).join("");
   }
 
@@ -228,6 +246,35 @@
     if (viewer.open) paintViewer();
   }
 
+  /**
+   * Format a session's cost + tokens. Only ever called after the blind lifts.
+   *
+   * Input is shown split — fresh vs cache-read — because collapsing them is how
+   * a $1.57 session was displayed as $7.10 for a week. One agentic CLI resends
+   * its whole conversation every turn, so its input count runs an order of
+   * magnitude above a single-shot CLI's while costing a tenth as much per
+   * token. A single "1.25M in" figure makes those two look like the same
+   * quantity. They are not, and the split says so on the card.
+   */
+  function costLine(id) {
+    var m = usage[id];
+    if (!m) return "";
+    var bits = [];
+    if (typeof m.costUSD === "number") bits.push("$" + m.costUSD.toFixed(4));
+    else bits.push("cost unknown");
+    var u = m.usage;
+    if (u) {
+      bits.push((u.input || 0).toLocaleString() + " in");
+      if (u.cacheRead) bits.push(u.cacheRead.toLocaleString() + " cache-read");
+      if (u.cacheWrite) bits.push(u.cacheWrite.toLocaleString() + " cache-write");
+      bits.push((u.output || 0).toLocaleString() + " out");
+    }
+    if (m.seconds) bits.push(m.seconds + "s");
+    if (m.effort) bits.push("effort " + m.effort);
+    if (m.price && m.price.priceSource === "assumed") bits.push("list rate, unreconciled");
+    return bits.join(" · ");
+  }
+
   function setBlind(on) {
     state.blind = on;
     save();
@@ -236,7 +283,14 @@
     document.querySelectorAll(".card").forEach(function (card) {
       var v = manifest.variants[indexOf(card.dataset.id)];
       card.querySelector("[data-model]").textContent = on ? "가려짐" : v.model;
+      // cost identifies the vendor as surely as the name — reveal together
+      card.querySelector("[data-cost]").textContent = on ? "" : costLine(v.id);
     });
+    var tot = $("#totalCost");
+    if (tot) {
+      var sum = Object.keys(usage).reduce(function (s, k) { return s + (usage[k].costUSD || 0); }, 0);
+      tot.textContent = on || !sum ? "" : "라운드 합계 $" + sum.toFixed(4);
+    }
     paintStandings();
     if (viewer.open) paintViewer();
   }
@@ -307,6 +361,7 @@
       criteria: manifest.criteria,
       variants: rows.map(function (x, i) {
         var r = ratingOf(x.v.id);
+        var m = usage[x.v.id] || {};
         return {
           id: x.v.id,
           model: x.v.model,
@@ -315,22 +370,55 @@
           scores: manifest.criteria.reduce(function (o, c) { o[c] = r.scores[c]; return o; }, {}),
           mean: Number(x.mean.toFixed(2)),
           note: String(r.note || "").trim(),
+          costUSD: typeof m.costUSD === "number" ? Number(m.costUSD.toFixed(6)) : null,
+          tokens: m.usage || null,
+          price: m.price || null,
+          priceSource: (m.price && m.price.priceSource) || null,
+          seconds: m.seconds || null,
+          effort: m.effort || null,
         };
       }),
     };
+    data.totalCostUSD = Number(
+      data.variants.reduce(function (s, v) { return s + (v.costUSD || 0); }, 0).toFixed(6),
+    );
 
     var table = rows.map(function (x, i) {
       var r = ratingOf(x.v.id);
+      var m = usage[x.v.id] || {};
+      var u = m.usage || {};
+      var c = typeof m.costUSD === "number" ? "$" + m.costUSD.toFixed(4) : "—";
+      var tok = m.usage
+        ? (u.input || 0).toLocaleString() + " + " + (u.cacheRead || 0).toLocaleString() +
+          "c / " + (u.output || 0).toLocaleString()
+        : "—";
       return "| " + (i + 1) + " | " + x.v.label + " | " + x.v.model + " | " + x.mean.toFixed(1) +
+        " | " + c + " | " + tok +
         " | " + String(r.note || "").replace(/\|/g, "\\|").replace(/\n/g, " ") + " |";
     }).join("\n");
 
+    var assumed = rows.filter(function (x) {
+      var m = usage[x.v.id] || {};
+      return m.price && m.price.priceSource === "assumed";
+    }).map(function (x) { return x.v.model; });
+
     return "# " + manifest.round + " — ranking\n\n" +
       "Produced by the board (`bash tools/serve.sh`). Validated by `node tools/verify-round.mjs`.\n\n" +
-      "**Judged blind** — model identity was hidden until the ranking was submitted.\n\n" +
+      "**Judged blind** — model identity AND session cost were hidden until the ranking\n" +
+      "was submitted. Cost identifies the vendor as surely as the name does.\n\n" +
       "## Result\n\n" +
-      "| Rank | Variant | Model | Mean | Note |\n|---|---|---|---|---|\n" + table + "\n\n" +
-      "## Data\n\n```json\n" + JSON.stringify(data, null, 2) + "\n```\n";
+      "| Rank | Variant | Model | Mean | Cost | Tokens (fresh + cached in / out) | Note |\n" +
+      "|---|---|---|---|---|---|---|\n" + table + "\n\n" +
+      "Round total: **$" + data.totalCostUSD.toFixed(4) + "** across " + rows.length +
+      " session(s). One design = one session, priced at list API rates from `design/models.json`.\n\n" +
+      "Fresh and cached input are listed separately because they differ by 10x in\n" +
+      "price. An agentic CLI resends its conversation every turn, so a large input\n" +
+      "count is mostly cache and costs far less than the same number of fresh tokens.\n" +
+      (assumed.length
+        ? "\nRates for " + assumed.join(", ") + " are list prices applied by us and not\n" +
+          "reconciled against a vendor-reported cost — only Anthropic's CLI reports one.\n"
+        : "") +
+      "\n## Data\n\n```json\n" + JSON.stringify(data, null, 2) + "\n```\n";
   }
 
   function exportRanking() {
@@ -422,10 +510,23 @@
     return;
   }
 
-  fetch("../rounds/" + round + "/manifest.json", { cache: "no-store" })
-    .then(function (r) {
+  // usage.json is optional — a hand-assembled round has no cost data, and the
+  // board must still work. Load it before boot so nothing renders un-blinded.
+  Promise.all([
+    fetch("../rounds/" + round + "/manifest.json", { cache: "no-store" }).then(function (r) {
       if (!r.ok) throw new Error(String(r.status));
       return r.json();
+    }),
+    fetch("../rounds/" + round + "/usage.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }),
+  ])
+    .then(function (both) {
+      var u = both[1];
+      if (u && Array.isArray(u.variants)) {
+        u.variants.forEach(function (v) { usage[v.id] = v; });
+      }
+      return both[0];
     })
     .then(boot)
     .catch(function () {

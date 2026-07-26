@@ -1,0 +1,34 @@
+{
+  "id": "gpt-sol-a",
+  "model": "gpt-sol",
+  "label": "GPT-5.6 Sol",
+  "modelId": "gpt-5.6-sol",
+  "vendor": "OpenAI",
+  "effort": "xhigh",
+  "round": "r4",
+  "seconds": 321,
+  "bytes": 56669,
+  "pages": [
+    "index.html",
+    "about.html",
+    "team.html",
+    "pricing.html"
+  ],
+  "usage": {
+    "input": 76393,
+    "output": 24495,
+    "cacheRead": 454400,
+    "cacheWrite": 0,
+    "normalized": true,
+    "reportedCostUSD": null
+  },
+  "costUSD": 1.344015,
+  "reportedCostUSD": null,
+  "price": {
+    "input": 5,
+    "output": 30,
+    "cacheRead": 0.5,
+    "priceSource": "assumed"
+  },
+  "generatedBy": "tools/generate.mjs"
+}

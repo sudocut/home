@@ -25,9 +25,18 @@ an existing token — never hand-pick a hex.
 - **Shadows are hard offset, zero blur.** `6px 6px 0`, `9px 9px 0` on hover.
   A blur radius is a rejection.
 - **Three typefaces:** Hahmlet (display) · SUIT (UI/Korean) · Jost (numerals).
-  **Never IBM Plex** — it cannot set Hangul, and Korean is the default locale.
-- **Korean-first.** `ko` is the default locale; copy lives in `messages/`, never
-  hardcoded in components.
+  **Never IBM Plex** — it cannot set Hangul, and Korean is a shipped locale.
+- **English first, Korean second** (constitution D5, founder 2026-07-26 — this
+  REVERSES soul.md's "Korean-first is our home"; the gap is tracked in
+  `docs/open-questions.md`). `en` is the default locale; copy lives in
+  `messages/`, never hardcoded in components. Korean is written as Korean.
+- **Paper texture shader: measured settings only** (constitution D6, rewritten
+  2026-07-27). `paperTexture` via `--sc-paper-fibre` / `--sc-paper-lit`, contrast
+  .55 / roughness .30 / fibre .70 / fibreSize .40, static, **and a loaded
+  `u_image`** — without one `u_imageAspectRatio` stays 0 and the fibre renders
+  nothing at any setting. Never tune by eye; run `node tools/shader-probe.mjs` and
+  update D6's table with the numbers. Every other shader, animation, and
+  `halftone-cmyk` stay banned.
 - Gradients only for the 76px hairline grid.
 - `prefers-reduced-motion` must kill all animation.
 
@@ -56,7 +65,13 @@ constitution question first. If it is, it needs a round or a founder decision.
 ```bash
 pnpm lint && pnpm typecheck && pnpm build
 node tools/verify-round.mjs          # if you touched design/
-grep -rnE '#[0-9a-fA-F]{6}|font-family:' app/ src/    # must be empty
+# Literal colours or typeface names — both must be empty. `font-family: var(--sc-*)`
+# is compliant, so it is filtered out; the old one-liner flagged four correct lines,
+# which meant "must be empty" was never true and the check was never really run.
+grep -rnE '#[0-9a-fA-F]{6}' app/ src/
+grep -rn 'font-family:' app/ src/ | grep -v 'var(--sc-'
+
+node tools/shader-probe.mjs         # if you touched D6's shader settings
 ```
 
 ## Honesty

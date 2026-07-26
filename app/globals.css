@@ -1,11 +1,10 @@
 /* =========================================================================
- * SudoCut company site — base layer only.
+ * SudoCut company site.
  *
- * THIS FILE IS NOT THE DESIGN. The final LAYOUT of this site comes from the
- * design rounds under design/ — not from here. What lives in this file is the
- * minimum needed to render a structurally correct skeleton: base element
- * styles, the 76px hairline grid, focus, and five component classes. When a
- * round is selected, its layout supersedes everything below.
+ * THIS IS THE DESIGN. Round 4 was ranked blind and the founder selected
+ * kimi-k3-a on 2026-07-27 (design/rounds/r4/VERDICT.md). What follows is that
+ * variant ported — it is not a skeleton awaiting a round, and a change here is
+ * a change to a ranked decision. To alter the layout, run a round.
  *
  * Authority order — a lower layer never overrides a higher one:
  *   1. meta/strategy/soul.md                      the constitution
@@ -20,8 +19,8 @@
  *     --sc-content-muted, --sc-rule, --sc-action, --sc-action-content,
  *     --sc-shadow-action, --sc-lift), never the raw --sc-ink / --sc-paper.
  *   - Cobalt (--sc-action) appears AT MOST ONCE per page, on the single
- *     required action. Two cobalt objects in one view is a bug. .sc-action is
- *     therefore the only rule in this file that touches --sc-action.
+ *     required action. On every page that is the waitlist submit button, and
+ *     .sc-btn is the only rule in this file that touches --sc-action.
  *   - radius 0, hard offset zero-blur shadows only, and the single permitted
  *     gradient is the 76px hairline grid on body::before.
  * ========================================================================= */
@@ -51,16 +50,29 @@ html {
 body {
   min-height: 100svh;
   margin: 0;
-  background: var(--sc-surface);
   color: var(--sc-content);
   font-family: var(--sc-body);
   font-weight: 450; /* BRAND-KIT §5 — base body weight, deliberately not 400 */
+  line-height: 1.55;
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
 }
 
-/* BRAND-KIT §9 — 양피지 warmth is warm paper plus a 76px hairline grid. This is
-   the ONLY gradient permitted anywhere in the system. Never decorative. */
+/* The paper texture host — constitution D6. Sits BELOW the grid so the hairlines
+   read as printed on the sheet rather than floating over it. Renders flat
+   --sc-surface until the shader mounts, and stays flat forever if WebGL is
+   unavailable; that is the r3 page, which shipped, so it is a valid rendering
+   rather than a broken one. */
+.sc-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: var(--sc-surface);
+  pointer-events: none;
+}
+
+/* BRAND-KIT §9 — 양피지 warmth is warm paper, the D6 texture, and a 76px hairline
+   grid. This is the ONLY gradient permitted anywhere in the system. */
 body::before {
   content: "";
   position: fixed;
@@ -78,9 +90,8 @@ h2,
 h3 {
   margin: 0;
   font-family: var(--sc-heavy);
-  font-weight: 750;
-  letter-spacing: -0.01em;
-  line-height: 1.08;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
   text-wrap: balance;
 }
 
@@ -114,15 +125,556 @@ textarea {
   outline-offset: 3px;
 }
 
-/* ── Component classes. Five, matching src/components/. ─────────────────── */
+/* ── Shell ──────────────────────────────────────────────────────────────── */
 
-/* Micro label — BRAND-KIT §5: mono, 0.61rem, 0.1em tracking, uppercase. */
+.sc-wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 calc(40px * var(--sc-density));
+}
+
+.sc-head {
+  border-bottom: 1px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+}
+
+.sc-head .sc-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 18px;
+}
+
+.sc-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sc-heavy);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.sc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.sc-nav a {
+  font-family: var(--sc-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--sc-fast) var(--sc-ease);
+}
+
+.sc-nav a:hover,
+.sc-nav a[aria-current="page"] {
+  border-bottom-color: var(--sc-content);
+}
+
+.sc-foot {
+  border-top: 1px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+}
+
+.sc-foot .sc-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-block: 22px;
+}
+
+.sc-foot-tag {
+  font-family: var(--sc-mono);
+  font-size: 13px;
+}
+
+.sc-foot-fine {
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  color: var(--sc-content-muted);
+}
+
+/* ── Hero ───────────────────────────────────────────────────────────────── */
+
+/* Deliberately NOT 100svh. The winning variant lets the page start scrolling
+   immediately so the 80/20 band arrives sooner; the two variants that pinned a
+   full-height hero both placed below it. See r4 VERDICT.md. */
+.sc-hero {
+  display: grid;
+  grid-template-columns: 1.12fr 0.88fr;
+  align-items: start;
+  gap: 64px;
+  padding-top: 88px;
+  padding-bottom: 80px;
+}
+
+.sc-kicker {
+  font-family: var(--sc-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.sc-hero h1 {
+  font-weight: 600;
+  font-size: clamp(38px, 4.6vw, 58px);
+  line-height: 1.08;
+  margin: 20px 0 24px;
+}
+
+.sc-lede {
+  font-size: 17px;
+  max-width: var(--sc-measure);
+}
+
+/* ── Waitlist — the one cobalt object on every page ─────────────────────── */
+
+.sc-wait {
+  margin-top: 44px;
+  border-top: 1px solid var(--sc-content);
+  padding-top: 22px;
+  max-width: 520px;
+}
+
+.sc-wait label {
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sc-wait-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.sc-wait input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--sc-content);
+  border-radius: var(--sc-radius);
+  background: var(--sc-surface-raised);
+  color: var(--sc-content);
+  font-family: var(--sc-body);
+  font-size: 15px;
+  padding: 12px 14px;
+}
+
+.sc-wait-note {
+  margin-top: 14px;
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  color: var(--sc-content-muted);
+}
+
+.sc-wait-err {
+  margin-top: 10px;
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  color: var(--sc-status-error);
+}
+
+.sc-wait-ok {
+  margin-top: 12px;
+  font-family: var(--sc-mono);
+  font-size: 13px;
+}
+
+/* THE one cobalt object. Nothing else in this file may reference --sc-action. */
+.sc-btn {
+  appearance: none;
+  border: 1px solid var(--sc-content);
+  border-radius: var(--sc-radius);
+  background: var(--sc-action);
+  color: var(--sc-action-content);
+  font-family: var(--sc-mono);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  padding: 12px 20px;
+  min-height: 44px; /* BRAND-KIT §13 — touch target */
+  cursor: pointer;
+  box-shadow: var(--sc-shadow-action);
+  transition:
+    box-shadow var(--sc-fast) var(--sc-ease),
+    transform var(--sc-fast) var(--sc-ease);
+}
+
+.sc-btn:hover {
+  box-shadow: var(--sc-shadow-action-hover);
+  transform: var(--sc-lift);
+}
+
+/* ── Proof card ─────────────────────────────────────────────────────────── */
+
+/* Bordered and light, not an inverted ink block. On a paper sheet a filled ink
+   panel reads as a foreign object; this reads as printed on the same page. */
+.sc-proof {
+  border: 2px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+  padding: 44px 40px 40px;
+}
+
+.sc-proof-ab {
+  font-family: var(--sc-heavy);
+  font-weight: 700;
+  font-size: clamp(84px, 9vw, 128px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.sc-proof-claim {
+  font-family: var(--sc-heavy);
+  font-weight: 600;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.25;
+  margin-top: 26px;
+}
+
+.sc-proof-detail {
+  margin-top: 16px;
+  font-size: 15px;
+  color: var(--sc-content-muted);
+}
+
+.sc-proof-tagline {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sc-content);
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sc-content-muted);
+}
+
+/* ── 80/20 split ────────────────────────────────────────────────────────── */
+
+.sc-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 2px solid var(--sc-content);
+  border-bottom: 2px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+}
+
+.sc-split-cell {
+  padding: 72px 48px 64px;
+}
+
+.sc-split-cell + .sc-split-cell {
+  border-left: 1px solid var(--sc-content);
+}
+
+.sc-num {
+  font-family: var(--sc-numbers);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(96px, 12vw, 164px);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.sc-split-label {
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-top: 28px;
+}
+
+.sc-split-copy {
+  margin-top: 12px;
+  font-size: 15px;
+  max-width: 34ch;
+}
+
+.sc-example {
+  padding: 56px 0 72px;
+  text-align: center;
+  font-family: var(--sc-mono);
+  font-size: 13px;
+  color: var(--sc-content-muted);
+}
+
+/* The override for this lives with the base .sc-numeric rule further down, so
+   the compound selector never precedes the class it overrides. */
+
+/* ── Interior pages ─────────────────────────────────────────────────────── */
+
+.sc-page-head {
+  padding-top: 80px;
+  padding-bottom: 64px;
+}
+
+/* Interior pages set the kicker tighter and wider-tracked than the home hero,
+   and step the headline down a size. Both are the variant's own distinction
+   between "the pitch" and "a page about something". */
+.sc-page-head .sc-kicker {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+}
+
+.sc-page-head h1 {
+  font-weight: 600;
+  font-size: clamp(34px, 4.2vw, 52px);
+  line-height: 1.1;
+  margin: 18px 0 22px;
+  max-width: 18ch;
+}
+
+/* Pricing's headline is the one that runs full width — it is a two-sentence
+   title and 18ch breaks it badly. */
+.sc-page-head--wide h1 {
+  max-width: none;
+}
+
+/* Numbered list — /about's beliefs and /team's rules share one structure. */
+.sc-numbered {
+  border-top: 2px solid var(--sc-content);
+}
+
+.sc-numbered-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 32px;
+  padding: 44px 0;
+  border-bottom: 1px solid var(--sc-content);
+}
+
+.sc-numbered-no {
+  font-family: var(--sc-numbers);
+  font-variant-numeric: tabular-nums;
+  font-size: 44px;
+  line-height: 1;
+}
+
+.sc-numbered-item h2 {
+  font-weight: 600;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.sc-numbered-item p {
+  font-size: 15px;
+  max-width: var(--sc-measure);
+}
+
+.sc-more {
+  padding-bottom: 88px;
+}
+
+.sc-more a {
+  font-family: var(--sc-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--sc-content);
+  text-decoration: none;
+  transition: border-color var(--sc-fast) var(--sc-ease);
+}
+
+/* /about gives the proof card more room and drops the muted detail colour,
+   because here the detail IS the argument rather than a caption. */
+.sc-proof--full {
+  margin: 72px 0;
+  padding: 52px 48px 44px;
+}
+
+.sc-proof--full .sc-proof-detail {
+  color: var(--sc-content);
+  max-width: var(--sc-measure);
+}
+
+/* Roster placeholder. Dashed on purpose — it reads as a reserved space rather
+   than a designed panel, because the names are a consent decision, not a copy
+   task. See design/rounds/r4/VERDICT.md. */
+.sc-roster {
+  margin: 72px 0 88px;
+  border: 1px dashed var(--sc-content);
+  background: var(--sc-surface-raised);
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.sc-roster-slot {
+  font-family: var(--sc-mono);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+}
+
+.sc-roster-why {
+  font-size: 14px;
+  color: var(--sc-content-muted);
+  max-width: 52ch;
+}
+
+/* Pricing blocks — "what exists today" and "what is only a target", kept in
+   two visibly separate containers so neither can be mistaken for the other. */
+.sc-block {
+  border: 2px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+  margin-bottom: 64px;
+}
+
+.sc-block-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--sc-content);
+  padding: 22px 32px;
+}
+
+.sc-block-head h2 {
+  font-family: var(--sc-mono);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  font-weight: 400;
+}
+
+.sc-when {
+  font-family: var(--sc-mono);
+  font-size: 13px;
+  color: var(--sc-content-muted);
+}
+
+.sc-block-body {
+  padding: 32px;
+}
+
+.sc-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sc-rows li {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--sc-content);
+  font-size: 15px;
+}
+
+.sc-rows li:last-child {
+  border-bottom: 0;
+}
+
+.sc-rows .sc-k {
+  font-family: var(--sc-mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  padding-top: 2px;
+}
+
+.sc-packs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.sc-packs span {
+  border: 1px solid var(--sc-content);
+  padding: 8px 14px;
+  font-family: var(--sc-numbers);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  margin: -1px 0 0 -1px;
+}
+
+.sc-tablewrap {
+  overflow-x: auto;
+}
+
+.sc-tablewrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  min-width: 640px;
+}
+
+.sc-tablewrap th,
+.sc-tablewrap td {
+  text-align: left;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--sc-content);
+  vertical-align: top;
+}
+
+.sc-tablewrap th {
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  font-weight: 400;
+  color: var(--sc-content-muted);
+}
+
+.sc-tablewrap tr:last-child td {
+  border-bottom: 0;
+}
+
+.sc-tablewrap td.sc-price,
+.sc-tablewrap td.sc-included {
+  font-family: var(--sc-numbers);
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-tablewrap td.sc-price {
+  white-space: nowrap;
+}
+
+.sc-sub {
+  display: block;
+  font-family: var(--sc-body);
+  font-size: 13px;
+  color: var(--sc-content-muted);
+  margin-top: 2px;
+}
+
+.sc-caveat {
+  margin-top: 20px;
+  font-size: 14px;
+  max-width: var(--sc-measure);
+}
+
+.sc-caveat--mono {
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  color: var(--sc-content-muted);
+  letter-spacing: 0.06em;
+}
+
+.sc-foot-note {
+  padding-bottom: 88px;
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  color: var(--sc-content-muted);
+}
+
+/* ── Utilities ──────────────────────────────────────────────────────────── */
+
+/* Micro label — BRAND-KIT §5: mono, 0.1em tracking, uppercase. */
 .sc-label {
   display: block;
   font-family: var(--sc-mono);
-  font-size: 0.61rem;
-  font-weight: 450;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--sc-content-muted);
 }
@@ -134,35 +686,17 @@ textarea {
   letter-spacing: -0.02em;
 }
 
-/* THE one cobalt object. Nothing else in this file may reference --sc-action. */
-.sc-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 52px; /* BRAND-KIT §13 — touch target ≥ 44px */
-  padding-inline: calc(28px * var(--sc-density));
-  border: 1px solid var(--sc-action-shadow);
-  border-radius: var(--sc-radius);
-  background: var(--sc-action);
-  color: var(--sc-action-content);
-  font-weight: 800;
-  text-decoration: none;
-  box-shadow: var(--sc-shadow-action);
-  transition:
-    box-shadow var(--sc-fast) var(--sc-ease),
-    transform var(--sc-fast) var(--sc-ease);
-}
-
-.sc-action:hover {
-  box-shadow: var(--sc-shadow-action-hover);
-  transform: var(--sc-lift);
+/* The timecode in the example line sits at reading size and full ink, so the
+   figure is the one thing not muted in an otherwise muted sentence. */
+.sc-example .sc-numeric {
+  color: var(--sc-content);
+  font-size: 15px;
 }
 
 /* Reading column. BRAND-KIT §12 — say it, then stop; the measure enforces it. */
 .sc-prose {
-  max-width: 62ch;
+  max-width: var(--sc-measure);
   color: var(--sc-content);
-  line-height: 1.62;
 }
 
 .sc-prose > * + * {
@@ -173,6 +707,10 @@ textarea {
    Jost face resolve. Sizing is driven by the wrapper's height. */
 .sc-logo {
   display: inline-block;
+}
+
+.sc-wordmark .sc-logo {
+  height: 22px;
 }
 
 .sc-logo svg {
@@ -196,4 +734,86 @@ textarea {
 
 .sc-skip:focus {
   left: 0;
+}
+
+@media (max-width: 880px) {
+  .sc-wrap {
+    padding: 0 calc(22px * var(--sc-density));
+  }
+
+  .sc-hero {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+
+  .sc-split {
+    grid-template-columns: 1fr;
+  }
+
+  .sc-split-cell + .sc-split-cell {
+    border-left: 0;
+    border-top: 1px solid var(--sc-content);
+  }
+
+  .sc-split-cell {
+    padding: 56px 28px;
+  }
+
+  .sc-wait-row {
+    flex-direction: column;
+  }
+
+  .sc-nav {
+    gap: 18px;
+  }
+
+  .sc-page-head {
+    padding-top: 56px;
+    padding-bottom: 48px;
+  }
+
+  .sc-numbered-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 36px 0;
+  }
+
+  .sc-proof--full {
+    margin: 56px 0;
+    padding: 36px 26px 32px;
+  }
+
+  .sc-roster {
+    margin: 56px 0 72px;
+  }
+
+  .sc-block-head {
+    padding: 18px 22px;
+  }
+
+  .sc-block-body {
+    padding: 22px;
+  }
+
+  .sc-rows li {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+/* The constitution requires prefers-reduced-motion to kill ALL animation, which
+   is a global override of every author rule by definition — !important is the
+   mechanism, not a shortcut around specificity. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore-start lint/complexity/noImportantStyles: a blanket motion kill
+       must outrank every author rule; that is the point of the media query. */
+    transition: none !important;
+    animation: none !important;
+    /* biome-ignore-end lint/complexity/noImportantStyles: see above */
+  }
 }

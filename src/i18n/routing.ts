@@ -8,8 +8,10 @@ import { DEFAULT_LOCALE, LOCALES } from "./config";
 //
 // localePrefix "always" means /ko is never elided. There is no middleware.ts in
 // this repo, so the bare "/" is redirected to "/ko" by next.config.ts instead.
-// Trade-off: no Accept-Language negotiation. Every visitor lands on Korean and
-// switches explicitly from the nav. That is the correct default for this brand.
+// Trade-off: no Accept-Language negotiation. Every visitor lands on English and
+// switches explicitly from the nav (constitution D5, reversed from Korean-first
+// on 2026-07-26). A Korean visitor therefore sees English until they switch —
+// worth revisiting with a middleware once the language question is settled.
 export const routing = defineRouting({
   locales: LOCALES,
   defaultLocale: DEFAULT_LOCALE,

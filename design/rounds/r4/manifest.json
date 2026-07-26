@@ -1,0 +1,30 @@
+{
+  "round": "r4",
+  "criteria": [
+    "clarity",
+    "hierarchy",
+    "voice",
+    "restraint",
+    "proof"
+  ],
+  "variants": [
+    {
+      "id": "gpt-sol-a",
+      "model": "gpt-sol",
+      "label": "A",
+      "path": "variants/gpt-sol-a/index.html"
+    },
+    {
+      "id": "fable5-a",
+      "model": "fable5",
+      "label": "B",
+      "path": "variants/fable5-a/index.html"
+    },
+    {
+      "id": "kimi-k3-a",
+      "model": "kimi-k3",
+      "label": "C",
+      "path": "variants/kimi-k3-a/index.html"
+    }
+  ]
+}
