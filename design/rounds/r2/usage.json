@@ -1,0 +1,136 @@
+{
+  "round": "r2",
+  "totalCostUSD": 4.202009,
+  "variants": [
+    {
+      "id": "fable5-a",
+      "status": "written",
+      "model": "fable5",
+      "label": "Claude Fable 5",
+      "modelId": "claude-fable-5",
+      "vendor": "Anthropic",
+      "effort": "max",
+      "round": "r2",
+      "seconds": 569,
+      "bytes": 12615,
+      "usage": {
+        "input": 4,
+        "output": 38458,
+        "cacheRead": 45743,
+        "cacheWrite": 48572,
+        "reportedCostUSD": 2.940123
+      },
+      "costUSD": 2.5758330000000003,
+      "reportedCostUSD": 2.940123,
+      "price": {
+        "input": 10,
+        "output": 50,
+        "cacheRead": 1,
+        "cacheWrite": 12.5
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "opus5-a",
+      "status": "written",
+      "model": "opus5",
+      "label": "Claude Opus 5",
+      "modelId": "claude-opus-5",
+      "vendor": "Anthropic",
+      "effort": "max",
+      "round": "r2",
+      "seconds": 369,
+      "bytes": 14057,
+      "usage": {
+        "input": 11,
+        "output": 25810,
+        "cacheRead": 242002,
+        "cacheWrite": 54460,
+        "reportedCostUSD": 1.3109060000000001
+      },
+      "costUSD": 1.106681,
+      "reportedCostUSD": 1.3109060000000001,
+      "price": {
+        "input": 5,
+        "output": 25,
+        "cacheRead": 0.5,
+        "cacheWrite": 6.25
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "gpt-sol-a",
+      "status": "written",
+      "model": "gpt-sol",
+      "label": "GPT-5.6 Sol",
+      "modelId": "gpt-5.6-sol",
+      "vendor": "OpenAI",
+      "effort": "xhigh",
+      "round": "r2",
+      "seconds": 102,
+      "bytes": 8159,
+      "usage": {
+        "input": 23657,
+        "output": 5857,
+        "cacheRead": 23296,
+        "cacheWrite": 0,
+        "reportedCostUSD": null
+      },
+      "costUSD": 0.41047500000000003,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 5,
+        "output": 30
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "gpt-terra-a",
+      "status": "written",
+      "model": "gpt-terra",
+      "label": "GPT-5.6 Terra",
+      "modelId": "gpt-5.6-terra",
+      "vendor": "OpenAI",
+      "effort": "xhigh",
+      "round": "r2",
+      "seconds": 30,
+      "bytes": 5038,
+      "usage": {
+        "input": 20734,
+        "output": 2063,
+        "cacheRead": 10496,
+        "cacheWrite": 0,
+        "reportedCostUSD": null
+      },
+      "costUSD": 0.10902,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 2.5,
+        "output": 15
+      },
+      "generatedBy": "tools/generate.mjs"
+    },
+    {
+      "id": "kimi-k3-a",
+      "status": "written",
+      "model": "kimi-k3",
+      "label": "Kimi K3",
+      "modelId": "kimi-k3",
+      "vendor": "Moonshot",
+      "effort": "high",
+      "round": "r2",
+      "seconds": 231,
+      "bytes": 5542,
+      "usage": null,
+      "costUSD": null,
+      "reportedCostUSD": null,
+      "price": {
+        "input": 3,
+        "output": 15,
+        "cacheRead": 0.3
+      },
+      "generatedBy": "tools/generate.mjs",
+      "note": "Output was repaired post-generation: the CLI appended a session-resume hint and an escaped replay of the exchange after </html>, which the extractor originally swallowed. Document sliced at the first </html>. Token usage is unavailable — kimi's stream-json reports none."
+    }
+  ]
+}

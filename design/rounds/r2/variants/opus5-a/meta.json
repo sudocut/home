@@ -1,0 +1,27 @@
+{
+  "id": "opus5-a",
+  "model": "opus5",
+  "label": "Claude Opus 5",
+  "modelId": "claude-opus-5",
+  "vendor": "Anthropic",
+  "effort": "max",
+  "round": "r2",
+  "seconds": 369,
+  "bytes": 14057,
+  "usage": {
+    "input": 11,
+    "output": 25810,
+    "cacheRead": 242002,
+    "cacheWrite": 54460,
+    "reportedCostUSD": 1.3109060000000001
+  },
+  "costUSD": 1.106681,
+  "reportedCostUSD": 1.3109060000000001,
+  "price": {
+    "input": 5,
+    "output": 25,
+    "cacheRead": 0.5,
+    "cacheWrite": 6.25
+  },
+  "generatedBy": "tools/generate.mjs"
+}

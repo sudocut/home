@@ -1,0 +1,18 @@
+{
+  "round": "_tmpcheck",
+  "criteria": [
+    "clarity",
+    "hierarchy",
+    "voice",
+    "restraint",
+    "proof"
+  ],
+  "variants": [
+    {
+      "id": "check-a",
+      "model": "check",
+      "label": "A",
+      "path": "variants/check-a/index.html"
+    }
+  ]
+}

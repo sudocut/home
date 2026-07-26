@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SudoCut — 지루한 부분만 지웁니다</title>
+<meta name="description" content="4시간짜리 촬영본에서 침묵과 말버릇, NG 테이크를 AI가 골라내고, 남길지 지울지는 당신이 정합니다.">
+<link rel="stylesheet" href="/brand/tokens/tokens.css">
+<style>
+  /* r2 — the sheet of paper, almost empty.
+     paperTexture is mounted below the brief's ceiling (contrast .10 vs .12);
+     if WebGL or the module fails, the flat token colour stands in unchanged. */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--sc-surface);
+    color: var(--sc-content);
+    font-family: var(--sc-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #paper {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .page {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(26px, 4.8vh, 40px) clamp(22px, 5.9vw, 76px) clamp(26px, 4.5vh, 38px);
+  }
+
+  /* mark + wordmark. The lockup file sets its wordmark in live <text>, which an
+     <img> cannot font-load, so the wordmark is set here in Jost per the lockup
+     spec — monochrome, so cobalt appears exactly once on this page. */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  header img {
+    display: block;
+    height: 30px;
+    width: auto;
+  }
+  .wordmark {
+    font-family: var(--sc-numbers);
+    font-weight: 400;
+    font-size: 20px;
+    letter-spacing: -0.027em;
+    line-height: 1;
+  }
+
+  main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-block: clamp(20px, 4vh, 40px);
+  }
+
+  .cmd {
+    font-family: var(--sc-mono);
+    font-size: clamp(14px, 1.3vw, 16px);
+    letter-spacing: 0.01em;
+  }
+
+  h1 {
+    font-family: var(--sc-heavy);
+    font-weight: 700;
+    font-size: clamp(44px, 7.4vw, 94px);
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    margin-top: clamp(16px, 3.2vh, 26px);
+  }
+
+  .what {
+    margin-top: clamp(20px, 4.2vh, 34px);
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.72;
+    max-width: 560px;
+  }
+
+  .cta {
+    display: inline-block;
+    margin-top: clamp(28px, 5.8vh, 46px);
+    padding: 19px 34px;
+    background: var(--sc-action);
+    color: var(--sc-action-content);
+    font-family: var(--sc-body);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    border-radius: var(--sc-radius);
+    box-shadow: var(--sc-shadow-action);
+    transition: transform var(--sc-fast) var(--sc-ease), box-shadow var(--sc-fast) var(--sc-ease);
+  }
+  .cta:hover { transform: var(--sc-lift); box-shadow: var(--sc-shadow-action-hover); }
+  .cta:active { transform: none; box-shadow: var(--sc-shadow-action); }
+  .cta:focus-visible { outline: 2px solid var(--sc-content); outline-offset: 4px; }
+
+  footer {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(14px, 2vw, 26px);
+    flex-wrap: wrap;
+    border-top: 1px solid var(--sc-rule);
+    padding-top: 16px;
+  }
+  .src {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--sc-content-muted);
+    white-space: nowrap;
+  }
+  .claim {
+    flex: 1 1 300px;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+</style>
+</head>
+<body>
+  <div id="paper" aria-hidden="true"></div>
+
+  <div class="page">
+    <header>
+      <img src="/brand/logo/mark.svg" alt="" aria-hidden="true">
+      <span class="wordmark">sudocut</span>
+    </header>
+
+    <main>
+      <p class="cmd">sudo rm the boring parts.</p>
+      <h1>지루한 부분만<br>지웁니다.</h1>
+      <p class="what">4시간짜리 촬영본에서 침묵과 말버릇, NG&nbsp;테이크를 AI가 골라내고, 남길지 지울지는 당신이 정합니다.</p>
+      <a class="cta" href="/beta">베타 신청하기</a>
+    </main>
+
+    <footer>
+      <span class="src">자체 블라인드 테스트</span>
+      <p class="claim">사람이 편집한 컷과 AI가 편집한 컷을 나란히 보여줬습니다. 시청자는 구분하지 못했습니다.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    try {
+      const [
+        { ShaderMount },
+        { paperTextureFragmentShader },
+        { getShaderColorFromString },
+        { getShaderNoiseTexture },
+      ] = await Promise.all([
+        import('/design/vendor/paper-shaders/shader-mount.js'),
+        import('/design/vendor/paper-shaders/shaders/paper-texture.js'),
+        import('/design/vendor/paper-shaders/get-shader-color-from-string.js'),
+        import('/design/vendor/paper-shaders/get-shader-noise-texture.js'),
+      ]);
+
+      // colours come from the computed tokens, never literals
+      const css = getComputedStyle(document.documentElement);
+      const ink = css.getPropertyValue('--sc-content').trim();
+      const sheet = css.getPropertyValue('--sc-surface').trim();
+
+      if (ink && sheet) {
+        const u = {
+          u_colorFront: getShaderColorFromString(ink),
+          u_colorBack: getShaderColorFromString(sheet),
+          u_contrast: 0.1, u_roughness: 0.25, u_fiber: 0.45, u_fiberSize: 0.6,
+          u_crumples: 0.12, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,
+          u_drops: 0, u_seed: 3, u_fade: 0,
+          u_noiseTexture: getShaderNoiseTexture(),
+          u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+          u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,
+        };
+        await u.u_noiseTexture.decode();
+        new ShaderMount(document.getElementById('paper'), paperTextureFragmentShader, u, undefined, 0, 0);
+      }
+    } catch (e) {
+      /* no WebGL → the flat token colour stands in; nothing structural is lost */
+    }
+  </script>
+</body>
+</html>
+{"is_error":false,"duration_api_ms":566560,"num_turns":5,"stop_reason":"end_turn","session_id":"8f0ae589-2ce5-48db-8747-9fd464feb768","total_cost_usd":2.940123,"usage":{"input_tokens":4,"cache_creation_input_tokens":48572,"cache_read_input_tokens":45743,"output_tokens":38458,"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":48572,"ephemeral_5m_input_tokens":0},"inference_geo":"not_available","iterations":[{"input_tokens":2,"output_tokens":13995,"cache_read_input_tokens":30267,"cache_creation_input_tokens":33781,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":33781},"type":"message"}],"speed":"standard"},"modelUsage":{"claude-fable-5":{"inputTokens":4,"outputTokens":38458,"cacheReadInputTokens":45743,"cacheCreationInputTokens":48572,"webSearchRequests":0,"costUSD":2.940123,"contextWindow":1000000,"maxOutputTokens":64000,"canonicalModel":"claude-fable-5","provider":"firstParty"}},"permission_denials":[],"terminal_reason":"completed","fast_mode_state":"off","fast_mode_disabled_reason":"sdk_opt_in_required","subtype":"success","api_error_status":null,"result":"<!DOCTYPE html>\n<html lang=\"ko\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>SudoCut — 지루한 부분만 지웁니다</title>\n<meta name=\"description\" content=\"4시간짜리 촬영본에서 침묵과 말버릇, NG 테이크를 AI가 골라내고, 남길지 지울지는 당신이 정합니다.\">\n<link rel=\"stylesheet\" href=\"/brand/tokens/tokens.css\">\n<style>\n  /* r2 — the sheet of paper, almost empty.\n     paperTexture is mounted below the brief's ceiling (contrast .10 vs .12);\n     if WebGL or the module fails, the flat token colour stands in unchanged. */\n  * { box-sizing: border-box; margin: 0; padding: 0; }\n\n  body {\n    background: var(--sc-surface);\n    color: var(--sc-content);\n    font-family: var(--sc-body);\n    -webkit-font-smoothing: antialiased;\n  }\n\n  #paper {\n    position: fixed;\n    inset: 0;\n    z-index: -1;\n    pointer-events: none;\n  }\n\n  .page {\n    min-height: 100vh;\n    min-height: 100svh;\n    display: flex;\n    flex-direction: column;\n    padding: clamp(26px, 4.8vh, 40px) clamp(22px, 5.9vw, 76px) clamp(26px, 4.5vh, 38px);\n  }\n\n  /* mark + wordmark. The lockup file sets its wordmark in live <text>, which an\n     <img> cannot font-load, so the wordmark is set here in Jost per the lockup\n     spec — monochrome, so cobalt appears exactly once on this page. */\n  header {\n    display: flex;\n    align-items: center;\n    gap: 9px;\n  }\n  header img {\n    display: block;\n    height: 30px;\n    width: auto;\n  }\n  .wordmark {\n    font-family: var(--sc-numbers);\n    font-weight: 400;\n    font-size: 20px;\n    letter-spacing: -0.027em;\n    line-height: 1;\n  }\n\n  main {\n    flex: 1 1 auto;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    padding-block: clamp(20px, 4vh, 40px);\n  }\n\n  .cmd {\n    font-family: var(--sc-mono);\n    font-size: clamp(14px, 1.3vw, 16px);\n    letter-spacing: 0.01em;\n  }\n\n  h1 {\n    font-family: var(--sc-heavy);\n    font-weight: 700;\n    font-size: clamp(44px, 7.4vw, 94px);\n    line-height: 1.12;\n    letter-spacing: -0.015em;\n    margin-top: clamp(16px, 3.2vh, 26px);\n  }\n\n  .what {\n    margin-top: clamp(20px, 4.2vh, 34px);\n    font-size: clamp(16px, 1.5vw, 19px);\n    line-height: 1.72;\n    max-width: 560px;\n  }\n\n  .cta {\n    display: inline-block;\n    margin-top: clamp(28px, 5.8vh, 46px);\n    padding: 19px 34px;\n    background: var(--sc-action);\n    color: var(--sc-action-content);\n    font-family: var(--sc-body);\n    font-size: 17px;\n    font-weight: 600;\n    line-height: 1;\n    text-decoration: none;\n    border-radius: var(--sc-radius);\n    box-shadow: var(--sc-shadow-action);\n    transition: transform var(--sc-fast) var(--sc-ease), box-shadow var(--sc-fast) var(--sc-ease);\n  }\n  .cta:hover { transform: var(--sc-lift); box-shadow: var(--sc-shadow-action-hover); }\n  .cta:active { transform: none; box-shadow: var(--sc-shadow-action); }\n  .cta:focus-visible { outline: 2px solid var(--sc-content); outline-offset: 4px; }\n\n  footer {\n    display: flex;\n    align-items: baseline;\n    gap: clamp(14px, 2vw, 26px);\n    flex-wrap: wrap;\n    border-top: 1px solid var(--sc-rule);\n    padding-top: 16px;\n  }\n  .src {\n    font-size: 12.5px;\n    font-weight: 600;\n    letter-spacing: 0.06em;\n    color: var(--sc-content-muted);\n    white-space: nowrap;\n  }\n  .claim {\n    flex: 1 1 300px;\n    font-size: 15px;\n    line-height: 1.65;\n  }\n</style>\n</head>\n<body>\n  <div id=\"paper\" aria-hidden=\"true\"></div>\n\n  <div class=\"page\">\n    <header>\n      <img src=\"/brand/logo/mark.svg\" alt=\"\" aria-hidden=\"true\">\n      <span class=\"wordmark\">sudocut</span>\n    </header>\n\n    <main>\n      <p class=\"cmd\">sudo rm the boring parts.</p>\n      <h1>지루한 부분만<br>지웁니다.</h1>\n      <p class=\"what\">4시간짜리 촬영본에서 침묵과 말버릇, NG&nbsp;테이크를 AI가 골라내고, 남길지 지울지는 당신이 정합니다.</p>\n      <a class=\"cta\" href=\"/beta\">베타 신청하기</a>\n    </main>\n\n    <footer>\n      <span class=\"src\">자체 블라인드 테스트</span>\n      <p class=\"claim\">사람이 편집한 컷과 AI가 편집한 컷을 나란히 보여줬습니다. 시청자는 구분하지 못했습니다.</p>\n    </footer>\n  </div>\n\n  <script type=\"module\">\n    try {\n      const [\n        { ShaderMount },\n        { paperTextureFragmentShader },\n        { getShaderColorFromString },\n        { getShaderNoiseTexture },\n      ] = await Promise.all([\n        import('/design/vendor/paper-shaders/shader-mount.js'),\n        import('/design/vendor/paper-shaders/shaders/paper-texture.js'),\n        import('/design/vendor/paper-shaders/get-shader-color-from-string.js'),\n        import('/design/vendor/paper-shaders/get-shader-noise-texture.js'),\n      ]);\n\n      // colours come from the computed tokens, never literals\n      const css = getComputedStyle(document.documentElement);\n      const ink = css.getPropertyValue('--sc-content').trim();\n      const sheet = css.getPropertyValue('--sc-surface').trim();\n\n      if (ink && sheet) {\n        const u = {\n          u_colorFront: getShaderColorFromString(ink),\n          u_colorBack: getShaderColorFromString(sheet),\n          u_contrast: 0.1, u_roughness: 0.25, u_fiber: 0.45, u_fiberSize: 0.6,\n          u_crumples: 0.12, u_crumpleSize: 0.5, u_folds: 0, u_foldCount: 0,\n          u_drops: 0, u_seed: 3, u_fade: 0,\n          u_noiseTexture: getShaderNoiseTexture(),\n          u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,\n          u_originX: 0.5, u_originY: 0.5, u_worldWidth: 0, u_worldHeight: 0, u_fit: 0,\n        };\n        await u.u_noiseTexture.decode();\n        new ShaderMount(document.getElementById('paper'), paperTextureFragmentShader, u, undefined, 0, 0);\n      }\n    } catch (e) {\n      /* no WebGL → the flat token colour stands in; nothing structural is lost */\n    }\n  </script>\n</body>\n</html>

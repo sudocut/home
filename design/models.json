@@ -2,57 +2,176 @@
   "_comment": [
     "Model registry for the design-iteration harness.",
     "",
-    "Contract: every model is invoked non-interactively, receives the brief on stdin,",
-    "and PRINTS a complete HTML document to stdout. The runner extracts the document",
-    "and writes it to disk. Models never write files themselves — that keeps the",
-    "invocation uniform across four different CLIs and avoids tool-permission setup.",
+    "Contract: every model is invoked non-interactively at MAXIMUM reasoning effort,",
+    "receives the brief, and PRINTS a complete HTML document to stdout. The runner",
+    "extracts the document and writes it to disk. Models never write files themselves —",
+    "that keeps the invocation uniform across three different CLIs.",
     "",
-    "'available' is verified, not assumed. Re-check with: node tools/generate.mjs --check",
-    "Verified 2026-07-26 on this machine."
+    "'available' and the invocation flags are VERIFIED on this machine, not assumed.",
+    "Re-check with: node tools/generate.mjs --check",
+    "Verified 2026-07-26.",
+    "",
+    "PRICING is list API price per 1M tokens, used to cost each session. One design =",
+    "one session. Prices move — re-check them before quoting these numbers anywhere",
+    "that matters. Sources recorded in design/README.md."
   ],
-
-  "criteria": ["clarity", "hierarchy", "voice", "restraint", "proof"],
-
+  "criteria": [
+    "clarity",
+    "hierarchy",
+    "voice",
+    "restraint",
+    "proof"
+  ],
   "models": [
     {
-      "id": "opus",
-      "label": "Claude Opus",
-      "cmd": ["claude", "-p", "--model", "opus"],
+      "id": "opus5",
+      "label": "Claude Opus 5",
+      "modelId": "claude-opus-5",
+      "vendor": "Anthropic",
+      "cmd": [
+        "claude",
+        "-p",
+        "--model",
+        "opus",
+        "--effort",
+        "max",
+        "--output-format",
+        "json"
+      ],
       "promptVia": "stdin",
+      "parse": "claude-json",
+      "effort": "max",
+      "price": {
+        "input": 5.0,
+        "output": 25.0,
+        "cacheRead": 0.5,
+        "cacheWrite": 6.25
+      },
       "available": true,
-      "note": "claude 2.1.220. -p prints the response and exits."
+      "note": "claude 2.1.220. --effort max is the ceiling. --output-format json reports usage AND total_cost_usd, which we cross-check against our own computation.",
+      "reportsUsage": true
     },
     {
-      "id": "fable",
-      "label": "Claude Fable",
-      "cmd": ["claude", "-p", "--model", "claude-fable-5"],
+      "id": "fable5",
+      "label": "Claude Fable 5",
+      "modelId": "claude-fable-5",
+      "vendor": "Anthropic",
+      "cmd": [
+        "claude",
+        "-p",
+        "--model",
+        "claude-fable-5",
+        "--effort",
+        "max",
+        "--output-format",
+        "json"
+      ],
       "promptVia": "stdin",
+      "parse": "claude-json",
+      "effort": "max",
+      "price": {
+        "input": 10.0,
+        "output": 50.0,
+        "cacheRead": 1.0,
+        "cacheWrite": 12.5
+      },
       "available": true,
-      "note": "Same CLI as opus, different --model. If the alias is rejected, the runner reports it rather than silently falling back."
+      "note": "Thinking is always on for Fable 5; depth is controlled by effort. Priced above Opus tier — expect this to be the most expensive variant in a round.",
+      "reportsUsage": true
     },
     {
-      "id": "gpt",
-      "label": "OpenAI (Codex CLI)",
-      "cmd": ["codex", "exec"],
+      "id": "gpt-sol",
+      "label": "GPT-5.6 Sol",
+      "modelId": "gpt-5.6-sol",
+      "vendor": "OpenAI",
+      "cmd": [
+        "codex",
+        "exec",
+        "--json",
+        "-c",
+        "model=\"gpt-5.6-sol\"",
+        "-c",
+        "model_reasoning_effort=\"xhigh\""
+      ],
       "promptVia": "stdin",
+      "parse": "jsonl",
+      "effort": "xhigh",
+      "price": {
+        "input": 5.0,
+        "output": 30.0
+      },
       "available": true,
-      "note": "codex-cli 0.144.3, authed via ~/.codex/auth.json. 'exec' is the non-interactive mode. Output includes session chatter, so the runner extracts the HTML document from it."
+      "note": "codex-cli 0.144.3, authed via ~/.codex/auth.json. Flagship tier.",
+      "reportsUsage": true
     },
     {
-      "id": "kimi",
-      "label": "Kimi",
-      "cmd": ["kimi", "-p", "--auto"],
+      "id": "gpt-terra",
+      "label": "GPT-5.6 Terra",
+      "modelId": "gpt-5.6-terra",
+      "vendor": "OpenAI",
+      "cmd": [
+        "codex",
+        "exec",
+        "--json",
+        "-c",
+        "model=\"gpt-5.6-terra\"",
+        "-c",
+        "model_reasoning_effort=\"xhigh\""
+      ],
+      "promptVia": "stdin",
+      "parse": "jsonl",
+      "effort": "xhigh",
+      "price": {
+        "input": 2.5,
+        "output": 15.0
+      },
+      "available": true,
+      "note": "Mid tier, ~half of Sol. Included specifically to test whether a cheaper tier designs as well against a tightly-specified brief.",
+      "reportsUsage": true
+    },
+    {
+      "id": "kimi-k3",
+      "label": "Kimi K3",
+      "modelId": "kimi-k3",
+      "vendor": "Moonshot",
+      "cmd": [
+        "kimi",
+        "-m",
+        "kimi-code/k3",
+        "--output-format",
+        "stream-json",
+        "-p"
+      ],
       "promptVia": "arg",
+      "parse": "jsonl",
+      "effort": "high",
+      "price": {
+        "input": 3.0,
+        "output": 15.0,
+        "cacheRead": 0.3
+      },
       "available": true,
-      "note": "kimi -p takes the prompt as a flag VALUE, not stdin. --auto runs fully autonomously without asking questions."
+      "note": "kimi -p takes the prompt as its flag VALUE, so -p MUST be last here — the runner appends the prompt after it. --auto is deliberately absent: kimi rejects '--prompt with --auto', and our contract (print HTML to stdout, never write files) needs no tool permissions anyway. Thinking effort is 'high' in ~/.kimi-code/config.toml, its ceiling — there is no per-invocation effort flag, so this one is not literally comparable to the others' max. VERIFIED 2026-07-26: kimi --output-format stream-json emits only role/content messages and a session resume hint — NO token counts. So its cost cannot be computed and is recorded as null, never 0. Estimating from output size would understate it badly, since thinking tokens dominate on a reasoning model and are invisible here.",
+      "reportsUsage": false
     },
     {
       "id": "opencode",
       "label": "OpenCode",
-      "cmd": ["opencode", "run"],
+      "modelId": "(router)",
+      "vendor": "multi",
+      "cmd": [
+        "opencode",
+        "run"
+      ],
       "promptVia": "arg",
+      "parse": "text",
+      "price": {
+        "input": 0,
+        "output": 0
+      },
       "available": false,
-      "note": "Installed but not enabled by default — it is a multi-provider router, so which model actually answers is ambiguous, which defeats the point of comparing models. Flip available to true and pin a provider if you want it in the pool."
+      "note": "Installed but disabled — it routes across providers, so which model answered would be ambiguous, defeating the comparison. Flip to true and pin a provider to include it.",
+      "reportsUsage": true
     }
   ]
 }

@@ -17,6 +17,7 @@
   </div>
   <div class="top-right">
     <div class="progress"><span id="progressText">0 / 0</span><div class="bar"><i id="progressBar"></i></div></div>
+    <div class="micro" id="totalCost"></div>
     <div class="actions">
       <button type="button" class="btn" id="btnBlind" aria-pressed="true">🙈 블라인드</button>
       <button type="button" class="btn" id="btnReset">초기화</button>
@@ -33,7 +34,7 @@
 <section class="standings" id="standings" hidden>
   <h2>순위</h2>
   <table>
-    <thead><tr><th>#</th><th>변형</th><th>모델</th><th>평균</th><th>메모</th></tr></thead>
+    <thead><tr><th>#</th><th>변형</th><th>모델</th><th>평균</th><th>비용</th><th>메모</th></tr></thead>
     <tbody id="standingsBody"></tbody>
   </table>
 </section>

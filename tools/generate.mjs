@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * generate.mjs — fan a round's brief out to every available model, in parallel.
+ * generate.mjs — fan a round's brief out to every available model, in parallel,
+ * at maximum reasoning effort, and record what each session cost.
  *
  *   node tools/generate.mjs [round] [options]
  *
@@ -8,12 +9,16 @@
  *     --force          regenerate variants that already exist
  *     --only a,b       restrict to these model ids
  *     --letter b       write to <model>-b instead of <model>-a (a second take)
- *     --timeout 300    per-model seconds (default 300)
+ *     --timeout 900    per-model seconds (default 900 — max effort is slow)
  *
  * Contract: every model receives `design/BRIEF.md` + the round's `BRIEF.md` and
  * PRINTS one HTML document to stdout. We extract it and write the file. Models
- * never write files themselves — that keeps four different CLIs interchangeable
- * and avoids per-tool permission setup.
+ * never write files themselves — that keeps three different CLIs interchangeable.
+ *
+ * ONE DESIGN = ONE SESSION. Each session's token usage is captured from the CLI's
+ * own structured output and priced against design/models.json. Results land in
+ * variants/<id>/meta.json and are aggregated into the round's usage.json, which
+ * the ranking board displays alongside each variant.
  *
  * Degrades honestly: with one model available it runs one and says so.
  * Resumable: existing variants are skipped unless --force.
@@ -36,7 +41,7 @@ const has = (name) => argv.includes(`--${name}`);
 const round = argv.find((a) => /^r\d+$/.test(a)) || newestRound();
 const only = flag("only") ? String(flag("only")).split(",").map((s) => s.trim()) : null;
 const letter = String(flag("letter", "a"));
-const timeoutMs = Number(flag("timeout", 300)) * 1000;
+const timeoutMs = Number(flag("timeout", 900)) * 1000;
 
 function newestRound() {
   const dirs = readdirSync(join(ROOT, "design/rounds"), { withFileTypes: true })
@@ -96,16 +101,147 @@ function runModel(model, prompt) {
 }
 
 /**
- * Pull the HTML document out of whatever the CLI printed. Handles markdown
- * fences and session chatter uniformly, which is why every model can share
- * one code path.
+ * Slice a complete HTML document out of a string, or null.
+ *
+ * Cuts at the FIRST `</html>` after the doctype, not the last. Some CLIs append
+ * trailer content after the document (kimi prints a session-resume hint plus a
+ * replay of the exchange); `lastIndexOf` swallowed all of it and produced a
+ * 22KB "document" that rendered raw JSON on the page. The real one was 5KB.
+ * A stray `</html>` inside a string literal would truncate early, but that is
+ * far rarer than trailing chatter and fails loudly rather than silently.
+ */
+function sliceDoc(s) {
+  const start = s.search(/<!DOCTYPE\s+html/i);
+  if (start === -1) return null;
+  const end = s.toLowerCase().indexOf("</html>", start);
+  if (end === -1) return null;
+  return s.slice(start, end + "</html>".length).trim() + "\n";
+}
+
+/**
+ * Pull the HTML document out of whatever the CLI printed.
+ *
+ * Each CLI nests its final message differently — claude puts it at `.result`,
+ * codex at `.item.text`, kimi at `.content` — so rather than enumerate paths we
+ * walk every parsed JSON value and collect every string that contains a
+ * document. DECODED STRINGS ALWAYS WIN over the raw stdout: the raw text of a
+ * JSON line is escaped (`href=\"...\"`), and writing that to disk yields HTML
+ * that silently fails to load its stylesheet. That bug shipped once — it made
+ * two compliant variants look like they had ignored the brief.
  */
 function extractHtml(text) {
-  const start = text.search(/<!DOCTYPE\s+html/i);
-  const end = text.toLowerCase().lastIndexOf("</html>");
-  if (start === -1 || end === -1 || end < start) return null;
-  return text.slice(start, end + "</html>".length).trim() + "\n";
+  const candidates = [];
+  const collect = (v) => {
+    if (typeof v === "string") {
+      if (/<!DOCTYPE\s+html/i.test(v)) candidates.push(v);
+      return;
+    }
+    if (v && typeof v === "object") Object.values(v).forEach(collect);
+  };
+
+  for (const line of text.split("\n")) {
+    const t = line.trim();
+    if (!t.startsWith("{") && !t.startsWith("[")) continue;
+    try { collect(JSON.parse(t)); } catch { /* not json */ }
+  }
+  if (!candidates.length) {
+    try { collect(JSON.parse(text)); } catch { /* not json */ }
+  }
+
+  // Rank candidates. Length alone is the WRONG tiebreak: kimi's session-resume
+  // hint echoes a JSON-escaped copy of the whole exchange, which is longer than
+  // the real message and slices into a document full of literal \n and \" —
+  // valid-looking HTML that renders escape sequences as visible garbage.
+  // So score by escaping first, length second.
+  const scored = candidates
+    .map((c) => sliceDoc(c))
+    .filter(Boolean)
+    .map((doc) => {
+      const escapes = (doc.match(/\\[nrt"]/g) || []).length;
+      const newlines = (doc.match(/\n/g) || []).length;
+      return { doc, escaped: escapes > newlines, len: doc.length };
+    })
+    .sort((a, b) => (a.escaped !== b.escaped ? (a.escaped ? 1 : -1) : b.len - a.len));
+
+  if (scored.length && !scored[0].escaped) return scored[0].doc;
+
+  // plain-text CLI (no JSON envelope) — safe to slice the raw output
+  const raw = sliceDoc(text);
+  if (raw) return raw;
+  // last resort: an escaped candidate is better than nothing, but unescape it
+  if (scored.length) {
+    try { return JSON.parse(`"${scored[0].doc.replace(/"/g, '\\"')}"`); } catch { return scored[0].doc; }
+  }
+  return null;
 }
+
+/* ---------- usage capture ---------- */
+
+const num = (v) => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+
+/**
+ * Extract token usage from a CLI's structured output. Each CLI reports
+ * differently, so this is deliberately forgiving: it walks every JSON object it
+ * can find and keeps the largest counts seen. Returns nulls (not zeros) when
+ * nothing was found, so "unknown" is never silently priced as "free".
+ */
+function parseUsage(model, out) {
+  const acc = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, reportedCostUSD: null };
+  let found = false;
+
+  const visit = (o) => {
+    if (!o || typeof o !== "object") return;
+    if (Array.isArray(o)) return o.forEach(visit);
+    const i = num(o.input_tokens ?? o.inputTokens ?? o.prompt_tokens ?? o.input);
+    const p = num(o.output_tokens ?? o.outputTokens ?? o.completion_tokens ?? o.output);
+    const cr = num(o.cache_read_input_tokens ?? o.cacheReadInputTokens ?? o.cached_input_tokens);
+    const cw = num(o.cache_creation_input_tokens ?? o.cacheCreationInputTokens);
+    if (i || p || cr || cw) {
+      found = true;
+      acc.input = Math.max(acc.input, i);
+      acc.output = Math.max(acc.output, p);
+      acc.cacheRead = Math.max(acc.cacheRead, cr);
+      acc.cacheWrite = Math.max(acc.cacheWrite, cw);
+    }
+    if (typeof o.total_cost_usd === "number") acc.reportedCostUSD = o.total_cost_usd;
+    if (typeof o.costUSD === "number" && acc.reportedCostUSD === null) acc.reportedCostUSD = o.costUSD;
+    for (const v of Object.values(o)) if (v && typeof v === "object") visit(v);
+  };
+
+  for (const line of out.split("\n")) {
+    const t = line.trim();
+    if (!t.startsWith("{")) continue;
+    try { visit(JSON.parse(t)); } catch { /* ignore */ }
+  }
+  if (!found) {
+    try { visit(JSON.parse(out)); } catch { /* ignore */ }
+  }
+  // Last resort: codex prints a human-readable "tokens used\n7,098" summary.
+  if (!found) {
+    const m = out.match(/tokens used[\s\n]*([\d,]+)/i);
+    if (m) {
+      found = true;
+      acc.output = Number(m[1].replace(/,/g, ""));
+      acc.estimated = true;
+    }
+  }
+  return found ? acc : null;
+}
+
+/** Price a session against the model's list rates. Returns USD. */
+function costOf(model, u) {
+  if (!u) return null;
+  const p = model.price || {};
+  const per = (tokens, rate) => (num(tokens) / 1_000_000) * num(rate);
+  return (
+    per(u.input, p.input) +
+    per(u.output, p.output) +
+    per(u.cacheRead, p.cacheRead ?? p.input) +
+    per(u.cacheWrite, p.cacheWrite ?? p.input)
+  );
+}
+
+const usd = (n) => (n === null || n === undefined ? "—" : `$${n.toFixed(4)}`);
 
 /* ---------- main ---------- */
 
@@ -124,7 +260,6 @@ async function main() {
   let pool = registry.models.filter((m) => m.available !== false);
   if (only) pool = pool.filter((m) => only.includes(m.id));
 
-  // verify each binary really exists rather than trusting the registry
   const checked = pool.map((m) => {
     const path = which(m.cmd[0]);
     return { ...m, path, reachable: Boolean(path) };
@@ -133,10 +268,14 @@ async function main() {
   if (has("check")) {
     console.log("\nmodel availability\n");
     for (const m of checked) {
-      console.log(`  ${m.reachable ? "✓" : "✗"} ${m.id.padEnd(10)} ${m.label.padEnd(22)} ${m.path || "not on PATH"}`);
+      console.log(
+        `  ${m.reachable ? "✓" : "✗"} ${m.id.padEnd(11)} ${m.label.padEnd(16)} ` +
+        `${String(m.effort ?? "-").padEnd(6)} $${m.price.input}/$${m.price.output} per 1M   ${m.path || "not on PATH"}`,
+      );
     }
-    const off = registry.models.filter((m) => m.available === false);
-    for (const m of off) console.log(`  · ${m.id.padEnd(10)} ${m.label.padEnd(22)} disabled in models.json`);
+    for (const m of registry.models.filter((m) => m.available === false)) {
+      console.log(`  · ${m.id.padEnd(11)} ${m.label.padEnd(16)} disabled in models.json`);
+    }
     console.log();
     return;
   }
@@ -144,13 +283,13 @@ async function main() {
   const usable = checked.filter((m) => m.reachable);
   if (!usable.length) {
     console.error("\nNo model CLI is reachable. Check `node tools/generate.mjs --check`.");
-    console.error("You can still add a variant by hand — see the manual path in design/README.md.\n");
+    console.error("You can still add a variant by hand — see design/README.md.\n");
     process.exit(1);
   }
 
   for (const m of checked.filter((m) => !m.reachable)) {
     console.warn(`  ! ${m.id}: ${m.cmd[0]} is not on PATH — skipping.`);
-    console.warn(`    To include it by hand: paste design/BRIEF.md + design/rounds/${round}/BRIEF.md into ${m.label},`);
+    console.warn(`    By hand: paste design/BRIEF.md + design/rounds/${round}/BRIEF.md into ${m.label},`);
     console.warn(`    then save its HTML to design/rounds/${round}/variants/${m.id}-${letter}/index.html`);
   }
 
@@ -163,7 +302,8 @@ async function main() {
     "\n\n---\n\nPrint ONLY the HTML document. No commentary, no markdown fences. Start at <!DOCTYPE html>.\n",
   ].join("");
 
-  console.log(`\nround ${round} — generating with ${usable.length} model(s)\n`);
+  console.log(`\nround ${round} — generating with ${usable.length} model(s) at max effort`);
+  console.log(`prompt: ${(prompt.length / 1024).toFixed(1)}kb\n`);
 
   const jobs = usable.map(async (m) => {
     const id = `${m.id}-${letter}`;
@@ -171,38 +311,69 @@ async function main() {
     const file = join(dir, "index.html");
 
     if (existsSync(file) && !has("force")) {
-      console.log(`  · ${id.padEnd(12)} exists, skipping (--force to regenerate)`);
+      console.log(`  · ${id.padEnd(13)} exists, skipping (--force to regenerate)`);
       return { id, status: "skipped" };
     }
 
     const t0 = Date.now();
     const r = await runModel(m, prompt);
-    const secs = ((Date.now() - t0) / 1000).toFixed(0);
-
-    if (!r.ok && !r.out) {
-      console.error(`  ✗ ${id.padEnd(12)} ${r.why} (${secs}s)`);
-      if (r.err) console.error(`      ${r.err.trim().split("\n").slice(-3).join("\n      ")}`);
-      return { id, status: "failed", why: r.why };
-    }
+    const secs = Math.round((Date.now() - t0) / 1000);
+    const usage = parseUsage(m, r.out + "\n" + r.err);
+    const cost = costOf(m, usage);
 
     const html = extractHtml(r.out);
     if (!html) {
-      console.error(`  ✗ ${id.padEnd(12)} no HTML document in output (${secs}s)`);
-      console.error(`      first 200 chars: ${r.out.slice(0, 200).replace(/\n/g, " ")}`);
-      return { id, status: "failed", why: "no html" };
+      console.error(`  ✗ ${id.padEnd(13)} no HTML in output — ${r.why ?? "exit 0"} (${secs}s)`);
+      const snippet = (r.out || r.err).slice(0, 200).replace(/\s+/g, " ");
+      console.error(`      ${snippet}`);
+      return { id, model: m.id, status: "failed", why: r.why ?? "no html", seconds: secs, usage, costUSD: cost };
     }
 
     mkdirSync(dir, { recursive: true });
     writeFileSync(file, html);
-    console.log(`  ✓ ${id.padEnd(12)} ${(html.length / 1024).toFixed(1)}kb (${secs}s)`);
-    return { id, status: "written" };
+
+    const meta = {
+      id,
+      model: m.id,
+      label: m.label,
+      modelId: m.modelId,
+      vendor: m.vendor,
+      effort: m.effort ?? null,
+      round,
+      seconds: secs,
+      bytes: html.length,
+      usage,
+      costUSD: cost,
+      reportedCostUSD: usage?.reportedCostUSD ?? null,
+      price: m.price,
+      generatedBy: "tools/generate.mjs",
+    };
+    writeFileSync(join(dir, "meta.json"), JSON.stringify(meta, null, 2) + "\n");
+
+    const tok = usage ? `${usage.input + usage.cacheRead + usage.cacheWrite}in/${usage.output}out` : "usage unknown";
+    console.log(`  ✓ ${id.padEnd(13)} ${(html.length / 1024).toFixed(1)}kb  ${String(secs).padStart(4)}s  ${tok.padEnd(22)} ${usd(cost)}`);
+    return { id, status: "written", ...meta };
   });
 
   const results = await Promise.all(jobs);
-  const written = results.filter((r) => r.status === "written").length;
-  const failed = results.filter((r) => r.status === "failed").length;
+  const written = results.filter((r) => r.status === "written");
+  const failed = results.filter((r) => r.status === "failed");
 
-  console.log(`\n${written} written, ${results.length - written - failed} skipped, ${failed} failed`);
+  // aggregate — the board reads this
+  const prior = existsSync(join(roundDir, "usage.json"))
+    ? JSON.parse(readFileSync(join(roundDir, "usage.json"), "utf8"))
+    : { round, variants: [] };
+  const byId = new Map(prior.variants.map((v) => [v.id, v]));
+  for (const w of written) byId.set(w.id, w);
+  const variants = [...byId.values()];
+  const totalCost = variants.reduce((s, v) => s + (v.costUSD || 0), 0);
+  writeFileSync(
+    join(roundDir, "usage.json"),
+    JSON.stringify({ round, totalCostUSD: totalCost, variants }, null, 2) + "\n",
+  );
+
+  console.log(`\n${written.length} written, ${results.length - written.length - failed.length} skipped, ${failed.length} failed`);
+  if (variants.length) console.log(`round total: ${usd(totalCost)} across ${variants.length} session(s)`);
   console.log(`\nnext:  node tools/verify-round.mjs ${round}\n`);
 }
 

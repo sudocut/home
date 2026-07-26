@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SudoCut — 지루한 부분은 먼저 지웁니다</title>
+  <meta name="description" content="긴 원본에서 침묵, 말실수, NG를 먼저 걷어내 편집할 컷으로 돌려드립니다.">
+  <link rel="stylesheet" href="/brand/tokens/tokens.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--sc-surface);
+      color: var(--sc-content);
+    }
+
+    body {
+      font-family: var(--sc-body);
+      overflow: hidden;
+    }
+
+    #paper {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-rows: 92px minmax(0, 1fr) auto;
+      width: min(100%, 1440px);
+      height: 100svh;
+      margin: 0 auto;
+      padding: 0 clamp(28px, 5vw, 72px);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--sc-rule);
+    }
+
+    .logo {
+      display: block;
+      width: clamp(136px, 13vw, 164px);
+      height: auto;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: center;
+      gap: 24px;
+      min-height: 0;
+      padding: clamp(40px, 7vh, 76px) 0;
+    }
+
+    .copy {
+      grid-column: 1 / span 8;
+      max-width: 900px;
+    }
+
+    .positioning {
+      margin: 0 0 clamp(24px, 4vh, 38px);
+      color: var(--sc-content-muted);
+      font-family: var(--sc-mono);
+      font-size: clamp(13px, 1.25vw, 16px);
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--sc-heavy);
+      font-size: clamp(58px, 7.2vw, 94px);
+      font-weight: 700;
+      line-height: 0.98;
+      letter-spacing: -0.065em;
+      word-break: keep-all;
+    }
+
+    .description {
+      max-width: 680px;
+      margin: clamp(28px, 4vh, 42px) 0 0;
+      color: var(--sc-content-muted);
+      font-size: clamp(18px, 1.65vw, 22px);
+      line-height: 1.65;
+      letter-spacing: -0.025em;
+      word-break: keep-all;
+    }
+
+    .action-wrap {
+      grid-column: 10 / -1;
+      align-self: end;
+      padding-bottom: 8px;
+    }
+
+    .action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 62px;
+      padding: 0 20px;
+      border: 1px solid var(--sc-content);
+      border-radius: var(--sc-radius);
+      background: var(--sc-action);
+      color: var(--sc-action-content);
+      box-shadow: var(--sc-shadow-action);
+      font-family: var(--sc-body);
+      font-size: 17px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      transition:
+        transform var(--sc-fast) var(--sc-ease),
+        box-shadow var(--sc-fast) var(--sc-ease);
+    }
+
+    .action:hover {
+      transform: var(--sc-lift);
+      box-shadow: var(--sc-shadow-action-hover);
+    }
+
+    .action:focus-visible {
+      outline: 2px solid var(--sc-content);
+      outline-offset: 5px;
+    }
+
+    .arrow {
+      font-family: var(--sc-mono);
+      font-size: 20px;
+    }
+
+    .proof {
+      display: grid;
+      grid-template-columns: 2fr 7fr 3fr;
+      gap: 24px;
+      align-items: start;
+      border-top: 1px solid var(--sc-rule);
+      padding: 22px 0 28px;
+    }
+
+    .proof-label,
+    .english {
+      margin: 0;
+      color: var(--sc-content-muted);
+      font-family: var(--sc-mono);
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: 0.04em;
+    }
+
+    .proof-copy {
+      max-width: 660px;
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.65;
+      letter-spacing: -0.018em;
+      word-break: keep-all;
+    }
+
+    .english {
+      justify-self: end;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        grid-template-rows: 70px minmax(0, 1fr) auto;
+        padding: 0 20px;
+      }
+
+      .logo {
+        width: 132px;
+      }
+
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        gap: 0;
+        padding: 28px 0 32px;
+      }
+
+      .copy {
+        max-width: none;
+      }
+
+      .positioning {
+        margin-bottom: 22px;
+        font-size: 12px;
+      }
+
+      h1 {
+        font-size: clamp(42px, 12.2vw, 52px);
+        line-height: 1.04;
+        letter-spacing: -0.06em;
+      }
+
+      .description {
+        margin-top: 24px;
+        font-size: 17px;
+        line-height: 1.58;
+      }
+
+      .action-wrap {
+        padding: 0;
+        margin-top: 28px;
+      }
+
+      .action {
+        min-height: 56px;
+        font-size: 16px;
+      }
+
+      .proof {
+        grid-template-columns: 82px minmax(0, 1fr);
+        gap: 14px;
+        padding: 16px 0 20px;
+      }
+
+      .proof-copy {
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .english {
+        display: none;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .shell {
+        grid-template-rows: 64px minmax(0, 1fr) auto;
+      }
+
+      .hero {
+        padding-top: 20px;
+        padding-bottom: 24px;
+      }
+
+      .positioning {
+        margin-bottom: 18px;
+      }
+
+      .description {
+        margin-top: 20px;
+      }
+
+      .action-wrap {
+        margin-top: 22px;
+      }
+
+      .proof {
+        padding-top: 13px;
+        padding-bottom: 15px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .action {
+        transition: none;
+      }
+
+      .action:hover {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="paper" aria-hidden="true"></div>
+
+  <main class="shell">
+    <header class="header">
+      <img
+        class="logo"
+        src="/brand/logo/lockup-horizontal.svg"
+        alt="SudoCut"
+      >
+    </header>
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="copy">
+        <p class="positioning">sudo rm the boring parts.</p>
+        <h1 id="hero-title">지루한 부분은<br>먼저 지웁니다.</h1>
+        <p class="description">
+          긴 원본에서 침묵·말실수·NG를 먼저 걷어내,
+          이어서 편집할 컷으로 돌려드립니다.
+        </p>
+      </div>
+
+      <div class="action-wrap">
+        <a class="action" href="/start">
+          <span>내 원본 줄여보기</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+
+    <aside class="proof" aria-label="SudoCut 편집 비교 검증">
+      <p class="proof-label">직접 비교했습니다.</p>
+      <p class="proof-copy">
+        사람이 자른 컷과 AI가 자른 컷을 나란히 보여줬습니다.
+        시청자는 둘을 구분하지 못했습니다.
+      </p>
+      <p class="english">Less footage.<br>More story.</p>
+    </aside>
+  </main>
+
+  <script type="module">
+    import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+    import { paperTextureFragmentShader } from '/design/vendor/paper-shaders/shaders/paper-texture.js';
+    import { getShaderColorFromString } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+    import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+
+    const styles = getComputedStyle(document.documentElement);
+    const token = (name) => styles.getPropertyValue(name).trim();
+
+    const uniforms = {
+      u_colorFront: getShaderColorFromString(token('--sc-content')),
+      u_colorBack: getShaderColorFromString(token('--sc-surface')),
+      u_contrast: 0.045,
+      u_roughness: 0.12,
+      u_fiber: 0.18,
+      u_fiberSize: 0.75,
+      u_crumples: 0.025,
+      u_crumpleSize: 0.5,
+      u_folds: 0,
+      u_foldCount: 0,
+      u_drops: 0,
+      u_seed: 3,
+      u_fade: 0,
+      u_noiseTexture: getShaderNoiseTexture(),
+      u_scale: 1,
+      u_rotation: 0,
+      u_offsetX: 0,
+      u_offsetY: 0,
+      u_originX: 0.5,
+      u_originY: 0.5,
+      u_worldWidth: 0,
+      u_worldHeight: 0,
+      u_fit: 0
+    };
+
+    try {
+      await uniforms.u_noiseTexture.decode();
+      new ShaderMount(
+        document.getElementById('paper'),
+        paperTextureFragmentShader,
+        uniforms,
+        undefined,
+        0,
+        0
+      );
+    } catch {
+      document.getElementById('paper')?.remove();
+    }
+  </script>
+</body>
+</html>

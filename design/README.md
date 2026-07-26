@@ -96,10 +96,42 @@ needs different ones, but changing them mid-experiment makes rounds incomparable
 node tools/generate.mjs --check
 ```
 
-Verified on this machine 2026-07-26: **opus**, **fable** (both via `claude -p`),
-**gpt** (`codex exec`), **kimi** (`kimi -p --auto`). `opencode` is installed but
-disabled — it routes across providers, so which model answered would be ambiguous,
-which defeats the point.
+Verified on this machine 2026-07-26, all at **maximum reasoning effort**:
+
+| id | model | effort | $/1M in | $/1M out | driver |
+|---|---|---|---|---|---|
+| `opus5` | Claude Opus 5 | `max` | 5.00 | 25.00 | `claude -p --effort max` |
+| `fable5` | Claude Fable 5 | `max` | 10.00 | 50.00 | `claude -p --effort max` |
+| `gpt-sol` | GPT-5.6 Sol | `xhigh` | 5.00 | 30.00 | `codex exec -c model_reasoning_effort` |
+| `gpt-terra` | GPT-5.6 Terra | `xhigh` | 2.50 | 15.00 | `codex exec -c model_reasoning_effort` |
+| `kimi-k3` | Kimi K3 | `high` | 3.00 | 15.00 | `kimi -p --auto` |
+
+`opencode` is installed but disabled — it routes across providers, so which model
+answered would be ambiguous, which defeats the point.
+
+> **Kimi is not literally comparable.** It has no per-invocation effort flag; its
+> ceiling is `effort = "high"` in `~/.kimi-code/config.toml`. The other four are
+> set to their true maximum per call. Don't read a Kimi result as "K3 at max".
+
+## Cost
+
+**One design = one session.** `generate.mjs` captures each session's token usage
+from the CLI's own structured output and prices it against the rates above,
+writing `variants/<id>/meta.json` and the round's `usage.json`.
+
+The board shows cost per variant and a round total — but **only after the blind is
+lifted**. Price tiers identify the vendor as surely as the name does, so revealing
+cost during judging would break the blind. Both reveal together.
+
+Where the numbers are unavailable the field is `null`, never `0` — an unknown cost
+is never silently priced as free. Anthropic's CLI also self-reports a cost, which
+is recorded alongside ours as a cross-check.
+
+Prices are list API rates as of 2026-07-26 ([Anthropic](https://www.aipricing.guru/anthropic-pricing/),
+[OpenAI](https://www.aipricing.guru/openai-pricing/), [Moonshot](https://benchlm.ai/moonshot/api-pricing)).
+They move — re-check `design/models.json` before quoting them anywhere that matters.
+Note these are *list API* prices; the CLIs may run on a subscription, in which case
+the figure is what the session *would* cost via API, not what you were charged.
 
 Every model gets the identical prompt (`design/BRIEF.md` + the round brief) and
 **prints one HTML document to stdout**. The runner extracts and writes it. Models

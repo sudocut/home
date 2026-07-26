@@ -19,6 +19,11 @@
  * is already shuffled deterministically upstream, so screen position carries no
  * signal about which model produced what.
  *
+ * COST IS ALSO BLIND. tools/generate.mjs records each session's tokens and price
+ * in the round's usage.json, but the price tiers differ per vendor — showing
+ * "$0.41" next to a variant would identify the model as surely as its name. So
+ * usage is loaded up front and rendered only after the blind is lifted.
+ *
  * Zero dependencies. Must be served over HTTP (tools/serve.sh) because it
  * fetches the manifest and iframes the variants.
  */
@@ -32,6 +37,7 @@
 
   var state = { round: round, blind: true, judge: "", ratings: {} };
   var manifest = null;
+  var usage = {};      // variant id -> { costUSD, usage, seconds, label, effort }
   var LS_KEY = "";
 
   var viewer = { open: false, index: 0, crit: 0 };
@@ -122,7 +128,8 @@
     head.className = "card-head";
     head.innerHTML =
       '<div><div class="card-label">' + esc(v.label) + '</div>' +
-      '<div class="card-model" data-model>' + (state.blind ? "가려짐" : esc(v.model)) + "</div></div>" +
+      '<div class="card-model" data-model>' + (state.blind ? "가려짐" : esc(v.model)) + "</div>" +
+      '<div class="card-cost micro" data-cost></div></div>' +
       '<div class="card-mean" data-mean>—</div>';
     card.appendChild(head);
 
@@ -214,9 +221,14 @@
     if (!rows.length) { sec.hidden = true; return; }
     sec.hidden = false;
     $("#standingsBody").innerHTML = rows.map(function (x, i) {
+      var m = usage[x.v.id];
+      var costCell = state.blind
+        ? '<span class="micro">가려짐</span>'
+        : (m && typeof m.costUSD === "number" ? "$" + m.costUSD.toFixed(4) : "—");
       return "<tr><td>" + (i + 1) + "</td><td>" + esc(x.v.label) + "</td><td>" +
         (state.blind ? '<span class="micro">가려짐</span>' : esc(x.v.model)) + "</td><td>" +
-        x.mean.toFixed(1) + "</td><td>" + esc(ratingOf(x.v.id).note || "") + "</td></tr>";
+        x.mean.toFixed(1) + "</td><td>" + costCell + "</td><td>" +
+        esc(ratingOf(x.v.id).note || "") + "</td></tr>";
     }).join("");
   }
 
@@ -228,6 +240,18 @@
     if (viewer.open) paintViewer();
   }
 
+  /** Format a session's cost + tokens. Only ever called after the blind lifts. */
+  function costLine(id) {
+    var m = usage[id];
+    if (!m) return "";
+    var bits = [];
+    if (typeof m.costUSD === "number") bits.push("$" + m.costUSD.toFixed(4));
+    if (m.usage) bits.push((m.usage.output || 0).toLocaleString() + " out");
+    if (m.seconds) bits.push(m.seconds + "s");
+    if (m.effort) bits.push("effort " + m.effort);
+    return bits.join(" · ");
+  }
+
   function setBlind(on) {
     state.blind = on;
     save();
@@ -236,7 +260,14 @@
     document.querySelectorAll(".card").forEach(function (card) {
       var v = manifest.variants[indexOf(card.dataset.id)];
       card.querySelector("[data-model]").textContent = on ? "가려짐" : v.model;
+      // cost identifies the vendor as surely as the name — reveal together
+      card.querySelector("[data-cost]").textContent = on ? "" : costLine(v.id);
     });
+    var tot = $("#totalCost");
+    if (tot) {
+      var sum = Object.keys(usage).reduce(function (s, k) { return s + (usage[k].costUSD || 0); }, 0);
+      tot.textContent = on || !sum ? "" : "라운드 합계 $" + sum.toFixed(4);
+    }
     paintStandings();
     if (viewer.open) paintViewer();
   }
@@ -307,6 +338,7 @@
       criteria: manifest.criteria,
       variants: rows.map(function (x, i) {
         var r = ratingOf(x.v.id);
+        var m = usage[x.v.id] || {};
         return {
           id: x.v.id,
           model: x.v.model,
@@ -315,21 +347,33 @@
           scores: manifest.criteria.reduce(function (o, c) { o[c] = r.scores[c]; return o; }, {}),
           mean: Number(x.mean.toFixed(2)),
           note: String(r.note || "").trim(),
+          costUSD: typeof m.costUSD === "number" ? Number(m.costUSD.toFixed(6)) : null,
+          tokens: m.usage || null,
+          seconds: m.seconds || null,
+          effort: m.effort || null,
         };
       }),
     };
+    data.totalCostUSD = Number(
+      data.variants.reduce(function (s, v) { return s + (v.costUSD || 0); }, 0).toFixed(6),
+    );
 
     var table = rows.map(function (x, i) {
       var r = ratingOf(x.v.id);
+      var m = usage[x.v.id] || {};
+      var c = typeof m.costUSD === "number" ? "$" + m.costUSD.toFixed(4) : "—";
       return "| " + (i + 1) + " | " + x.v.label + " | " + x.v.model + " | " + x.mean.toFixed(1) +
-        " | " + String(r.note || "").replace(/\|/g, "\\|").replace(/\n/g, " ") + " |";
+        " | " + c + " | " + String(r.note || "").replace(/\|/g, "\\|").replace(/\n/g, " ") + " |";
     }).join("\n");
 
     return "# " + manifest.round + " — ranking\n\n" +
       "Produced by the board (`bash tools/serve.sh`). Validated by `node tools/verify-round.mjs`.\n\n" +
-      "**Judged blind** — model identity was hidden until the ranking was submitted.\n\n" +
+      "**Judged blind** — model identity AND session cost were hidden until the ranking\n" +
+      "was submitted. Cost identifies the vendor as surely as the name does.\n\n" +
       "## Result\n\n" +
-      "| Rank | Variant | Model | Mean | Note |\n|---|---|---|---|---|\n" + table + "\n\n" +
+      "| Rank | Variant | Model | Mean | Cost | Note |\n|---|---|---|---|---|---|\n" + table + "\n\n" +
+      "Round total: **$" + data.totalCostUSD.toFixed(4) + "** across " + rows.length +
+      " session(s). One design = one session, priced at list API rates from `design/models.json`.\n\n" +
       "## Data\n\n```json\n" + JSON.stringify(data, null, 2) + "\n```\n";
   }
 
@@ -422,10 +466,23 @@
     return;
   }
 
-  fetch("../rounds/" + round + "/manifest.json", { cache: "no-store" })
-    .then(function (r) {
+  // usage.json is optional — a hand-assembled round has no cost data, and the
+  // board must still work. Load it before boot so nothing renders un-blinded.
+  Promise.all([
+    fetch("../rounds/" + round + "/manifest.json", { cache: "no-store" }).then(function (r) {
       if (!r.ok) throw new Error(String(r.status));
       return r.json();
+    }),
+    fetch("../rounds/" + round + "/usage.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }),
+  ])
+    .then(function (both) {
+      var u = both[1];
+      if (u && Array.isArray(u.variants)) {
+        u.variants.forEach(function (v) { usage[v.id] = v; });
+      }
+      return both[0];
     })
     .then(boot)
     .catch(function () {
