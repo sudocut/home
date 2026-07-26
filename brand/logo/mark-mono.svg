@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SudoCut mark — SINGLE INK.
+  Option H: "When in doubt, use the single-ink lockup. It is always correct."
+
+  Uses currentColor at full strength throughout, so it inherits whatever ink
+  it sits in. Correct for engraving, stamping, one-color print, and any surface
+  where the cobalt would become a second point of color in a view that already
+  has one (soul.md: one point color per view).
+
+  The cut stays readable without color because the two 12x gaps flank the line:
+  thick / gap / thin / gap / thick. Do NOT fade the line to imply the cut —
+  a single ink means a single ink.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 88" width="72" height="88" role="img" aria-label="SudoCut">
+  <title>SudoCut</title>
+  <rect x="0"  y="0" width="22" height="88" fill="currentColor"/>
+  <rect x="34" y="0" width="4"  height="88" fill="currentColor"/>
+  <rect x="50" y="0" width="22" height="88" fill="currentColor"/>
+</svg>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SudoCut STACKED LOCKUP — centred.
+  Option H lockup 2 of 6. Use where horizontal space is tight:
+  narrow columns, mobile headers, square placements.
+
+  Mark is centred over the wordmark: (220 - 72) / 2 = 74.
+  Vertical gap between mark and wordmark baseline honours the 22-unit
+  clear-space rule.
+
+  NOTE: live <text>; outline it before external distribution. See Q-VECTORS.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 170" width="220" height="170" role="img" aria-label="SudoCut">
+  <title>SudoCut</title>
+
+  <!-- mark -->
+  <rect x="74"  y="0" width="22" height="88" fill="var(--sc-ink, #24292c)"/>
+  <rect x="108" y="0" width="4"  height="88" fill="var(--sc-accent, #1f55ff)"/>
+  <rect x="124" y="0" width="22" height="88" fill="var(--sc-ink, #24292c)"/>
+
+  <!-- wordmark -->
+  <text x="110" y="152" text-anchor="middle"
+        font-family="Jost Local, Jost, sans-serif"
+        font-size="52" font-weight="400" letter-spacing="-1.4">
+    <tspan fill="var(--sc-ink, #24292c)">sudo</tspan><tspan fill="var(--sc-accent, #1f55ff)">cut</tspan>
+  </text>
+</svg>
