@@ -360,19 +360,25 @@ editing the value and re-running `node tools/build-tokens.mjs`.
 
 ## 15. Domain and contact
 
-The domain is **`sudocut.io`**. Evidenced by the Option H exploration, which is
-the only artifact in any repo that records it — page 9 footer *"QUESTIONS →
-BRAND@SUDOCUT.IO"*, and the business card mock *"MIRA@SUDOCUT.IO"*. Superseding
-that document's colour and type does **not** supersede its factual content.
+The domain is **`sudo-cut.com`** — founder, 2026-07-27. `www.sudo-cut.com` is the
+product; the company site this repo builds goes on a subdomain.
 
 | Address | Status |
 |---|---|
-| `brand@sudocut.io` | Evidenced — brand enquiries |
-| `hello@sudocut.io` | **Unconfirmed local part.** Used on the contact page because the site needs an address. The `.io` domain is evidenced; `hello@` is our assumption. Confirm or replace it. |
+| `support@sudo-cut.com` | **Confirmed** — founder, 2026-07-27. The contact page address, and where waitlist submissions are delivered. |
 
-Recorded here because v1 of this kit dropped the contact details while
-transcribing, and the next writer then invented `hello@sudocut.com` — the wrong
-TLD — from nothing. Facts travel with the kit.
+**This supersedes `sudocut.io`,** which every earlier version of this section
+recorded as the domain. That came from the Option H exploration — page 9 footer
+*"QUESTIONS → BRAND@SUDOCUT.IO"* and the business card mock *"MIRA@SUDOCUT.IO"* —
+and it was the best evidence available at the time. It was still a mock-up, and
+the founder outranks it. Any `sudocut.io` address elsewhere is stale.
+
+The history is kept because this section has now been wrong twice in opposite
+directions: v1 of this kit dropped the contact details while transcribing, the
+next writer invented `hello@sudocut.com` from nothing, and the version after that
+recorded a `.io` domain read off a mock. Three writers, three answers, and the
+only one that settled it was asking. Facts travel with the kit — and a mock-up is
+evidence of a design, not of a fact.
 
 ---
 

@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 type LocaleParams = { locale: string };
 
+const PEOPLE = ["jonghyun", "jiho"] as const;
 const RULES = ["one", "two", "three", "four"] as const;
 
 export async function generateMetadata({
@@ -17,14 +18,13 @@ export async function generateMetadata({
 }
 
 /**
- * /team — r4 winner (kimi-k3-a). Four decision rules, then a dashed placeholder
- * where the roster will go.
+ * /team — r4 winner (kimi-k3-a). The two founders, then the four decision rules.
  *
- * THE ROSTER IS DELIBERATELY UNPUBLISHED. The founder data exists, but the source
- * marks one title "needs founder confirmation" and carries birth years and
- * personal social links, while business/README.md says keep personal data out of
- * git. Publishing a named real person is a consent decision, not a copy task.
- * Do not fill this in from any source other than the founders saying so.
+ * The roster was a stub through r2–r4 on purpose: publishing a named real person
+ * is a consent decision, not a copy task. The founders ruled on 2026-07-27 to
+ * publish themselves, and this page carries exactly that — their own names,
+ * roles, and what they build. No birth years, no personal social links, and no
+ * one who has not asked to be here. business/README.md still applies.
  */
 export default async function TeamPage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
@@ -39,6 +39,20 @@ export default async function TeamPage({ params }: { params: Promise<LocaleParam
         <p className="sc-lede">{t("lede")}</p>
       </section>
 
+      {/* The roster was a deliberate stub through r2–r4 because publishing a
+          named real person is a consent decision. The founders ruled on
+          2026-07-27 to publish themselves, so this is theirs and only theirs —
+          no birth years, no personal social links, and no third parties. */}
+      <section aria-label={t("peopleLabel")} className="sc-people">
+        {PEOPLE.map((person) => (
+          <article className="sc-person" key={person}>
+            <h2>{t(`people.${person}.name`)}</h2>
+            <p className="sc-person-role">{t(`people.${person}.role`)}</p>
+            <p className="sc-person-copy">{t(`people.${person}.copy`)}</p>
+          </article>
+        ))}
+      </section>
+
       <section aria-label={t("rulesLabel")} className="sc-numbered">
         {RULES.map((rule) => (
           <div className="sc-numbered-item" key={rule}>
@@ -51,12 +65,7 @@ export default async function TeamPage({ params }: { params: Promise<LocaleParam
         ))}
       </section>
 
-      {/* A <section> rather than the variant's bare <div>: aria-label needs a
-          role to attach to, and on a plain div a screen reader drops it. */}
-      <section aria-label={t("roster.label")} className="sc-roster">
-        <p className="sc-roster-slot">{t("roster.slot")}</p>
-        <p className="sc-roster-why">{t("roster.why")}</p>
-      </section>
+      <p className="sc-team-note">{t("note")}</p>
     </div>
   );
 }

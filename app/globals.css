@@ -206,7 +206,7 @@ textarea {
 /* ── Hero ───────────────────────────────────────────────────────────────── */
 
 /* Deliberately NOT 100svh. The winning variant lets the page start scrolling
-   immediately so the 80/20 band arrives sooner; the two variants that pinned a
+   immediately so the two-figure band arrives sooner; the variants that pinned a
    full-height hero both placed below it. See r4 VERDICT.md. */
 .sc-hero {
   display: grid;
@@ -244,29 +244,34 @@ textarea {
   max-width: 520px;
 }
 
-.sc-wait label {
+.sc-wait-label {
   font-family: var(--sc-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.sc-wait-row {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
+/* Says what the form will ask before the visitor commits to leaving the page.
+   The application lives on a Google Form, so this is the only chance to set the
+   expectation that it is two questions and not a survey. */
+.sc-wait-ask {
+  margin-top: 10px;
+  font-size: 15px;
+  max-width: 46ch;
 }
 
-.sc-wait input {
-  flex: 1;
-  min-width: 0;
-  border: 1px solid var(--sc-content);
-  border-radius: var(--sc-radius);
-  background: var(--sc-surface-raised);
-  color: var(--sc-content);
-  font-family: var(--sc-body);
-  font-size: 15px;
-  padding: 12px 14px;
+/* align-items:start stops the single child stretching to the row's full width —
+   the action should be the size of its own label, not the size of the column. */
+.sc-wait-row {
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.sc-wait-row > .sc-btn {
+  flex: 0 0 auto;
 }
 
 .sc-wait-note {
@@ -276,22 +281,15 @@ textarea {
   color: var(--sc-content-muted);
 }
 
-.sc-wait-err {
-  margin-top: 10px;
-  font-family: var(--sc-mono);
-  font-size: 12px;
-  color: var(--sc-status-error);
-}
-
-.sc-wait-ok {
-  margin-top: 12px;
-  font-family: var(--sc-mono);
-  font-size: 13px;
-}
-
-/* THE one cobalt object. Nothing else in this file may reference --sc-action. */
+/* THE one cobalt object. Nothing else in this file may reference --sc-action.
+   It is an <a> now that the application lives on a Google Form, so it needs the
+   things a <button> gave for free: centred text, no underline, and a box that
+   grows to the touch target rather than collapsing to the line height. */
 .sc-btn {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--sc-content);
   border-radius: var(--sc-radius);
   background: var(--sc-action);
@@ -300,6 +298,7 @@ textarea {
   font-size: 14px;
   letter-spacing: 0.06em;
   white-space: nowrap;
+  text-decoration: none;
   padding: 12px 20px;
   min-height: 44px; /* BRAND-KIT §13 — touch target */
   cursor: pointer;
@@ -357,7 +356,7 @@ textarea {
   color: var(--sc-content-muted);
 }
 
-/* ── 80/20 split ────────────────────────────────────────────────────────── */
+/* ── Two-figure band ────────────────────────────────────────────────────── */
 
 .sc-split {
   display: grid;
@@ -493,33 +492,50 @@ textarea {
   max-width: var(--sc-measure);
 }
 
-/* Roster placeholder. Dashed on purpose — it reads as a reserved space rather
-   than a designed panel, because the names are a consent decision, not a copy
-   task. See design/rounds/r4/VERDICT.md. */
-.sc-roster {
-  margin: 72px 0 88px;
-  border: 1px dashed var(--sc-content);
+/* Founders. Two cells, same rule weights as the figures band so the page reads as
+   one system — but no numerals, because a person is not a figure. Replaces the
+   dashed roster placeholder that stood here through r2–r4. */
+.sc-people {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 2px solid var(--sc-content);
+  border-bottom: 2px solid var(--sc-content);
   background: var(--sc-surface-raised);
-  min-height: 240px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  text-align: center;
-  padding: 40px 24px;
+  margin-bottom: 8px;
 }
 
-.sc-roster-slot {
+.sc-person {
+  padding: 44px 40px 40px;
+}
+
+.sc-person + .sc-person {
+  border-left: 1px solid var(--sc-content);
+}
+
+.sc-person h2 {
+  font-weight: 600;
+  font-size: clamp(22px, 2.2vw, 28px);
+}
+
+.sc-person-role {
+  margin-top: 10px;
   font-family: var(--sc-mono);
-  font-size: 13px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sc-content-muted);
 }
 
-.sc-roster-why {
+.sc-person-copy {
+  margin-top: 18px;
+  font-size: 15px;
+}
+
+.sc-team-note {
+  margin: 44px 0 88px;
   font-size: 14px;
   color: var(--sc-content-muted);
-  max-width: 52ch;
+  max-width: var(--sc-measure);
 }
 
 /* Pricing blocks — "what exists today" and "what is only a target", kept in
@@ -785,8 +801,17 @@ textarea {
     padding: 36px 26px 32px;
   }
 
-  .sc-roster {
-    margin: 56px 0 72px;
+  .sc-people {
+    grid-template-columns: 1fr;
+  }
+
+  .sc-person + .sc-person {
+    border-left: 0;
+    border-top: 1px solid var(--sc-content);
+  }
+
+  .sc-person {
+    padding: 36px 26px 32px;
   }
 
   .sc-block-head {

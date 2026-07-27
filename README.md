@@ -89,12 +89,17 @@ The site's final layout is what the rounds are for — `r1` is written but not y
   conversion to WOFF2 before launch.
 - **Logo vectors are reconstructed**, not official — rebuilt from the published
   geometry. Exact, but replace them if the originals turn up.
-- **`hello@sudocut.io` is an assumption.** The `sudocut.io` domain is evidenced
-  (`brand@sudocut.io` appears in the Option H exploration), but the `hello@`
-  local part is ours. Confirm it or replace it in `messages/{ko,en}.json`.
-- **The homepage figures are illustrative, not measured.** `14:32 → 10:47`,
-  `6:12`, `7` come from `brand/voice.md`'s examples and are labelled as such.
-  Replace them with a real project's numbers when one is publishable — that
-  would be a much stronger page.
-- **No `Accept-Language` negotiation.** `/` always redirects to `/ko`. Adding it
-  needs a root `middleware.ts`.
+- **The waitlist links out to a Google Form.** The URL is committed, so there is
+  nothing to configure; `NEXT_PUBLIC_WAITLIST_FORM_URL` overrides it for a
+  preview or a second form (`.env.example`). Two consequences worth knowing: a
+  link that leaves the site converts worse than an inline field, which is what
+  the ranked r4 variant had — look here first if signups are thin. And **the
+  responses sheet holds personal data:** keep it inside the Workspace, share it
+  per-person rather than by link, and delete rows on request.
+- **The homepage figures are illustrative, not measured.** `14:32 → 10:47` comes
+  from `brand/voice.md`'s examples and is labelled as such on the page. Replace
+  it with a real project's numbers when one is publishable — that would be a
+  much stronger page.
+- **No `Accept-Language` negotiation.** `/` always redirects to `/en`
+  (constitution D5), so a Korean visitor lands on English and has to switch.
+  Adding negotiation needs a root `middleware.ts`.
