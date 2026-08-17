@@ -17,38 +17,35 @@ export async function generateMetadata({
 }
 
 /**
- * Front page — r6 variant PLAYHEAD.
+ * Front page — r7 variant HALFTONE.
  *
- * The tape is running. The screen pans across the waveform continuously and
- * forever, with no seam — the source repeats exactly twice across its width, so
- * the wrap lands on identical content and there is nothing to see.
+ * **THE CONTROL.** r6-playhead exactly as it stands: `halftone-dots` at a 22px
+ * pitch on the waveform, panning seamlessly.
  *
- * TWO THINGS THE FOUNDER REMOVED after picking this variant, 2026-08-18:
+ * It is in the round so the round can answer the question that was actually
+ * asked. "Is halftone-dots the best shader for this?" is not answerable by
+ * looking at five alternatives; it needs the incumbent on the same page, with the
+ * same copy, judged the same way.
  *
- *   The console.  D10 let a visitor change the screen. Ruled out: "it does not
- *                 matter for right now". The constitution records D10 as
- *                 reversed rather than deleting it, because the argument for it
- *                 — soul.md S7, expose the criteria — is still a good one and
- *                 the next round should be able to find it.
- *   The gate line. "Invite-only · ~10 channels · Korea first · free during beta"
- *                 is gone from the hero. Every one of those facts still lives on
- *                 /pricing, so the page lost a line and the site lost nothing.
+ * If this wins, that is a real result: it would mean the survey found nothing
+ * better and the shader was right all along.
  *
- * SHARED BY ALL SIX r6 VARIANTS
- * r5 chose billboard: a full-bleed screen with the claim knocked out on paper.
- * r6 keeps that, and the screen MOVES (D9) over a waveform base image.
+ * SHARED BY ALL SIX r7 VARIANTS
+ * The layout is r6-playhead, unchanged and already chosen. **Only the screen
+ * differs**, because the founder asked whether `halftone-dots` was the right
+ * shader at all — and a round that also moved the layout could not answer that.
  *
- * The waveform is the one picture this company can put on its own front page
- * that is both honest and about the product: it is what SudoCut looks at. It
- * invents no footage and needs nobody's permission.
+ * Three variants hold the shader and change the base image; two change the
+ * shader; one changes nothing and is the control. That split is the experiment:
+ * it separates "which shader" from "which picture", which six free-form designs
+ * could not.
  *
- * Text is cut again, to 61 words. Gone since r5: the two-figure band, the "what
- * comes back" sentence, the waitlist's "two questions" line, the gate line, and
- * the privacy line — which MOVED to the footer rather than being deleted,
- * because cutting copy may cost words and may not cost a commitment.
- *
- * The qualifier survives both cuts. The claim above it is a view count on one
- * channel, and the standing brief forbids publishing it without saying so.
+ * Every candidate was rendered and measured before it was proposed —
+ * `node tools/shader-survey.mjs`. Most of the library never reached the page:
+ * `mesh-gradient`, `god-rays`, `metaballs`, `liquid-metal`, `warp`, `voronoi`
+ * and the rest blend many colours or glow, and W5 bans blur while W8 bans
+ * decorative gradients. They cannot be expressed in a three-colour palette, so
+ * they are not taste rejections.
  */
 export default async function HomePage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
@@ -57,12 +54,12 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
 
   return (
     <>
-      <ScreenStage pitch={22} src="/frames/base-wave.png">
+      <ScreenStage screen={{ shader: "halftone-dots", src: "/frames/base-wave.png", pitch: 22 }}>
         <div className="sc-plate">
           <p className="sc-kicker">{t("kicker")}</p>
           <h1 className="sc-plate-head">{t("title")}</h1>
           <p className="sc-qualifier">{t("qualifier")}</p>
-          {/* The one cobalt object on this page. The console is monochrome. */}
+          {/* The one cobalt object on this page. */}
           <WaitlistCta />
         </div>
       </ScreenStage>
