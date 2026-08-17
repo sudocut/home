@@ -20,7 +20,8 @@
   },
   "footer": {
     "tagline": "sudo rm the boring parts.",
-    "rights": "© {year} SudoCut · Korea first"
+    "rights": "© {year} SudoCut · Korea first",
+    "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
   "waitlist": {
     "label": "Closed beta waitlist",
@@ -32,41 +33,24 @@
   "home": {
     "kicker": "sudo rm the boring parts.",
     "title": "AI cut it. We published it. Same views.",
-    "qualifier": "SudoCut cuts long spoken footage into a publishable episode. Same episode, two edits, one channel we run — a view count, not a study of viewers.",
-    "ab": {
-      "human": "Human edit",
-      "ai": "SudoCut edit",
-      "note": "The same abstract screen twice, on purpose — we do not publish stills from partner episodes. What differed between the two edits was who made them. What did not differ was the view count."
-    },
+    "qualifier": "Same episode, two edits, one channel we run. A view count.",
+    "deliverable": "MP4 + a Premiere or Final Cut project. Every cut opens.",
     "channels": {
       "label": "Publishing with SudoCut",
       "count": "5 channels",
-      "note": "The names are real. The screens are abstract — partner artwork is theirs to grant, and we have not asked."
+      "note": "Names are real. Screens are abstract — partner artwork is theirs to grant."
     },
-    "proof": {
-      "label": "A/B result on our own channel",
-      "mark": "A/B",
-      "claim": "Same views as the human edit.",
-      "detail": "We published the same episode two ways on a channel we run — one cut by a human editor, one cut by SudoCut. The AI cut matched it on views.",
-      "tagline": "Measured, on one channel"
-    },
-    "split": {
-      "label": "Where SudoCut sits today",
-      "chore": {
-        "value": "8h+",
-        "label": "To finish one episode",
-        "copy": "What a producer on a recurring talk show still spends, by hand, after the recording stops."
-      },
-      "story": {
-        "value": "5",
-        "label": "Channels publishing with it",
-        "copy": "Real uploads, today. Partner channels and our own — named below, not customers yet."
-      }
-    },
-    "deliverable": {
-      "before": "You get back an ",
-      "figure": "MP4",
-      "after": ", plus a Premiere or Final Cut project. Every cut opens."
+    "screen": {
+      "console": "Adjust the screen",
+      "pitch": "Dot size",
+      "contrast": "Contrast",
+      "motion": "Motion",
+      "grid": "Grid",
+      "source": "Source",
+      "sourceRaw": "with dead air",
+      "sourceCut": "dead air removed",
+      "reset": "Reset",
+      "note": "A generated waveform, screened. Bounded to settings we measured."
     }
   },
   "about": {
