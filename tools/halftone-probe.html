@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>halftone probe</title>
+<!--
+  halftone-probe.html — render halftoneDots full-bleed over a source frame at
+  settings given by the query string, so tools/halftone-probe.mjs can MEASURE the
+  result instead of eyeballing it.
+
+  Same contract, and same reason, as tools/shader-probe.html. D6's settings table
+  was written from screenshots twice and was wrong both times; nothing in the repo
+  could catch it because nothing measured. D7 does not get to repeat that.
+
+  Query params (all optional):
+    src               path to the source image        (default /frames/frame-hero.png)
+    front, back       hex colours                     size, radius, contrast
+    type              classic|gooey|holes|soft        grid  square|hex
+    inverted          1|0                             grainMixer, grainOverlay, grainSize
+    bw, bh            draw into an ELEMENT of exactly this CSS size, pinned to
+                      the top-left corner, instead of filling the viewport.
+    flat=1            skip the shader, draw the source image cover-fit — the
+                      baseline every setting's fidelity is correlated against.
+
+  WHY bw/bh EXIST AND `--window-size` IS NOT ENOUGH
+  Chrome enforces a minimum window size. Asking for `--window-size=176,99` does
+  not give a 176x99 viewport — it gives the minimum, renders the shader across
+  all of it, and screenshots the top-left 176x99 of the result. Every "small box"
+  number the probe produced that way was a CROP of a large render, and it read as
+  a real finding: coverage appeared to collapse from 0.34 to 0.07 below 480px,
+  which looked exactly like a genuine antialiasing cliff. It was the window
+  refusing to be small. Size the element, keep the window comfortable, crop the
+  screenshot to the element — then the box really is the variable.
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #f1f1ec; }
+  /* Default: fill the viewport. With bw/bh, sized exactly and pinned top-left so
+     the driver can crop to it without knowing anything about layout. */
+  #bg, #flat { position: fixed; inset: 0; }
+  #flat { background-size: cover; background-position: center; }
+  :root.sized #bg,
+  :root.sized #flat {
+    inset: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--bw);
+    height: var(--bh);
+  }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<script>
+  // Applied before the module runs so the element is already its final size when
+  // ShaderMount's ResizeObserver takes its first measurement.
+  {
+    const q = new URLSearchParams(location.search);
+    const bw = q.get('bw');
+    const bh = q.get('bh');
+    if (bw && bh) {
+      const root = document.documentElement;
+      root.style.setProperty('--bw', `${bw}px`);
+      root.style.setProperty('--bh', `${bh}px`);
+      root.classList.add('sized');
+    }
+  }
+</script>
+<script type="module">
+  import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+  import { halftoneDotsFragmentShader } from '/design/vendor/paper-shaders/shaders/halftone-dots.js';
+  import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+  import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+
+  const q = new URLSearchParams(location.search);
+  const num = (k, d) => (q.has(k) ? Number.parseFloat(q.get(k)) : d);
+  const str = (k, d) => q.get(k) ?? d;
+
+  const TYPES = { classic: 0, gooey: 1, holes: 2, soft: 3 };
+  const GRIDS = { square: 0, hex: 1 };
+
+  const src = str('src', '/frames/frame-hero.png');
+
+  // The baseline. Correlating a halftone against the source it screened is the
+  // only way to ask "did the picture survive" rather than "is there ink on the
+  // page", and the source has to be measured through the same pipeline —
+  // same canvas, same cover-fit, same screenshot path — or the correlation is
+  // measuring the resize, not the shader.
+  if (q.get('flat') === '1') {
+    // Reuse #bg's box so the baseline is measured through exactly the geometry
+    // the shader gets, then correlating the two compares like with like.
+    const el = document.getElementById('bg');
+    el.id = 'flat';
+    el.style.backgroundImage = `url("${src}")`;
+    const probe = new Image();
+    probe.src = src;
+    await probe.decode();
+    document.title = 'ready';
+  } else {
+    const img = new Image();
+    // Same-origin here, but the shader uploads this to a texture, so state the
+    // intent: a cross-origin thumbnail without CORS taints the canvas and the
+    // upload fails. Anything dropped into public/channels/ must be same-origin.
+    img.crossOrigin = 'anonymous';
+    img.src = src;
+    await img.decode();
+
+    const u = {
+      u_colorFront: col(str('front', '#24292c')),
+      u_colorBack:  col(str('back',  '#f1f1ec')),
+      u_size:     num('size', 0.45),
+      u_radius:   num('radius', 1.0),
+      u_contrast: num('contrast', 0.5),
+      u_grid: GRIDS[str('grid', 'square')] ?? 0,
+      u_type: TYPES[str('type', 'classic')] ?? 0,
+      u_originalColors: false,
+      u_inverted: str('inverted', '1') === '1',
+      u_grainMixer:   num('grainMixer', 0),
+      u_grainOverlay: num('grainOverlay', 0),
+      u_grainSize:    num('grainSize', 0.5),
+      u_image: img,
+      u_noiseTexture: getShaderNoiseTexture(),
+      u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+      u_originX: 0.5, u_originY: 0.5,
+      u_worldWidth: 0, u_worldHeight: 0,
+      u_fit: 2, // cover — the panel is a crop of the frame, never a letterbox
+    };
+    await u.u_noiseTexture.decode();
+    // speed 0, frame 0 — static. D7 keeps the brand's "no animated background".
+    new ShaderMount(document.getElementById('bg'), halftoneDotsFragmentShader, u, undefined, 0, 0);
+    // Signals the driver that the first frame is committed, so a screenshot taken
+    // after this cannot catch an empty canvas.
+    requestAnimationFrame(() => requestAnimationFrame(() => { document.title = 'ready'; }));
+  }
+</script>
+</body>
+</html>

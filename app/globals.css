@@ -205,18 +205,6 @@ textarea {
 
 /* ── Hero ───────────────────────────────────────────────────────────────── */
 
-/* Deliberately NOT 100svh. The winning variant lets the page start scrolling
-   immediately so the two-figure band arrives sooner; the variants that pinned a
-   full-height hero both placed below it. See r4 VERDICT.md. */
-.sc-hero {
-  display: grid;
-  grid-template-columns: 1.12fr 0.88fr;
-  align-items: start;
-  gap: 64px;
-  padding-top: 88px;
-  padding-bottom: 80px;
-}
-
 .sc-kicker {
   font-family: var(--sc-mono);
   font-size: 14px;
@@ -752,16 +740,221 @@ textarea {
   left: 0;
 }
 
+/* ── Halftone screens — constitution D7 ─────────────────────────────────── */
+
+/* The host every <Halftone> renders into. ShaderMount prepends an absolutely
+   positioned canvas at z-index -1 and sets isolation:isolate on the host, so
+   anything the caller stacks on top sits above the dots without a z-index war.
+
+   The paper background is the FALLBACK, not a backdrop: if WebGL is unavailable
+   the panel is a sheet of warm paper inside its rule, which is the r3 page, which
+   shipped. A screen that fails to render leaves a blank, not a broken picture. */
+.sc-screen {
+  position: relative;
+  background: var(--sc-surface);
+  border-radius: var(--sc-radius);
+}
+
+/* ── Trust band — constitution D8 ───────────────────────────────────────── */
+
+/* The band the founder asked to be visible the moment someone lands. Ink on
+   paper only: the one cobalt object on this page is the waitlist action, and a
+   row of five tiles is the easiest place in the world to accidentally spend the
+   point colour a second time. */
+.sc-trust {
+  /* Tile width, gutter and loop length. Each variant restates these — the band
+     is a strip in one design and the hero in another — but they are declared
+     here so the keyframes below always resolve, whatever a variant forgets. */
+  --sc-tick-w: 176px;
+  --sc-tick-gap: 16px;
+  --sc-tick-duration: 42s;
+
+  border-top: 2px solid var(--sc-content);
+  border-bottom: 2px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+  padding: 20px 0 18px;
+}
+
+.sc-trust-label {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 0 calc(40px * var(--sc-density));
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sc-trust-count {
+  font-family: var(--sc-numbers);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--sc-content-muted);
+}
+
+/* D8 condition 2: stopped, the band is still complete. The rail scrolls, so a
+   visitor with prefers-reduced-motion — or one who hovered and paused it — can
+   still reach every channel instead of seeing the row cut off at the edge. */
+.sc-tick-rail {
+  display: flex;
+  gap: var(--sc-tick-gap);
+  margin-top: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sc-tick-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.sc-tick-track {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--sc-tick-gap);
+  margin: 0;
+  padding: 0 0 0 var(--sc-tick-gap);
+  list-style: none;
+  animation: sc-tick var(--sc-tick-duration) linear infinite;
+}
+
+.sc-tick-track:first-child {
+  padding-left: calc(40px * var(--sc-density));
+}
+
+/* D8 condition 3: hover and focus pause it. Every tile is a link, and chasing a
+   moving link is the fastest way to make a "delightful" band unusable. */
+.sc-tick-rail:hover .sc-tick-track,
+.sc-tick-rail:focus-within .sc-tick-track {
+  animation-play-state: paused;
+}
+
+/* One full run of five tiles, gap included. Translating by exactly that puts the
+   duplicate run where the first one started, so the wrap has no seam. */
+@keyframes sc-tick {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-5 * (var(--sc-tick-w) + var(--sc-tick-gap))));
+  }
+}
+
+.sc-tick-item {
+  flex: 0 0 auto;
+  width: var(--sc-tick-w);
+}
+
+.sc-tick {
+  display: block;
+  text-decoration: none;
+  border: 1px solid var(--sc-content);
+  background: var(--sc-surface);
+  padding: 0;
+  transition:
+    box-shadow var(--sc-fast) var(--sc-ease),
+    transform var(--sc-fast) var(--sc-ease);
+}
+
+.sc-tick:hover {
+  box-shadow: var(--sc-shadow-action);
+  transform: var(--sc-lift);
+}
+
+.sc-tick-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid var(--sc-content);
+}
+
+.sc-tick-name {
+  display: block;
+  padding: 10px 12px 0;
+  font-family: var(--sc-body);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.25;
+  /* Two of the five names are long, and one is Korean. Clamp rather than
+     truncate at one line: the whole point of the band is that the names are
+     legible. */
+  min-height: 2.5em;
+}
+
+.sc-tick-handle {
+  display: block;
+  padding: 2px 12px 10px;
+  font-family: var(--sc-mono);
+  font-size: 11px;
+  color: var(--sc-content-muted);
+}
+
+/* Says out loud that the pictures are abstract. The names are real and the
+   screens are not, and a visitor should not have to work that out. */
+.sc-trust-note {
+  margin-top: 14px;
+  padding: 0 calc(40px * var(--sc-density));
+  font-family: var(--sc-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--sc-content-muted);
+  max-width: 76ch;
+}
+
+/* ── r5 TICKER — the trust band is the hero ─────────────────────────────── */
+
+/* Bigger tiles than any other variant: here the band is the first object on the
+   page rather than a strip under one, so a 240px tile at a 12px pitch reads as a
+   row of printed frames instead of a row of thumbnails. */
+.sc-trust {
+  --sc-tick-w: 240px;
+  --sc-tick-gap: 18px;
+  --sc-tick-duration: 46s;
+  border-top: 0;
+  padding: 22px 0 20px;
+}
+
+.sc-tk {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  align-items: start;
+  gap: 56px;
+  padding-top: 52px;
+  padding-bottom: 48px;
+}
+
+.sc-tk-head {
+  margin: 22px 0 20px;
+  font-weight: 700;
+  font-size: clamp(36px, 4.8vw, 62px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+}
+
+.sc-qualifier {
+  font-size: 16px;
+  line-height: 1.55;
+  max-width: 46ch;
+  color: var(--sc-content-muted);
+}
+
+/* Boxed, because with the headline taking the left two thirds the action would
+   otherwise be the only unenclosed thing on a page full of rules. */
+.sc-tk-side {
+  border: 2px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+  padding: 28px 28px 26px;
+}
+
+.sc-tk-side .sc-wait {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 @media (max-width: 880px) {
   .sc-wrap {
     padding: 0 calc(22px * var(--sc-density));
-  }
-
-  .sc-hero {
-    grid-template-columns: 1fr;
-    gap: 48px;
-    padding-top: 56px;
-    padding-bottom: 56px;
   }
 
   .sc-split {
@@ -825,6 +1018,22 @@ textarea {
   .sc-rows li {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+}
+
+@media (max-width: 880px) {
+  .sc-trust {
+    --sc-tick-w: 190px;
+  }
+
+  .sc-tk {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-top: 36px;
+  }
+
+  .sc-tk-side {
+    padding: 22px 20px 20px;
   }
 }
 
