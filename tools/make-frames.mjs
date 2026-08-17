@@ -304,6 +304,113 @@ function loopWave(w, h, seed) {
   return grey;
 }
 
+/* ---------- two more base images, both on the same loop ---------- */
+
+/**
+ * A spectrogram of the same speech: time across, frequency up, energy as ink.
+ *
+ * The waveform is one dimension of a recording; this is two, so it gives a screen
+ * something a flat envelope cannot — tonal structure in BOTH axes. Dithering and
+ * the image filters read that as a picture; against the waveform they mostly read
+ * as a silhouette.
+ *
+ * Periodic in x by the same construction as everything else here: one period is
+ * drawn and repeated twice, so a pan of half the image lands on identical pixels.
+ */
+function loopSpectrogram(w, h, seed) {
+  const grey = new Uint8Array(w * h);
+  const m = Math.round(w / 2);
+  const env = loopEnvelope(m, seed);
+
+  for (let x = 0; x < w; x++) {
+    const i = x % m;
+    const t = i / m;
+    const loud = env[i];
+    for (let y = 0; y < h; y++) {
+      // Low frequencies at the bottom, as a spectrogram is drawn.
+      const f = 1 - y / (h - 1);
+
+      // Voice sits low and rolls off; the roll-off is what stops this reading as
+      // a rectangle of noise. Gentle, so the field still reaches the top of the
+      // frame — the first version rolled off at 3.1 and left the upper two thirds
+      // blank, which screened to almost nothing.
+      const tilt = Math.exp(-f * 1.5);
+
+      // Four formants spread across most of the height, drifting slowly. Integer
+      // cycle counts keep the loop.
+      let bands = 0;
+      for (let k = 0; k < 4; k++) {
+        const centre = 0.1 + 0.22 * k + 0.06 * Math.sin(2 * Math.PI * (k + 1) * t);
+        const width = 0.055 + 0.025 * k;
+        const d = (f - centre) / width;
+        bands += Math.exp(-d * d) * (1 - 0.16 * k);
+      }
+
+      const grit = loopNoise(t * (1 + k0(y)), 191, seed + y * 7) * 0.35;
+      let e = loud * (0.66 * bands + 0.44 * tilt) * (0.82 + grit);
+      // Curve it so the field has blacks and whites rather than a wash of mid
+      // greys. A screen of nothing but midtones is a texture swatch, not a
+      // picture — the same lesson the hero frames taught.
+      e = Math.max(0, Math.min(1, e * 1.35));
+      e = e * e * (3 - 2 * e);
+      grey[y * w + x] = Math.round(255 * (1 - 0.95 * e));
+    }
+  }
+  return grey;
+}
+
+/** Tiny helper so each spectrogram row samples its noise on a different phase. */
+function k0(y) {
+  return (y % 7) * 0.13;
+}
+
+/**
+ * The timeline: clips laid end to end with the cuts between them.
+ *
+ * The most literal picture of the product in the set — a strip of kept takes with
+ * the removed dead air showing as gaps. Blocky and orthogonal, which is the house
+ * grammar, and it screens into hard-edged bands rather than clouds.
+ *
+ * Clip boundaries come from the SAME envelope as the waveform: a cut lands where
+ * the signal is quiet. The picture is therefore consistent with the other two
+ * rather than being a decoration that happens to look related.
+ */
+function loopTimeline(w, h, seed) {
+  const grey = new Uint8Array(w * h).fill(255);
+  const m = Math.round(w / 2);
+  const env = loopEnvelope(m, seed);
+
+  // Quiet runs long enough to be dead air, found the same way an editor would.
+  const quiet = new Uint8Array(m);
+  for (let i = 0; i < m; i++) quiet[i] = env[i] < 0.19 ? 1 : 0;
+
+  const laneTop = Math.round(h * 0.16);
+  const laneBottom = Math.round(h * 0.84);
+  const rule = Math.max(1, Math.round(h * 0.012));
+
+  for (let x = 0; x < w; x++) {
+    const i = x % m;
+    // Ink where a clip is kept, paper where it was cut.
+    const kept = !quiet[i];
+    for (let y = 0; y < h; y++) {
+      let v = 255;
+      if (kept && y >= laneTop && y <= laneBottom) {
+        // A lighter core inside each clip so the band is not a solid slab: the
+        // screen needs a tone to grade, or every clip prints as one flat block.
+        // Lifted from 0.06 to 0.24 after the first pass measured mean 166 — that
+        // much ink in the source screens into a field too dark to knock type out
+        // of, which is r2's rejected failure arriving by a different route.
+        const centre = 1 - Math.abs(y - (laneTop + laneBottom) / 2) / ((laneBottom - laneTop) / 2);
+        v = Math.round(255 * (0.24 + 0.46 * centre * centre));
+      }
+      // The baseline the clips sit on stays visible through the gaps.
+      if (Math.abs(y - Math.round(h / 2)) < rule) v = Math.min(v, 150);
+      grey[y * w + x] = v;
+    }
+  }
+  return grey;
+}
+
 /* ---------- driver ---------- */
 
 // Small on purpose. The screen destroys detail by definition — a 1600px source
@@ -331,7 +438,12 @@ const WAVE = { w: 2400, h: 300, seed: 7 };
 let changed = 0;
 
 {
-  for (const [name, grey] of [["base-wave", loopWave(WAVE.w, WAVE.h, WAVE.seed)]]) {
+  const bases = [
+    ["base-wave", loopWave(WAVE.w, WAVE.h, WAVE.seed)],
+    ["base-spectrogram", loopSpectrogram(WAVE.w, WAVE.h, WAVE.seed)],
+    ["base-timeline", loopTimeline(WAVE.w, WAVE.h, WAVE.seed)],
+  ];
+  for (const [name, grey] of bases) {
     const png = encodePng(WAVE.w, WAVE.h, grey);
     const file = join(OUT, `${name}.png`);
     const same = existsSync(file) && readFileSync(file).equals(png);

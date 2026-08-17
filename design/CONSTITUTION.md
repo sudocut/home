@@ -61,6 +61,7 @@ used by the selected *Bauhaus Timeline Proof* direction.
 | **D8** | **The trust band flows.** One continuous marquee, the channel band only. Narrows W6. Decided 2026-08-18. | delete the keyframes |
 | **D9** | **The screen moves.** D7's `static` is lifted for the hero screen only, driven by uniforms — never by `speed`. The loop is **seamless**, not a reset. Decided 2026-08-18. | delete the pan |
 | ~~D10~~ | ~~The visitor can adjust the screen.~~ **REVERSED the same day**, 2026-08-18. The console is gone. | re-add the console |
+| **D11** | **The screen's shader is chosen by survey, not by habit.** Any two-colour paper-shader is eligible; the palette decides what is even a candidate. Decided 2026-08-18. | see below |
 
 ### D5 — English first (2026-07-26, founder)
 
@@ -482,3 +483,76 @@ rather than on the one page whose job is a single decision. The implementation i
 recoverable from the `r6-console` branch.
 
 ---
+
+### D11 — which shader, and why it is chosen by survey (2026-08-18, founder)
+
+Founder: *"the design now are using halftone dots. I think it is not the best way
+to this design so you can just look around the shaders and pick a best one with
+best parameters."*
+
+`halftone-dots` was never chosen against alternatives — it was the first shader
+that fit the palette, and D7 froze it by writing its settings down. D11 replaces
+that accident with a rule: **the shader is whatever survives the palette and then
+measures best.** `tools/shader-survey.mjs` runs the comparison.
+
+#### The palette is the first filter, and it does most of the work
+
+A shader is eligible only if **every colour slot it has can be filled from ink,
+paper and panel**. That is not a preference; a shader with four inks cannot be
+expressed in this system at all.
+
+Ineligible, and why — none of these is a taste judgement:
+
+| shader | why it cannot be used |
+|---|---|
+| `mesh-gradient`, `static-mesh-gradient`, `static-radial-gradient`, `warp`, `grain-gradient` | built to blend many colours; W8 bans decorative gradients |
+| `god-rays`, `metaballs`, `smoke-ring`, `gem-smoke`, `neuro-noise`, `pulsing-border` | built to **glow**; W5 bans blur outright |
+| `voronoi` | has a `u_colorGlow` |
+| `liquid-metal`, `heatmap`, `color-panels` | multi-colour by construction |
+| `halftone-cmyk` | four inks — the original D7 exclusion, unchanged |
+
+#### The survey
+
+`node tools/shader-survey.mjs`, ink `#24292c` on paper `#f1f1ec`, 880×495.
+`coverage` and the flood/faint thresholds are D7's. `u_time moves` is measured by
+rendering two frames nine seconds apart at `speed 1` — never read off the docs.
+
+| shader | slots | coverage | grain | u_time moves | |
+|---|---|---|---|---|---|
+| `halftone-dots` on wave | 2 · ink/paper | 0.210 | 18.4 | — | the incumbent |
+| **`image-dithering` on wave** | **3 · ink/paper/ink** | **0.321** | **6.3** | **—** | **adopted** |
+| `image-dithering` on spectrogram | 3 | 0.303 | 21.9 | — | ok |
+| `image-dithering` on timeline | 3 | 0.458 | 24.9 | — | heavy |
+| `image-dithering` on wave, px 6 | 3 | 0.314 | 4.3 | — | **FLAT** |
+| `dithering` simplex, procedural | 2 · ink/paper | 0.403 | 22.2 | **yes, 71.2** | ok |
+| `dithering` sphere | 2 | 0.536 | 24.7 | yes | **FLOODED** |
+| `dot-grid` fine circles | 3 · paper/ink/ink | 0.129 | 6.7 | — | ok, very light |
+| `waves` fine lines | 2 · ink/paper | 0.647 | 22.5 | — | **FLOODED** |
+| `perlin-noise` | 2 · ink/paper | 0.997 | 0.3 | yes | **FLOODED** — solid ink |
+| `fluted-glass` on wave | 3 | 0.331 | 3.9 | — | **FLAT** — no structure |
+| `spiral` | 2 · ink/paper | 0.400 | 2.0 | yes | **FLAT** — no structure |
+
+#### What was adopted, and the argument in one line
+
+**`image-dithering`, 8×8 Bayer, `u_pxSize` 3, `u_inverted: true`, on the looping
+waveform.** `halftone-dots` reduces the signal to round dots on a fixed grid, and
+the waveform's fine vertical peaks are exactly what a dot grid throws away. The
+dither keeps them: coverage 0.321 against 0.210 **on the same source**, so it is
+carrying more of the picture rather than simply printing darker.
+
+`u_colorHighlight` is set equal to `u_colorFront` — the library's own docs call
+that "classic 2-color dithering". Anything else invents a third ink.
+
+#### Two things the survey caught that reading would not have
+
+1. **`u_inverted` means the opposite of its name here too.** At `false`,
+   `image-dithering` rendered an ink field with the waveform reversed out of it —
+   coverage 0.70, the page turned into the dark rectangle r2 was rejected for.
+   This is the second shader in this library with that exact trap.
+2. **`u_time` is per-shader, not per-library.** `dithering` animates itself, at
+   71.2 mean absolute difference over nine seconds. `halftone-dots`,
+   `image-dithering` and `dot-grid` declare `u_time` and never read it. A screen
+   built on any of those three has to be moved from outside, and one built on
+   `dithering` must not be.
+
+**Never assume; run the survey.** That is the rule D11 actually adds.
