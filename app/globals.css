@@ -396,6 +396,58 @@ textarea {
   max-width: 34ch;
 }
 
+/* ── Trusted channels ───────────────────────────────────────────────────── */
+
+/* Names the channels the story figure counts — a content addition to the r4
+   layout at the founder's request (2026-08-17), not a ranked-round change.
+   Monochrome by rule: the waitlist button owns the page's one cobalt, so these
+   are ink-bordered cells sharing hairlines the way .sc-packs cells do. */
+.sc-channels {
+  padding-top: 64px;
+}
+
+.sc-channel-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+/* -1px collapses neighbouring borders to a single hairline — same trick as
+   .sc-packs. */
+.sc-channel-list li {
+  margin: -1px 0 0 -1px;
+}
+
+.sc-channel {
+  display: block;
+  border: 1px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+  padding: 16px 22px;
+  text-decoration: none;
+  transition: background-color var(--sc-fast) var(--sc-ease);
+}
+
+.sc-channel:hover {
+  background: var(--sc-hover);
+}
+
+.sc-channel-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sc-channel-handle {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--sc-content-muted);
+}
+
 .sc-example {
   padding: 56px 0 72px;
   text-align: center;
@@ -779,6 +831,14 @@ textarea {
 
   .sc-wait-row {
     flex-direction: column;
+  }
+
+  .sc-channels {
+    padding-top: 48px;
+  }
+
+  .sc-channel {
+    padding: 14px 18px;
   }
 
   .sc-nav {

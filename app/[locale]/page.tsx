@@ -4,6 +4,22 @@ import { WaitlistCta } from "@/components/WaitlistCta";
 
 type LocaleParams = { locale: string };
 
+/**
+ * The channels named on the trust band — added at the founder's request,
+ * 2026-08-17: "trusted partners and channels that are using our service."
+ * Handles are locale-invariant identifiers rather than copy, so like the
+ * waitlist FORM_URL they live here and not in messages/. Each name is the
+ * channel's own YouTube title, checked against youtube.com/@{handle} on
+ * 2026-08-17 — all five resolved.
+ */
+const CHANNELS = [
+  { handle: "eo_korea", name: "EO Korea" },
+  { handle: "eoglobal", name: "EO" },
+  { handle: "sudoremove", name: "sudoremove" },
+  { handle: "chester_roh", name: "AI Frontier Korea (노정석)" },
+  { handle: "eegirit", name: "이기릿 EEgirIT" },
+] as const;
+
 export async function generateMetadata({
   params,
 }: {
@@ -59,6 +75,30 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
       </section>
 
       <div className="sc-wrap">
+        {/* Names the five channels the story figure counts, so the number above
+            is checkable rather than claimed. A content addition to the r4
+            layout at the founder's request (2026-08-17), not a ranked-round
+            change. Monochrome links only — the waitlist button above keeps the
+            page's one cobalt. */}
+        <section aria-label={t("channels.label")} className="sc-channels">
+          <p className="sc-label">{t("channels.label")}</p>
+          <ul className="sc-channel-list">
+            {CHANNELS.map((channel) => (
+              <li key={channel.handle}>
+                <a
+                  className="sc-channel"
+                  href={`https://www.youtube.com/@${channel.handle}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span className="sc-channel-name">{channel.name}</span>
+                  <span className="sc-channel-handle">@{channel.handle}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {/* Names the deliverable, which every r4 variant left unsaid — see the
             r4 verdict. Replaces an illustrative "14:32 → 10:47" that came from
             brand/voice.md's examples and measured nothing. */}
