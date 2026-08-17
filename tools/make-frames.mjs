@@ -190,6 +190,118 @@ function field(w, h, seed) {
   return grey;
 }
 
+/* ---------- the base image: a waveform, and the same waveform cut ---------- */
+
+/**
+ * WHY A WAVEFORM AND NOT A PICTURE OF SOMETHING
+ *
+ * r6 needs a base image for the screen, and the abstract light fields above were
+ * chosen for tonal range rather than for meaning. A waveform is the one image
+ * this company can put on its own front page that is **both** honest and about
+ * the product: it is literally what SudoCut looks at. It invents no footage, it
+ * impersonates nobody's episode, and it needs no one's permission.
+ *
+ * It also halftones well, which is not a given. A screen needs a tonal ramp —
+ * flat shapes make flat dots — so the envelope is drawn with a soft vertical
+ * falloff rather than as a hard silhouette. The dots grade out at the edge of the
+ * waveform the way ink does off the edge of a solid.
+ *
+ * TWO IMAGES FROM ONE SIGNAL. `base-wave.png` is the recording with its dead air
+ * in it. `base-wave-cut.png` is the SAME signal with the silences removed and the
+ * remainder closed up — which is the product, in one picture. A variant that hard
+ * cuts between them is not decorating, it is demonstrating; and a hard cut is the
+ * only transition the brand allows (O4), so the honest option is also the legal
+ * one.
+ */
+
+/** Amplitude envelope of a plausible run of speech, in [0,1], length n. */
+function speechEnvelope(n, seed) {
+  const env = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const t = i / n;
+    // Phrase level: slow swells, someone talking in sentences.
+    const phrase =
+      0.5 + 0.5 * Math.sin(2 * Math.PI * (t * 3.1 + hash2(seed, 1, 5))) * Math.cos(2 * Math.PI * t * 1.7);
+    // Syllable level: the fast beat inside a phrase.
+    const syll = 0.5 + 0.5 * Math.sin(2 * Math.PI * t * 190 + 3 * valueNoise(t * 40, seed, seed));
+    // Texture, so no two peaks are the same height.
+    const grit = valueNoise(t * 220, seed * 1.7, seed + 3);
+    env[i] = Math.max(0, Math.min(1, (0.55 * phrase + 0.3 * syll + 0.15 * grit) * phrase));
+  }
+  return env;
+}
+
+/**
+ * The runs of dead air. A gap counts only if it is both quiet AND long — which is
+ * the actual rule, not a simplification of one: a short quiet moment between two
+ * words is speech, and cutting it is what makes an edit sound clipped.
+ */
+function silences(env, floor, minRun) {
+  const runs = [];
+  let start = -1;
+  for (let i = 0; i < env.length; i++) {
+    const quiet = env[i] < floor;
+    if (quiet && start < 0) start = i;
+    if ((!quiet || i === env.length - 1) && start >= 0) {
+      if (i - start >= minRun) runs.push([start, i]);
+      start = -1;
+    }
+  }
+  return runs;
+}
+
+/** Draw an envelope as a mirrored band with a soft edge, dark on light. */
+function drawWave(w, h, sample) {
+  const grey = new Uint8Array(w * h);
+  const mid = (h - 1) / 2;
+  const maxAmp = h * 0.42;
+  // The soft edge, in pixels. This is the whole reason the result halftones into
+  // a ramp of dot sizes instead of a solid block with a hard border.
+  const soft = h * 0.055;
+
+  for (let x = 0; x < w; x++) {
+    const a = sample(x / (w - 1));
+    const half = Math.max(1.2, a * maxAmp);
+    for (let y = 0; y < h; y++) {
+      const d = Math.abs(y - mid);
+      // 1 inside the band, 0 outside, smooth across `soft`.
+      let inside = 1 - Math.max(0, Math.min(1, (d - half + soft) / soft));
+      inside = inside * inside * (3 - 2 * inside);
+      // A faint baseline so a silent stretch still reads as a track rather than
+      // as blank paper — dead air is part of the picture, not an absence of it.
+      const base = Math.exp(-(d * d) / (2 * 2.2 * 2.2)) * 0.28;
+      const ink = Math.max(inside, base);
+      grey[y * w + x] = Math.round(255 * (1 - 0.94 * ink));
+    }
+  }
+  return grey;
+}
+
+function waveFrames(w, h, seed) {
+  const N = 4096;
+  const env = speechEnvelope(N, seed);
+  const gaps = silences(env, 0.17, Math.round(N * 0.018));
+
+  // Raw: the recording as it came off the camera, dead air included.
+  const raw = drawWave(w, h, (u) => env[Math.min(N - 1, Math.round(u * (N - 1)))]);
+
+  // Cut: the same signal with those runs removed and the rest closed up. Built by
+  // index remapping rather than by redrawing, so it is provably the same audio —
+  // if it were regenerated the two images would be different recordings and the
+  // hard cut between them would be a lie about what changed.
+  const keep = [];
+  let g = 0;
+  for (let i = 0; i < N; i++) {
+    while (g < gaps.length && i > gaps[g][1]) g++;
+    if (g < gaps.length && i >= gaps[g][0] && i <= gaps[g][1]) continue;
+    keep.push(i);
+  }
+  const cut = drawWave(w, h, (u) => env[keep[Math.min(keep.length - 1, Math.round(u * (keep.length - 1)))]]);
+
+  const removed = 1 - keep.length / N;
+  return { raw, cut, removed };
+}
+
 /* ---------- driver ---------- */
 
 // Small on purpose. The screen destroys detail by definition — a 1600px source
@@ -208,7 +320,33 @@ const FRAMES = [
 const check = process.argv.includes("--check");
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
+// The r6 base image, and the same signal with its dead air removed. Wider than
+// the tiles because this one is a full-bleed hero background, and the screen pans
+// across it.
+const WAVE = { w: 1280, h: 720, seed: 7 };
+
 let changed = 0;
+
+{
+  const { raw, cut, removed } = waveFrames(WAVE.w, WAVE.h, WAVE.seed);
+  for (const [name, grey] of [["base-wave", raw], ["base-wave-cut", cut]]) {
+    const png = encodePng(WAVE.w, WAVE.h, grey);
+    const file = join(OUT, `${name}.png`);
+    const same = existsSync(file) && readFileSync(file).equals(png);
+    if (check) {
+      if (!same) {
+        changed++;
+        console.error(`  \u2717 ${name}.png differs from the committed file`);
+      }
+      continue;
+    }
+    if (!same) changed++;
+    writeFileSync(file, png);
+    console.log(`  ${same ? "\u00b7" : "\u2713"} ${name}.png  ${WAVE.w}\u00d7${WAVE.h}  ${(png.length / 1024).toFixed(1)}kb`);
+  }
+  if (!check) console.log(`    dead air removed by the cut: ${(removed * 100).toFixed(1)}%`);
+}
+
 for (const f of FRAMES) {
   const png = encodePng(f.w, f.h, field(f.w, f.h, f.seed));
   const file = join(OUT, `${f.name}.png`);

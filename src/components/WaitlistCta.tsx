@@ -32,7 +32,7 @@ import { useTranslations } from "next-intl";
  */
 const FORM_URL = "https://forms.gle/ee5EnjcggaMHRHGF8";
 
-export function WaitlistCta() {
+export function WaitlistCta({ compact = false }: { compact?: boolean } = {}) {
   const t = useTranslations("waitlist");
   const contact = useTranslations("contact");
 
@@ -43,10 +43,13 @@ export function WaitlistCta() {
   // address rather than rendering a dead button.
   const href = form || `mailto:${email}`;
 
+  // r6: compact drops the "two questions" line and the privacy line, leaving the
+  // label, the action and the gate. The privacy promise is not deleted — it moves
+  // to the footer, which is where a commitment lives when it is not the message.
   return (
     <div className="sc-wait" id="waitlist">
       <p className="sc-wait-label">{t("label")}</p>
-      <p className="sc-wait-ask">{t("ask")}</p>
+      {!compact && <p className="sc-wait-ask">{t("ask")}</p>}
 
       <div className="sc-wait-row">
         {/* The one cobalt object. Do not add a second anywhere in this view. */}
@@ -61,7 +64,7 @@ export function WaitlistCta() {
       </div>
 
       <p className="sc-wait-note">{t("note")}</p>
-      <p className="sc-wait-note">{t("privacy")}</p>
+      {!compact && <p className="sc-wait-note">{t("privacy")}</p>}
     </div>
   );
 }
