@@ -211,13 +211,6 @@ textarea {
   letter-spacing: 0.04em;
 }
 
-.sc-hero h1 {
-  font-weight: 600;
-  font-size: clamp(38px, 4.6vw, 58px);
-  line-height: 1.08;
-  margin: 20px 0 24px;
-}
-
 .sc-lede {
   font-size: 17px;
   max-width: var(--sc-measure);
@@ -344,30 +337,12 @@ textarea {
   color: var(--sc-content-muted);
 }
 
-/* ── Two-figure band ────────────────────────────────────────────────────── */
-
-.sc-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-top: 2px solid var(--sc-content);
-  border-bottom: 2px solid var(--sc-content);
-  background: var(--sc-surface-raised);
-}
-
 .sc-split-cell {
   padding: 72px 48px 64px;
 }
 
 .sc-split-cell + .sc-split-cell {
   border-left: 1px solid var(--sc-content);
-}
-
-.sc-num {
-  font-family: var(--sc-numbers);
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(96px, 12vw, 164px);
-  line-height: 0.9;
-  letter-spacing: -0.02em;
 }
 
 .sc-split-label {
@@ -382,14 +357,6 @@ textarea {
   margin-top: 12px;
   font-size: 15px;
   max-width: 34ch;
-}
-
-.sc-example {
-  padding: 56px 0 72px;
-  text-align: center;
-  font-family: var(--sc-mono);
-  font-size: 13px;
-  color: var(--sc-content-muted);
 }
 
 /* The override for this lives with the base .sc-numeric rule further down, so
@@ -690,13 +657,6 @@ textarea {
   letter-spacing: -0.02em;
 }
 
-/* The timecode in the example line sits at reading size and full ink, so the
-   figure is the one thing not muted in an otherwise muted sentence. */
-.sc-example .sc-numeric {
-  color: var(--sc-content);
-  font-size: 15px;
-}
-
 /* Reading column. BRAND-KIT §12 — say it, then stop; the measure enforces it. */
 .sc-prose {
   max-width: var(--sc-measure);
@@ -901,22 +861,6 @@ textarea {
   max-width: 76ch;
 }
 
-/* ── r5 BILLBOARD — the screen is the hero ──────────────────────────────── */
-
-/* Full bleed, so it sits outside .sc-wrap and re-establishes the gutter inside.
-   min-height rather than a fixed height: the plate inside is the tallest thing
-   and the band has to grow with it, not clip it. */
-.sc-bill {
-  position: relative;
-  display: grid;
-  align-items: center;
-  min-height: 560px;
-  padding: 64px 0;
-  border-bottom: 2px solid var(--sc-content);
-  /* The fallback if WebGL never arrives — paper, not a hole. */
-  background: var(--sc-surface);
-}
-
 .sc-bill-art {
   position: absolute;
   inset: 0;
@@ -961,13 +905,251 @@ textarea {
   border-top: 0;
 }
 
+/* ── The halftone stage — constitution D7, D9, D10 ──────────────────────── */
+
+/* Full bleed. The screen is a foreground object printed over the sheet, not the
+   sheet itself — the warm paper, the D6 texture and the 76px grid are all still
+   underneath, which is the clause in D7 that keeps this legal. */
+.sc-stage {
+  position: relative;
+  padding: 56px 0 24px;
+  border-bottom: 2px solid var(--sc-content);
+  /* Paper is the fallback if WebGL never arrives. The page is never a hole. */
+  background: var(--sc-surface);
+}
+
+.sc-stage-art {
+  position: absolute;
+  inset: 0;
+}
+
+.sc-stage-body {
+  position: relative;
+}
+
+/* Knocked out of the screen. Content never sits directly on dots: at the pitches
+   D9 permits, the screen wins every legibility contest it is entered into. */
+.sc-plate {
+  max-width: 620px;
+  border: 2px solid var(--sc-content);
+  background: var(--sc-surface);
+  box-shadow: var(--sc-shadow-widget);
+  padding: 36px 36px 32px;
+}
+
+.sc-plate-head {
+  margin: 16px 0 14px;
+  font-weight: 700;
+  font-size: clamp(32px, 4.2vw, 54px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+}
+
+/* Short on purpose. The founder cut the page twice; this line survives both
+   because the claim above it is a view count on one channel and may never be
+   published without saying so. */
+.sc-qualifier {
+  font-size: 15px;
+  line-height: 1.5;
+  max-width: 42ch;
+  color: var(--sc-content-muted);
+}
+
+.sc-plate .sc-wait {
+  margin-top: 22px;
+  padding-top: 14px;
+}
+
+/* ── The console — constitution D10 ─────────────────────────────────────── */
+
+/* soul.md S7: expose the criteria, never a black box. The same instinct that puts
+   every cut on an editable timeline puts the screen's settings on the page.
+
+   Monochrome, always. Cobalt belongs to the waitlist action, and a row of
+   controls is the easiest place on the page to spend the point colour twice. */
+.sc-console-wrap {
+  position: relative;
+  margin-top: 28px;
+}
+
+/* Always on paper, never on the dots. The console is small mono type and the
+   screen behind it is a field of 20px ink circles — there is no pitch at which
+   that contest goes the type's way. */
+.sc-console {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 26px;
+  border: 1px solid var(--sc-content);
+  border-radius: var(--sc-radius);
+  background: var(--sc-surface);
+  margin: 0;
+  padding: 12px 18px 14px;
+}
+
+.sc-console-legend {
+  padding: 0 8px;
+  margin-left: -8px;
+  font-family: var(--sc-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sc-ctl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sc-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sc-ctl-name {
+  white-space: nowrap;
+  color: var(--sc-content-muted);
+}
+
+/* Tabular so the row does not reflow while a slider is dragged — a control panel
+   that shifts under the pointer is a control panel you fight. */
+.sc-ctl-value {
+  font-family: var(--sc-numbers);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  min-width: 5.5ch;
+  text-align: right;
+}
+
+/* A 2px rule and a square block: the slider is drawn from the same two shapes as
+   everything else in the system. radius 0, W4. */
+.sc-ctl input[type="range"] {
+  appearance: none;
+  width: 116px;
+  height: 2px;
+  margin: 0;
+  background: var(--sc-content);
+  border-radius: var(--sc-radius);
+  cursor: pointer;
+}
+
+.sc-ctl input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 18px;
+  background: var(--sc-content);
+  border: 0;
+  border-radius: var(--sc-radius);
+}
+
+.sc-ctl input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 18px;
+  background: var(--sc-content);
+  border: 0;
+  border-radius: var(--sc-radius);
+}
+
+.sc-ctl input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--sc-content);
+  cursor: pointer;
+}
+
+.sc-ctl-reset {
+  appearance: none;
+  border: 1px solid var(--sc-content);
+  border-radius: var(--sc-radius);
+  background: transparent;
+  color: var(--sc-content);
+  font-family: var(--sc-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  min-height: 32px;
+  cursor: pointer;
+  transition: background var(--sc-fast) var(--sc-ease);
+}
+
+.sc-ctl-reset:hover {
+  background: var(--sc-hover);
+}
+
+/* Says the waveform is generated and the range is bounded. Both facts, five
+   words each, in the one place a visitor is already looking at the shader. */
+.sc-console-note {
+  flex-basis: 100%;
+  font-family: var(--sc-mono);
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: var(--sc-content-muted);
+}
+
+/* ── The line the page ends on ──────────────────────────────────────────── */
+
+.sc-deliverable {
+  padding: 30px 0 40px;
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  color: var(--sc-content-muted);
+}
+
+.sc-foot-privacy {
+  flex-basis: 100%;
+  font-family: var(--sc-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--sc-content-muted);
+}
+
+@media (max-width: 880px) {
+  .sc-stage {
+    padding: 32px 0 20px;
+  }
+
+  .sc-plate {
+    padding: 24px 20px 22px;
+    /* 14px of offset at 390px is a horizontal scrollbar. */
+    box-shadow: var(--sc-shadow-action);
+  }
+
+  .sc-console {
+    gap: 10px 18px;
+    padding: 12px 14px;
+  }
+
+  .sc-ctl input[type="range"] {
+    width: 92px;
+  }
+}
+
+/* ── r6 DRIFT — the restrained one ─────────────────────────────────────── */
+
+.sc-stage {
+  min-height: 520px;
+  display: grid;
+  align-content: center;
+}
+
+/* Narrower plate and a fine 12px screen: this variant is the argument that the
+   round did not need most of what the other five added. */
+.sc-plate {
+  max-width: 540px;
+}
+
+.sc-console-wrap--inline .sc-console {
+  max-width: 540px;
+  border-top: 0;
+}
+
 @media (max-width: 880px) {
   .sc-wrap {
     padding: 0 calc(22px * var(--sc-density));
-  }
-
-  .sc-split {
-    grid-template-columns: 1fr;
   }
 
   .sc-split-cell + .sc-split-cell {
@@ -1031,11 +1213,6 @@ textarea {
 }
 
 @media (max-width: 880px) {
-  .sc-bill {
-    min-height: 0;
-    padding: 40px 0;
-  }
-
   .sc-bill-plate {
     padding: 26px 22px 24px;
     /* The widget shadow is 14px; at 390px that is a scrollbar. */
@@ -1044,6 +1221,17 @@ textarea {
 
   .sc-trust {
     --sc-tick-w: 140px;
+  }
+}
+
+@media (max-width: 880px) {
+  .sc-stage {
+    min-height: 0;
+  }
+
+  .sc-plate,
+  .sc-console-wrap--inline .sc-console {
+    max-width: none;
   }
 }
 

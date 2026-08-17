@@ -217,6 +217,27 @@ Never cobalt, never red or yellow, `u_radius` never above 1.0 (it floods),
 `u_grainOverlay` always 0 (it paints pure black and white, which is neither
 token). Source images: `public/frames/*.png`. Measured tables: constitution D7.
 
+## 4e. Motion and the console (constitution D9, D10)
+
+**`u_time` is dead in `halftone-dots`.** It is declared and never read, so
+`speed` on `ShaderMount` spins a `requestAnimationFrame` loop forever and renders
+the identical frame. Proved: `speed 1` at frames 0 / 2000 / 8000 is byte-identical,
+while `u_size` 0.50 vs 0.55 is not. **Do not animate with `speed`.**
+
+Animate from your own loop, at `speed 0`, over the uniforms the shader does read:
+`u_offsetX`, `u_offsetY`, `u_size`, `u_scale`, `u_contrast`, `u_rotation`.
+`setUniforms` calls `render()` synchronously, so one write is one frame.
+
+Required: `prefers-reduced-motion` stops the loop dead (not slows it), so does
+`document.hidden`, a loop point is a hard cut and never an ease back (O4), and
+there is at most **one moving screen per page** — the D8 trust band is the only
+other motion allowed.
+
+The visitor may adjust the screen, but only inside ranges that measured inside the
+band: pitch 6–32px, contrast 0.25–0.80, motion 0–1.6, square/hex, raw/cut source.
+`u_radius`, `u_type` and both colour slots are never exposed. Never render a
+control in cobalt — the point colour belongs to the one action.
+
 ## 4c. Moodboard
 
 34 reference images the team collected live in `design/moodboard/`, with the
