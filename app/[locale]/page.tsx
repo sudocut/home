@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ChannelTicker } from "@/components/ChannelTicker";
+import { Halftone } from "@/components/Halftone";
 import { WaitlistCta } from "@/components/WaitlistCta";
 
 type LocaleParams = { locale: string };
@@ -15,12 +17,22 @@ export async function generateMetadata({
 }
 
 /**
- * Front page — r4 winner (kimi-k3-a), ranked blind and selected by the founder
- * on 2026-07-27. See design/rounds/r4/VERDICT.md.
+ * Front page — r5 variant BILLBOARD.
  *
- * The hero deliberately does NOT claim the viewport: no 100svh, items aligned to
- * the top, so the figures band arrives while the visitor is still reading. Both
- * variants that pinned a full-height hero placed below this one.
+ * The most literal reading of the founder's brief: use the halftone
+ * aggressively. The screen is the entire hero, full bleed, at a 28px cell pitch —
+ * near the top of D7's 6–32px band, and dots you can count from across a room.
+ *
+ * The claim is knocked out of it on a plate of warm paper with a hard 14px
+ * offset shadow, so the one thing that has to be read is the one thing not made
+ * of dots. That contrast is the whole idea: everything is texture except the
+ * sentence.
+ *
+ * WHAT THIS COSTS, STATED PLAINLY. A field of ink this large is the closest any
+ * of the six variants comes to r2's rejected failure — a dark rectangle reading
+ * as a foreign object on a warm sheet. It measures inside the band (coverage
+ * ~0.35 at this pitch, D7), but "inside the band" and "right for a landing page"
+ * are different questions, and only the second one is the founder's to answer.
  */
 export default async function HomePage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
@@ -29,24 +41,21 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
 
   return (
     <>
-      <div className="sc-wrap">
-        <section className="sc-hero">
-          <div>
+      <section className="sc-bill">
+        <Halftone className="sc-bill-art" pitch={28} src="/frames/frame-hero.png" />
+        <div className="sc-wrap">
+          <div className="sc-bill-plate">
             <p className="sc-kicker">{t("kicker")}</p>
-            <h1>{t("title")}</h1>
-            <p className="sc-lede">{t("lede")}</p>
+            <h1 className="sc-bill-head">{t("title")}</h1>
+            <p className="sc-qualifier">{t("qualifier")}</p>
             {/* The one cobalt object on this page. */}
             <WaitlistCta />
           </div>
+        </div>
+      </section>
 
-          <aside aria-label={t("proof.label")} className="sc-proof">
-            <p className="sc-proof-ab">{t("proof.mark")}</p>
-            <p className="sc-proof-claim">{t("proof.claim")}</p>
-            <p className="sc-proof-detail">{t("proof.detail")}</p>
-            <p className="sc-proof-tagline">{t("proof.tagline")}</p>
-          </aside>
-        </section>
-      </div>
+      {/* Constitution D8 — the one flowing band on the site. */}
+      <ChannelTicker pitch={7} />
 
       <section aria-label={t("split.label")} className="sc-split">
         {(["chore", "story"] as const).map((cell) => (
@@ -59,9 +68,6 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
       </section>
 
       <div className="sc-wrap">
-        {/* Names the deliverable, which every r4 variant left unsaid — see the
-            r4 verdict. Replaces an illustrative "14:32 → 10:47" that came from
-            brand/voice.md's examples and measured nothing. */}
         <p className="sc-example">
           {t("deliverable.before")}
           <span className="sc-numeric">{t("deliverable.figure")}</span>
