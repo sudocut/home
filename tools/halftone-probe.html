@@ -126,8 +126,13 @@
       u_fit: 2, // cover — the panel is a crop of the frame, never a letterbox
     };
     await u.u_noiseTexture.decode();
-    // speed 0, frame 0 — static. D7 keeps the brand's "no animated background".
-    new ShaderMount(document.getElementById('bg'), halftoneDotsFragmentShader, u, undefined, 0, 0);
+    // speed/frame are exposed so the probe can TEST whether u_time does anything.
+    // halftone-dots declares `uniform float u_time` and never reads it, so the
+    // answer should be "no" — and that has to be demonstrated, not asserted.
+    new ShaderMount(
+      document.getElementById('bg'), halftoneDotsFragmentShader, u, undefined,
+      num('speed', 0), num('frame', 0),
+    );
     // Signals the driver that the first frame is committed, so a screenshot taken
     // after this cannot catch an empty canvas.
     requestAnimationFrame(() => requestAnimationFrame(() => { document.title = 'ready'; }));

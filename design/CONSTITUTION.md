@@ -59,6 +59,8 @@ used by the selected *Bauhaus Timeline Proof* direction.
 | **D6** | **Paper texture shader allowed at mandated light settings only.** Amended 2026-07-27. | see below |
 | **D7** | **`halftone-dots` is admitted as a foreground screen.** Two colours, ink on paper, never cobalt. Amends D6's "no other shader, ever". Decided 2026-08-18. | see below |
 | **D8** | **The trust band flows.** One continuous marquee, the channel band only. Narrows W6. Decided 2026-08-18. | delete the keyframes |
+| **D9** | **The screen moves.** D7's `static` is lifted for the hero screen only, driven by uniforms — never by `speed`. Decided 2026-08-18. | set `motion` to `still` |
+| **D10** | **The visitor can adjust the screen**, inside the measured band. Decided 2026-08-18. | remove the console |
 
 ### D5 — English first (2026-07-26, founder)
 
@@ -366,3 +368,98 @@ A rule enters here when a round **verdict** settles a question that keeps recurr
 Add it with a date and a source, and state what would reverse it. If a rule cannot
 be checked — by `verify-round.mjs` or by a human in ten seconds — it is a preference,
 not a rule. Leave it out.
+
+### D9 — the screen moves (2026-08-18, founder)
+
+**D7 said `static`, and this lifts it.** Founder: *"I want you to use that shader
+to animate that effect."* The static rule came from O4 — the brand never
+dissolves — and from D6's ban on an animated background. D9 keeps the reason and
+narrows the rule: the **hero screen** may move; the paper sheet under it, the 76px
+grid and every other surface stay still.
+
+#### `u_time` is dead in this shader. Animating with `speed` renders nothing.
+
+This is the one thing about D9 that has to be read before anything is built.
+
+`halftone-dots` declares `uniform float u_time` and **never reads it in
+`main()`**. `ShaderMount` faithfully advances it and uploads it every frame, so
+`speed: 1` produces a `requestAnimationFrame` loop that runs forever, on every
+visitor's battery, drawing the identical picture.
+
+Measured, with a positive control so the harness is known to be able to see a
+difference at all:
+
+| render | sha256 |
+|---|---|
+| `speed 1, frame 0` | `fdc436b8…` |
+| `speed 1, frame 2000` | `fdc436b8…` |
+| `speed 1, frame 8000` | `fdc436b8…` |
+| `speed 0, u_size 0.50` | `fdc436b8…` |
+| `speed 0, u_size 0.55` | `4a1bfdec…` |
+
+Three different times are **byte-identical**, and identical to the still frame; a
+0.05 change in `u_size` is not. So the difference is visible to the measurement
+and absent from time.
+
+**This is the third dead uniform in this library.** D6's `u_image` made the paper
+fibre render nothing at any setting. D7's `u_inverted` means the opposite of what
+its name says. Now `u_time`. The rule this repo should carry away is not about any
+one of them: **assume no paper-shaders uniform does what it is called until a
+render proves it.**
+
+#### So animation is driven from our own loop
+
+`ShaderMount` stays at `speed 0` — which also means it schedules no frames of its
+own — and `setUniforms` is called from one `requestAnimationFrame` loop.
+`setUniforms` calls `render()` synchronously, so one write is one frame. Only
+uniforms the shader actually reads may be animated: `u_offsetX`, `u_offsetY`,
+`u_size`, `u_scale`, `u_contrast`, `u_rotation`.
+
+**Required:**
+
+1. **`prefers-reduced-motion` stops the loop dead** — not slows it. The screen
+   holds its frame, which is a complete design. Watched live, not read once.
+2. **`document.hidden` stops it.** At `speed 0` the vendor's own visibility pause
+   never fires, so this is ours to do.
+3. **A loop point is a hard cut, never an ease back.** O4 survives D9 intact: the
+   `playhead` pan resets, and the `cut` mode swaps its source image on a frame
+   boundary. Nothing crossfades.
+4. **One moving screen per page.** The trust band's marquee (D8) is the only other
+   motion allowed, and no page may add a third.
+
+#### D10 — the visitor can adjust the screen (2026-08-18, founder)
+
+Founder: *"there is farriers parameters for effect so on the user website user
+could adjust parameters to use that effect funny or interestingly… if I can adjust
+the background effect of that page it might be better page for users."*
+
+This sits oddly next to D6 and D7's central rule — *do not tune by eye* — and the
+resolution is that the two apply to different people. **We** may not choose
+settings by eye; the numbers in D7 are how the defaults were picked. A **visitor**
+is not choosing our defaults, they are playing with ours.
+
+What makes that safe is that **every control is clamped to a range that measured
+inside the band**:
+
+| control | range | why it stops there |
+|---|---|---|
+| dot pitch | 6–32px | 4px measured grain 2.79 — flat tone, no dots left |
+| contrast | 0.25–0.80 | 0.80 measured coverage 0.444, the last setting before the midtones crush |
+| motion | 0–1.6 | 0 is off, and off is a legitimate choice |
+| grid | square / hex | hex measured 0.333 against square's 0.341 — a real choice with no cost |
+| source | raw / cut | the same waveform with its dead air removed |
+
+`u_radius`, `u_type`, and both colour slots are **not exposed**. Radius 1.3
+measured coverage 0.544 and `soft`/`gooey`/`holes` all flood; the colours are the
+palette. A visitor can change how the page looks, not whether it still reads as
+SudoCut, and cannot reach a setting outside the closed palette.
+
+There is also a reason to want this beyond novelty. soul.md S7 is **expose the
+criteria — reviewable, never a black box**, and it is the same instinct that puts
+every cut on an editable timeline. A front page that hands over its own controls
+is making that argument in the only way a landing page can.
+
+**Not permitted:** a control that leaves the band, a control that touches a colour,
+persisting the visitor's settings across pages (the default is the design, and the
+next page starts there), and any control rendered in cobalt — the point colour
+belongs to the waitlist action.
