@@ -30,8 +30,8 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
-import { inflateSync } from "node:zlib";
+import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { measure, readPngLuminance } from "./lib/pixels.mjs";
 
 const PORT = process.env.PROBE_PORT ?? "4173";
 const BASE = `http://localhost:${PORT}/tools/shader-probe.html`;
@@ -95,124 +95,8 @@ const SWEEP = [
   { name: "lit deep+", front: "#d2d3ce", back: "#ffffff", contrast: 0.85, roughness: 0.45, fiber: 1.0, fiberSize: 0.2 },
 ];
 
-/* ---------- minimal PNG reader (no dependencies) ---------- */
+/* ---------- measurement: tools/lib/pixels.mjs ---------- */
 
-/**
- * Decode an 8-bit non-interlaced PNG to {w, h, lum:Float64Array}.
- * Chrome writes colour type 2 (RGB) or 6 (RGBA); both are handled.
- */
-function readPngLuminance(file) {
-  const buf = readFileSync(file);
-  if (buf.readUInt32BE(0) !== 0x89504e47) throw new Error(`${file}: not a PNG`);
-
-  let pos = 8;
-  let w = 0;
-  let h = 0;
-  let depth = 0;
-  let colorType = 0;
-  const idat = [];
-
-  while (pos < buf.length) {
-    const len = buf.readUInt32BE(pos);
-    const type = buf.toString("ascii", pos + 4, pos + 8);
-    const data = buf.subarray(pos + 8, pos + 8 + len);
-    if (type === "IHDR") {
-      w = data.readUInt32BE(0);
-      h = data.readUInt32BE(4);
-      depth = data[8];
-      colorType = data[9];
-      if (data[12] !== 0) throw new Error("interlaced PNG not supported");
-    } else if (type === "IDAT") idat.push(data);
-    else if (type === "IEND") break;
-    pos += 12 + len;
-  }
-  if (depth !== 8) throw new Error(`bit depth ${depth} not supported`);
-  const channels = colorType === 6 ? 4 : colorType === 2 ? 3 : 0;
-  if (!channels) throw new Error(`colour type ${colorType} not supported`);
-
-  const raw = inflateSync(Buffer.concat(idat));
-  const stride = w * channels;
-  const out = Buffer.allocUnsafe(h * stride);
-
-  // Undo the per-scanline filters. Each row is prefixed by one filter-type byte.
-  for (let y = 0; y < h; y++) {
-    const ft = raw[y * (stride + 1)];
-    const src = raw.subarray(y * (stride + 1) + 1, y * (stride + 1) + 1 + stride);
-    const cur = out.subarray(y * stride, (y + 1) * stride);
-    const prior = y > 0 ? out.subarray((y - 1) * stride, y * stride) : null;
-    for (let i = 0; i < stride; i++) {
-      const a = i >= channels ? cur[i - channels] : 0;
-      const b = prior ? prior[i] : 0;
-      const c = prior && i >= channels ? prior[i - channels] : 0;
-      let v = src[i];
-      if (ft === 1) v += a;
-      else if (ft === 2) v += b;
-      else if (ft === 3) v += (a + b) >> 1;
-      else if (ft === 4) {
-        const p = a + b - c;
-        const pa = Math.abs(p - a);
-        const pb = Math.abs(p - b);
-        const pc = Math.abs(p - c);
-        v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
-      }
-      cur[i] = v & 0xff;
-    }
-  }
-
-  const lum = new Float64Array(w * h);
-  for (let i = 0, p = 0; i < w * h; i++, p += channels) {
-    // Rec. 709 luma — the texture is near-neutral, but weighting correctly keeps
-    // the warm paper from reading as darker than it looks.
-    lum[i] = 0.2126 * out[p] + 0.7152 * out[p + 1] + 0.0722 * out[p + 2];
-  }
-  return { w, h, lum };
-}
-
-/**
- * Mean luminance, plus two independent measures of visible structure:
- *
- *   grain   mean |difference| between horizontally adjacent pixels — catches fine
- *           fibre, the thing that actually reads as paper stock.
- *   mottle  mean per-tile standard deviation over 8x8 tiles — catches slower
- *           cloudiness that `grain` under-reports because neighbouring pixels in a
- *           soft blotch are nearly equal. A texture can be visible via either.
- */
-function measure({ w, h, lum }) {
-  let sum = 0;
-  for (let i = 0; i < lum.length; i++) sum += lum[i];
-  const mean = sum / lum.length;
-
-  let dsum = 0;
-  let n = 0;
-  for (let y = 0; y < h; y++) {
-    const row = y * w;
-    for (let x = 1; x < w; x++) {
-      dsum += Math.abs(lum[row + x] - lum[row + x - 1]);
-      n++;
-    }
-  }
-
-  const T = 8;
-  let sdSum = 0;
-  let tiles = 0;
-  for (let ty = 0; ty + T <= h; ty += T) {
-    for (let tx = 0; tx + T <= w; tx += T) {
-      let s = 0;
-      let ss = 0;
-      for (let y = ty; y < ty + T; y++) {
-        for (let x = tx; x < tx + T; x++) {
-          const v = lum[y * w + x];
-          s += v;
-          ss += v * v;
-        }
-      }
-      const k = T * T;
-      sdSum += Math.sqrt(Math.max(0, ss / k - (s / k) ** 2));
-      tiles++;
-    }
-  }
-  return { mean, grain: dsum / n, mottle: sdSum / tiles };
-}
 
 /* ---------- driver ---------- */
 

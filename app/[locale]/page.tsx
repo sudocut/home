@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ChannelTicker } from "@/components/ChannelTicker";
+import { Halftone } from "@/components/Halftone";
 import { WaitlistCta } from "@/components/WaitlistCta";
 
 type LocaleParams = { locale: string };
@@ -15,12 +17,22 @@ export async function generateMetadata({
 }
 
 /**
- * Front page — r4 winner (kimi-k3-a), ranked blind and selected by the founder
- * on 2026-07-27. See design/rounds/r4/VERDICT.md.
+ * Front page — r5 variant BANDS.
  *
- * The hero deliberately does NOT claim the viewport: no 100svh, items aligned to
- * the top, so the figures band arrives while the visitor is still reading. Both
- * variants that pinned a full-height hero placed below this one.
+ * Aggressive by repetition rather than by scale. Three full-bleed screened bands
+ * at three different pitches — 26px, then the trust band's 7px, then 11px —
+ * separated by strips of bare paper, with the content knocked out on paper
+ * plates. The page reads as a printed sheet run through the press three times.
+ *
+ * WHY IT IS NOT ONE FULL-PAGE SCREEN. That is banned, and by the same rule that
+ * lets the rest of this exist: D7 admits `halftone-dots` as a FOREGROUND object
+ * and leaves the page's own background field to warm paper, the D6 texture and
+ * the 76px grid. Bands are how you get an all-over effect without taking the
+ * sheet away — every band still sits on the paper, and the paper still shows
+ * between them.
+ *
+ * Varying the pitch band to band is the point rather than decoration: it is what
+ * stops three screens of the same abstract frame reading as one repeated tile.
  */
 export default async function HomePage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
@@ -29,39 +41,39 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
 
   return (
     <>
-      <div className="sc-wrap">
-        <section className="sc-hero">
-          <div>
+      <section className="sc-band sc-band--hero">
+        <Halftone className="sc-band-art" pitch={26} src="/frames/frame-hero.png" />
+        <div className="sc-wrap">
+          <div className="sc-band-box">
             <p className="sc-kicker">{t("kicker")}</p>
-            <h1>{t("title")}</h1>
-            <p className="sc-lede">{t("lede")}</p>
+            <h1 className="sc-band-head">{t("title")}</h1>
+            <p className="sc-qualifier">{t("qualifier")}</p>
             {/* The one cobalt object on this page. */}
             <WaitlistCta />
           </div>
+        </div>
+      </section>
 
-          <aside aria-label={t("proof.label")} className="sc-proof">
-            <p className="sc-proof-ab">{t("proof.mark")}</p>
-            <p className="sc-proof-claim">{t("proof.claim")}</p>
-            <p className="sc-proof-detail">{t("proof.detail")}</p>
-            <p className="sc-proof-tagline">{t("proof.tagline")}</p>
-          </aside>
-        </section>
-      </div>
+      {/* Constitution D8 — the one flowing band on the site, and the middle of
+          the three screened bands. */}
+      <ChannelTicker pitch={7} />
 
-      <section aria-label={t("split.label")} className="sc-split">
-        {(["chore", "story"] as const).map((cell) => (
-          <div className="sc-split-cell" key={cell}>
-            <p className="sc-num">{t(`split.${cell}.value`)}</p>
-            <p className="sc-split-label">{t(`split.${cell}.label`)}</p>
-            <p className="sc-split-copy">{t(`split.${cell}.copy`)}</p>
+      <section aria-label={t("split.label")} className="sc-band sc-band--figures">
+        <Halftone className="sc-band-art" pitch={11} src="/frames/frame-06.png" />
+        <div className="sc-wrap">
+          <div className="sc-band-box sc-band-box--split">
+            {(["chore", "story"] as const).map((cell) => (
+              <div key={cell}>
+                <p className="sc-num">{t(`split.${cell}.value`)}</p>
+                <p className="sc-split-label">{t(`split.${cell}.label`)}</p>
+                <p className="sc-split-copy">{t(`split.${cell}.copy`)}</p>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </section>
 
       <div className="sc-wrap">
-        {/* Names the deliverable, which every r4 variant left unsaid — see the
-            r4 verdict. Replaces an illustrative "14:32 → 10:47" that came from
-            brand/voice.md's examples and measured nothing. */}
         <p className="sc-example">
           {t("deliverable.before")}
           <span className="sc-numeric">{t("deliverable.figure")}</span>
