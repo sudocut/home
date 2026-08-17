@@ -968,6 +968,20 @@ textarea {
   color: var(--sc-content-muted);
 }
 
+/* ── r7 ──────────────────────────────────────────────────────────────────
+   The stage, plate and trust-band rules are inherited whole from r6-playhead;
+   nothing about the layout changed this round. What changed is which shader
+   draws the field, and that lives in TypeScript, not here — see
+   src/components/ScreenStage.tsx and constitution D11. */
+
+/* ── r7 GRID ───────────────────────────────────────────────────────────── */
+
+/* Nothing behind the plate is competing, so the stage can be shorter and the
+   page starts scrolling sooner. */
+.sc-stage {
+  min-height: 480px;
+}
+
 @media (max-width: 880px) {
   .sc-stage {
     padding: 32px 0 20px;
