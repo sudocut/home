@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ChannelTicker } from "@/components/ChannelTicker";
+import { Halftone } from "@/components/Halftone";
 import { WaitlistCta } from "@/components/WaitlistCta";
 
 type LocaleParams = { locale: string };
@@ -15,12 +17,21 @@ export async function generateMetadata({
 }
 
 /**
- * Front page — r4 winner (kimi-k3-a), ranked blind and selected by the founder
- * on 2026-07-27. See design/rounds/r4/VERDICT.md.
+ * Front page — r5 variant A/B.
  *
- * The hero deliberately does NOT claim the viewport: no 100svh, items aligned to
- * the top, so the figures band arrives while the visitor is still reading. Both
- * variants that pinned a full-height hero placed below this one.
+ * The layout is the argument. Two screens side by side, one rule between them,
+ * labelled `Human edit` and `SudoCut edit` — and they are identical, because
+ * that is the claim. A visitor gets the point before reading a word.
+ *
+ * BOTH PANELS SCREEN THE SAME FILE, DELIBERATELY, AND THE PAGE SAYS SO.
+ * Two different abstract frames would have implied the two edits look different,
+ * which is a claim nobody made and nobody measured. And a still from either real
+ * edit is a partner channel's to grant, not ours to publish. So it is one screen
+ * twice, with a line under it explaining exactly that — the honesty is on the
+ * page rather than in this comment, because the visitor is the one who needs it.
+ *
+ * The A/B proof card from r4 is gone. It argued for this in prose; the layout
+ * argues for it in geometry, and keeping both would have been saying it twice.
  */
 export default async function HomePage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
@@ -30,23 +41,31 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
   return (
     <>
       <div className="sc-wrap">
-        <section className="sc-hero">
-          <div>
-            <p className="sc-kicker">{t("kicker")}</p>
-            <h1>{t("title")}</h1>
-            <p className="sc-lede">{t("lede")}</p>
-            {/* The one cobalt object on this page. */}
-            <WaitlistCta />
+        <section className="sc-ab">
+          <p className="sc-kicker sc-kicker--rule">{t("kicker")}</p>
+          <h1 className="sc-ab-head">{t("title")}</h1>
+
+          <div className="sc-ab-pair">
+            {(["human", "ai"] as const).map((side) => (
+              <figure className="sc-ab-cell" key={side}>
+                <Halftone className="sc-ab-art" pitch={16} src="/frames/frame-hero.png" />
+                <figcaption className="sc-ab-cap">
+                  <span className="sc-ab-tag">{t(`ab.${side}`)}</span>
+                  <span className="sc-ab-mark">{side === "human" ? "A" : "B"}</span>
+                </figcaption>
+              </figure>
+            ))}
           </div>
 
-          <aside aria-label={t("proof.label")} className="sc-proof">
-            <p className="sc-proof-ab">{t("proof.mark")}</p>
-            <p className="sc-proof-claim">{t("proof.claim")}</p>
-            <p className="sc-proof-detail">{t("proof.detail")}</p>
-            <p className="sc-proof-tagline">{t("proof.tagline")}</p>
-          </aside>
+          <p className="sc-ab-note">{t("ab.note")}</p>
+          <p className="sc-qualifier">{t("qualifier")}</p>
+          {/* The one cobalt object on this page. */}
+          <WaitlistCta />
         </section>
       </div>
+
+      {/* Constitution D8 — the one flowing band on the site. */}
+      <ChannelTicker pitch={7} />
 
       <section aria-label={t("split.label")} className="sc-split">
         {(["chore", "story"] as const).map((cell) => (
@@ -59,9 +78,6 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
       </section>
 
       <div className="sc-wrap">
-        {/* Names the deliverable, which every r4 variant left unsaid — see the
-            r4 verdict. Replaces an illustrative "14:32 → 10:47" that came from
-            brand/voice.md's examples and measured nothing. */}
         <p className="sc-example">
           {t("deliverable.before")}
           <span className="sc-numeric">{t("deliverable.figure")}</span>

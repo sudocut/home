@@ -31,8 +31,18 @@
   },
   "home": {
     "kicker": "sudo rm the boring parts.",
-    "title": "Upload the recording. Get back a publishable episode.",
-    "lede": "SudoCut transcribes your footage, then cuts dead air, retakes, repetition and tangents with the full context of the conversation. It comes back as a finished MP4 and a Premiere or Final Cut project — so you can open every cut, check it, and put anything back.",
+    "title": "AI cut it. We published it. Same views.",
+    "qualifier": "SudoCut cuts long spoken footage into a publishable episode. Same episode, two edits, one channel we run — a view count, not a study of viewers.",
+    "ab": {
+      "human": "Human edit",
+      "ai": "SudoCut edit",
+      "note": "The same abstract screen twice, on purpose — we do not publish stills from partner episodes. What differed between the two edits was who made them. What did not differ was the view count."
+    },
+    "channels": {
+      "label": "Publishing with SudoCut",
+      "count": "5 channels",
+      "note": "The names are real. The screens are abstract — partner artwork is theirs to grant, and we have not asked."
+    },
     "proof": {
       "label": "A/B result on our own channel",
       "mark": "A/B",
@@ -48,15 +58,15 @@
         "copy": "What a producer on a recurring talk show still spends, by hand, after the recording stops."
       },
       "story": {
-        "value": "4",
+        "value": "5",
         "label": "Channels publishing with it",
-        "copy": "Real uploads, today. Channels we run or work on — production testbeds, not customers yet."
+        "copy": "Real uploads, today. Partner channels and our own — named below, not customers yet."
       }
     },
     "deliverable": {
-      "before": "What comes back: ",
+      "before": "You get back an ",
       "figure": "MP4",
-      "after": " for upload, plus a Premiere or Final Cut project you can open and change. Nothing is locked."
+      "after": ", plus a Premiere or Final Cut project. Every cut opens."
     }
   },
   "about": {
@@ -175,9 +185,24 @@
           "included": "60 min/mo",
           "sub": "+ 600 min one-time grant"
         },
-        { "name": "Starter", "price": "₩14,900", "included": "600 min (10h)", "sub": "" },
-        { "name": "Pro", "price": "₩49,000", "included": "1,200 min (20h)", "sub": "" },
-        { "name": "Studio", "price": "₩149,000", "included": "3,600 min (60h)", "sub": "" },
+        {
+          "name": "Starter",
+          "price": "₩14,900",
+          "included": "600 min (10h)",
+          "sub": ""
+        },
+        {
+          "name": "Pro",
+          "price": "₩49,000",
+          "included": "1,200 min (20h)",
+          "sub": ""
+        },
+        {
+          "name": "Studio",
+          "price": "₩149,000",
+          "included": "3,600 min (60h)",
+          "sub": ""
+        },
         {
           "name": "Managed",
           "price": "₩299,000",
