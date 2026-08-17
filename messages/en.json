@@ -48,10 +48,13 @@
         "copy": "What a producer on a recurring talk show still spends, by hand, after the recording stops."
       },
       "story": {
-        "value": "4",
+        "value": "5",
         "label": "Channels publishing with it",
-        "copy": "Real uploads, today. Channels we run or work on — production testbeds, not customers yet."
+        "copy": "Real uploads, today. Partner channels and our own — named just below, not customers yet."
       }
+    },
+    "channels": {
+      "label": "Trusted partners & channels"
     },
     "deliverable": {
       "before": "What comes back: ",
