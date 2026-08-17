@@ -232,15 +232,6 @@ textarea {
   text-transform: uppercase;
 }
 
-/* Says what the form will ask before the visitor commits to leaving the page.
-   The application lives on a Google Form, so this is the only chance to set the
-   expectation that it is two questions and not a survey. */
-.sc-wait-ask {
-  margin-top: 10px;
-  font-size: 15px;
-  max-width: 46ch;
-}
-
 /* align-items:start stops the single child stretching to the row's full width —
    the action should be the size of its own label, not the size of the column. */
 .sc-wait-row {
@@ -960,136 +951,6 @@ textarea {
   padding-top: 14px;
 }
 
-/* ── The console — constitution D10 ─────────────────────────────────────── */
-
-/* soul.md S7: expose the criteria, never a black box. The same instinct that puts
-   every cut on an editable timeline puts the screen's settings on the page.
-
-   Monochrome, always. Cobalt belongs to the waitlist action, and a row of
-   controls is the easiest place on the page to spend the point colour twice. */
-.sc-console-wrap {
-  position: relative;
-  margin-top: 28px;
-}
-
-/* Always on paper, never on the dots. The console is small mono type and the
-   screen behind it is a field of 20px ink circles — there is no pitch at which
-   that contest goes the type's way. */
-.sc-console {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 26px;
-  border: 1px solid var(--sc-content);
-  border-radius: var(--sc-radius);
-  background: var(--sc-surface);
-  margin: 0;
-  padding: 12px 18px 14px;
-}
-
-.sc-console-legend {
-  padding: 0 8px;
-  margin-left: -8px;
-  font-family: var(--sc-mono);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.sc-ctl {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--sc-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.sc-ctl-name {
-  white-space: nowrap;
-  color: var(--sc-content-muted);
-}
-
-/* Tabular so the row does not reflow while a slider is dragged — a control panel
-   that shifts under the pointer is a control panel you fight. */
-.sc-ctl-value {
-  font-family: var(--sc-numbers);
-  font-variant-numeric: tabular-nums;
-  font-size: 12px;
-  min-width: 5.5ch;
-  text-align: right;
-}
-
-/* A 2px rule and a square block: the slider is drawn from the same two shapes as
-   everything else in the system. radius 0, W4. */
-.sc-ctl input[type="range"] {
-  appearance: none;
-  width: 116px;
-  height: 2px;
-  margin: 0;
-  background: var(--sc-content);
-  border-radius: var(--sc-radius);
-  cursor: pointer;
-}
-
-.sc-ctl input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 18px;
-  background: var(--sc-content);
-  border: 0;
-  border-radius: var(--sc-radius);
-}
-
-.sc-ctl input[type="range"]::-moz-range-thumb {
-  width: 12px;
-  height: 18px;
-  background: var(--sc-content);
-  border: 0;
-  border-radius: var(--sc-radius);
-}
-
-.sc-ctl input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
-  margin: 0;
-  accent-color: var(--sc-content);
-  cursor: pointer;
-}
-
-.sc-ctl-reset {
-  appearance: none;
-  border: 1px solid var(--sc-content);
-  border-radius: var(--sc-radius);
-  background: transparent;
-  color: var(--sc-content);
-  font-family: var(--sc-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 6px 12px;
-  min-height: 32px;
-  cursor: pointer;
-  transition: background var(--sc-fast) var(--sc-ease);
-}
-
-.sc-ctl-reset:hover {
-  background: var(--sc-hover);
-}
-
-/* Says the waveform is generated and the range is bounded. Both facts, five
-   words each, in the one place a visitor is already looking at the shader. */
-.sc-console-note {
-  flex-basis: 100%;
-  font-family: var(--sc-mono);
-  font-size: 10px;
-  line-height: 1.6;
-  letter-spacing: 0.04em;
-  color: var(--sc-content-muted);
-}
-
 /* ── The line the page ends on ──────────────────────────────────────────── */
 
 .sc-deliverable {
@@ -1117,38 +978,18 @@ textarea {
     /* 14px of offset at 390px is a horizontal scrollbar. */
     box-shadow: var(--sc-shadow-action);
   }
-
-  .sc-console {
-    gap: 10px 18px;
-    padding: 12px 14px;
-  }
-
-  .sc-ctl input[type="range"] {
-    width: 92px;
-  }
 }
 
 /* ── r6 PLAYHEAD — the tape is running ─────────────────────────────────── */
 
+/* Taller now that the console has gone from under it: the screen is the only
+   thing left holding the bottom of the band, so it needs the room to read as a
+   field rather than as a strip behind a card. */
 .sc-stage {
-  min-height: 540px;
+  min-height: 560px;
   display: grid;
   align-content: center;
-}
-
-/* The console is a strip across the foot of the stage, the width of the page:
-   a transport bar under a running tape, not a settings dialog. */
-.sc-console-wrap--strip .sc-console {
-  border-left: 0;
-  border-right: 0;
-  border-bottom: 0;
-  border-top: 2px solid var(--sc-content);
-  padding-left: 18px;
-  padding-right: 18px;
-}
-
-.sc-console-wrap--strip {
-  margin-top: 34px;
+  padding-bottom: 56px;
 }
 
 @media (max-width: 880px) {

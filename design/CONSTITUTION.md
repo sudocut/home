@@ -59,8 +59,8 @@ used by the selected *Bauhaus Timeline Proof* direction.
 | **D6** | **Paper texture shader allowed at mandated light settings only.** Amended 2026-07-27. | see below |
 | **D7** | **`halftone-dots` is admitted as a foreground screen.** Two colours, ink on paper, never cobalt. Amends D6's "no other shader, ever". Decided 2026-08-18. | see below |
 | **D8** | **The trust band flows.** One continuous marquee, the channel band only. Narrows W6. Decided 2026-08-18. | delete the keyframes |
-| **D9** | **The screen moves.** D7's `static` is lifted for the hero screen only, driven by uniforms — never by `speed`. Decided 2026-08-18. | set `motion` to `still` |
-| **D10** | **The visitor can adjust the screen**, inside the measured band. Decided 2026-08-18. | remove the console |
+| **D9** | **The screen moves.** D7's `static` is lifted for the hero screen only, driven by uniforms — never by `speed`. The loop is **seamless**, not a reset. Decided 2026-08-18. | delete the pan |
+| ~~D10~~ | ~~The visitor can adjust the screen.~~ **REVERSED the same day**, 2026-08-18. The console is gone. | re-add the console |
 
 ### D5 — English first (2026-07-26, founder)
 
@@ -421,45 +421,64 @@ uniforms the shader actually reads may be animated: `u_offsetX`, `u_offsetY`,
    holds its frame, which is a complete design. Watched live, not read once.
 2. **`document.hidden` stops it.** At `speed 0` the vendor's own visibility pause
    never fires, so this is ours to do.
-3. **A loop point is a hard cut, never an ease back.** O4 survives D9 intact: the
-   `playhead` pan resets, and the `cut` mode swaps its source image on a frame
-   boundary. Nothing crossfades.
+3. **A loop point is seamless, or it is a hard cut. Never an ease back.**
+
+   The first version of this clause said the pan should hard reset, on the
+   grounds that O4 forbids dissolving. It was obeyed, and the founder saw it
+   immediately: *"it is not connected from start to the end so user can feel that
+   it's disconnected."*
+
+   The mistake was treating a seam as a motion problem. It was a **picture**
+   problem. `public/frames/base-wave.png` now repeats exactly twice across its
+   width — every term in the generator has a whole number of cycles, and the two
+   halves are byte-identical, measured at a mean absolute difference of 0.0000.
+   The pan sweeps exactly half the image and subtracts half when it wraps, so it
+   lands on identical content and there is nothing to perceive.
+
+   That does not weaken O4. Nothing dissolves; the signal is simply continuous.
+   A hard cut remains the right answer when two states genuinely differ — it is
+   the wrong answer when they are supposed to be one thing.
+
+   **The geometry is load-bearing.** `u_fit: cover` shows a window of
+   `boxAspect / imageAspect`, and the pan needs the rest, so
+   `boxAspect / 8 + 0.5 <= 1` — true for every hero shape here. Narrow the
+   source's aspect ratio or widen the pan and a short, wide hero walks off the
+   edge of the image, where `getUvFrame` blanks it.
 4. **One moving screen per page.** The trust band's marquee (D8) is the only other
    motion allowed, and no page may add a third.
 
-#### D10 — the visitor can adjust the screen (2026-08-18, founder)
+#### D10 — the visitor can adjust the screen — PROPOSED AND REVERSED (2026-08-18)
 
-Founder: *"there is farriers parameters for effect so on the user website user
-could adjust parameters to use that effect funny or interestingly… if I can adjust
-the background effect of that page it might be better page for users."*
+**This rule lasted one round. It is kept rather than deleted because the argument
+for it is still good and the next round should be able to find it.**
 
-This sits oddly next to D6 and D7's central rule — *do not tune by eye* — and the
-resolution is that the two apply to different people. **We** may not choose
-settings by eye; the numbers in D7 are how the defaults were picked. A **visitor**
-is not choosing our defaults, they are playing with ours.
+Founder, proposing it: *"there is farriers parameters for effect so on the user
+website user could adjust parameters to use that effect funny or interestingly…
+if I can adjust the background effect of that page it might be better page for
+users."*
 
-What makes that safe is that **every control is clamped to a range that measured
-inside the band**:
+Founder, reversing it after seeing it: *"remove the adjust the screen widget or
+card because I think it does not matter for right now."*
 
-| control | range | why it stops there |
-|---|---|---|
-| dot pitch | 6–32px | 4px measured grain 2.79 — flat tone, no dots left |
-| contrast | 0.25–0.80 | 0.80 measured coverage 0.444, the last setting before the midtones crush |
-| motion | 0–1.6 | 0 is off, and off is a legitimate choice |
-| grid | square / hex | hex measured 0.333 against square's 0.341 — a real choice with no cost |
-| source | raw / cut | the same waveform with its dead air removed |
+**What was built.** A console on the page with sliders for dot pitch, contrast and
+motion, plus grid and source toggles, every one clamped to a range that measured
+inside D7's band. `u_radius`, `u_type` and both colour slots were never exposed,
+so a visitor could change how the page looked but not whether it still read as
+SudoCut.
 
-`u_radius`, `u_type`, and both colour slots are **not exposed**. Radius 1.3
-measured coverage 0.544 and `soft`/`gooey`/`holes` all flood; the colours are the
-palette. A visitor can change how the page looks, not whether it still reads as
-SudoCut, and cannot reach a setting outside the closed palette.
+**Why it was worth trying.** soul.md S7 is *expose the criteria — reviewable,
+never a black box*, and it is the same instinct that puts every cut on an editable
+timeline. A front page that hands over its own controls makes that argument in the
+only way a landing page can.
 
-There is also a reason to want this beyond novelty. soul.md S7 is **expose the
-criteria — reviewable, never a black box**, and it is the same instinct that puts
-every cut on an editable timeline. A front page that hands over its own controls
-is making that argument in the only way a landing page can.
+**Why it lost, and this is the part to remember.** The brief that produced it also
+said *the text is too many*. A console is five labels, five values and a legend —
+**interface is text**, and it was competing with a claim the whole page exists to
+deliver. The `console` variant's own PR flagged exactly this risk before the
+founder ruled; the risk was real.
 
-**Not permitted:** a control that leaves the band, a control that touches a colour,
-persisting the visitor's settings across pages (the default is the design, and the
-next page starts there), and any control rendered in cobalt — the point colour
-belongs to the waitlist action.
+**If it comes back**, it belongs on a page whose job is to explain the product
+rather than on the one page whose job is a single decision. The implementation is
+recoverable from the `r6-console` branch.
+
+---

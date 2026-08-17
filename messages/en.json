@@ -25,9 +25,7 @@
   },
   "waitlist": {
     "label": "Closed beta waitlist",
-    "ask": "Two questions: your email, and a link to the channel you run.",
     "submit": "Request an invite →",
-    "note": "Invite-only · ~10 channels · Korea first · free during beta",
     "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
   "home": {
@@ -39,18 +37,6 @@
       "label": "Publishing with SudoCut",
       "count": "5 channels",
       "note": "Names are real. Screens are abstract — partner artwork is theirs to grant."
-    },
-    "screen": {
-      "console": "Adjust the screen",
-      "pitch": "Dot size",
-      "contrast": "Contrast",
-      "motion": "Motion",
-      "grid": "Grid",
-      "source": "Source",
-      "sourceRaw": "with dead air",
-      "sourceCut": "dead air removed",
-      "reset": "Reset",
-      "note": "A generated waveform, screened. Bounded to settings we measured."
     }
   },
   "about": {

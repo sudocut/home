@@ -190,116 +190,118 @@ function field(w, h, seed) {
   return grey;
 }
 
-/* ---------- the base image: a waveform, and the same waveform cut ---------- */
+/* ---------- the base image: one continuous, looping waveform ---------- */
 
 /**
  * WHY A WAVEFORM AND NOT A PICTURE OF SOMETHING
  *
- * r6 needs a base image for the screen, and the abstract light fields above were
- * chosen for tonal range rather than for meaning. A waveform is the one image
- * this company can put on its own front page that is **both** honest and about
- * the product: it is literally what SudoCut looks at. It invents no footage, it
- * impersonates nobody's episode, and it needs no one's permission.
+ * A waveform is the one image this company can put on its own front page that is
+ * both honest and about the product: it is literally what SudoCut looks at. It
+ * invents no footage, impersonates nobody's episode, and needs no one's
+ * permission. The abstract light fields it replaced managed that only by meaning
+ * nothing at all.
  *
- * It also halftones well, which is not a given. A screen needs a tonal ramp —
- * flat shapes make flat dots — so the envelope is drawn with a soft vertical
- * falloff rather than as a hard silhouette. The dots grade out at the edge of the
- * waveform the way ink does off the edge of a solid.
+ * WHY IT IS PERIODIC, WHICH IS THE WHOLE POINT OF THIS FILE
  *
- * TWO IMAGES FROM ONE SIGNAL. `base-wave.png` is the recording with its dead air
- * in it. `base-wave-cut.png` is the SAME signal with the silences removed and the
- * remainder closed up — which is the product, in one picture. A variant that hard
- * cuts between them is not decorating, it is demonstrating; and a hard cut is the
- * only transition the brand allows (O4), so the honest option is also the legal
- * one.
+ * Founder, 2026-08-18: *"there's some audio waves flow on the background, but it
+ * is not connected from start to the end so user can feel that it's
+ * disconnected."* That was exactly right, and it was not a bug in the animation —
+ * it was a property of the image. The first waveform was a one-off stretch of
+ * signal, so however smoothly the screen panned across it, reaching the end meant
+ * jumping back to a different-looking start. There is no pan that hides that.
+ *
+ * The fix is in the picture, not the motion: **the content repeats exactly twice
+ * across the image.** Everything below is built from basis functions with whole
+ * numbers of cycles over one half-width — sines at integer frequencies, and a
+ * value noise whose lattice wraps — so the second half is byte-identical to the
+ * first and the signal has no beginning or end.
+ *
+ * A window narrower than half the image can then pan by exactly half the image
+ * width and jump back, and the jump is invisible because it lands on identical
+ * content. That is a true infinite loop rather than a long one.
+ *
+ * THE ASPECT RATIO IS PART OF THE MECHANISM, NOT A STYLE CHOICE.
+ *
+ * `u_fit: cover` shows a window of the image whose width, as a fraction, is
+ * (box aspect / image aspect). The pan is ±1/4 of the image, so the window must
+ * fit in the remaining half:
+ *
+ *     boxAspect / imageAspect <= 1/2      i.e.   boxAspect <= 4
+ *
+ * At aspect 8 that holds for every hero shape this site can produce — a 1280x560
+ * band is 2.29, a phone is under 1 — with margin to spare. Go below aspect 8 and
+ * a wide, short hero starts panning past the edge of the image, where
+ * `getUvFrame` blanks it to nothing.
  */
 
-/** Amplitude envelope of a plausible run of speech, in [0,1], length n. */
-function speechEnvelope(n, seed) {
-  const env = new Float64Array(n);
-  for (let i = 0; i < n; i++) {
-    const t = i / n;
-    // Phrase level: slow swells, someone talking in sentences.
+/** Value noise that wraps: the lattice is `cells` wide and index `cells` IS index 0. */
+function loopNoise(t, cells, seed) {
+  const x = t * cells;
+  const i = Math.floor(x);
+  const f = x - i;
+  const u = f * f * (3 - 2 * f);
+  const a = hash2(i % cells, 0, seed);
+  const b = hash2((i + 1) % cells, 0, seed);
+  return a * (1 - u) + b * u;
+}
+
+/**
+ * One period of a plausible run of speech, sampled `m` times.
+ *
+ * Every term is periodic over the full length: the sines take integer cycle
+ * counts and the noise wraps its lattice. Nothing here may use a non-integer
+ * frequency — one would put a step at the loop point, which is the entire defect
+ * this is built to remove.
+ */
+function loopEnvelope(m, seed) {
+  const env = new Float64Array(m);
+  const phase = hash2(seed, 1, 5) * Math.PI * 2;
+  for (let i = 0; i < m; i++) {
+    const t = i / m;
+    // Phrase level: three swells against two, so the pattern takes the whole
+    // loop to come back round rather than repeating within it.
     const phrase =
-      0.5 + 0.5 * Math.sin(2 * Math.PI * (t * 3.1 + hash2(seed, 1, 5))) * Math.cos(2 * Math.PI * t * 1.7);
+      0.5 + 0.5 * Math.sin(2 * Math.PI * 3 * t + phase) * Math.cos(2 * Math.PI * 2 * t);
     // Syllable level: the fast beat inside a phrase.
-    const syll = 0.5 + 0.5 * Math.sin(2 * Math.PI * t * 190 + 3 * valueNoise(t * 40, seed, seed));
+    const syll = 0.5 + 0.5 * Math.sin(2 * Math.PI * 97 * t + 3 * loopNoise(t, 23, seed));
     // Texture, so no two peaks are the same height.
-    const grit = valueNoise(t * 220, seed * 1.7, seed + 3);
+    const grit = loopNoise(t, 131, seed + 3);
     env[i] = Math.max(0, Math.min(1, (0.55 * phrase + 0.3 * syll + 0.15 * grit) * phrase));
   }
   return env;
 }
 
 /**
- * The runs of dead air. A gap counts only if it is both quiet AND long — which is
- * the actual rule, not a simplification of one: a short quiet moment between two
- * words is speech, and cutting it is what makes an edit sound clipped.
+ * Draw the envelope as a mirrored band with a soft edge, dark on light, repeated
+ * exactly twice across the width.
+ *
+ * The soft edge is what makes this halftone into a ramp of dot sizes rather than
+ * a solid block with a hard border, and it is why the screen reads as a
+ * reproduction at all.
  */
-function silences(env, floor, minRun) {
-  const runs = [];
-  let start = -1;
-  for (let i = 0; i < env.length; i++) {
-    const quiet = env[i] < floor;
-    if (quiet && start < 0) start = i;
-    if ((!quiet || i === env.length - 1) && start >= 0) {
-      if (i - start >= minRun) runs.push([start, i]);
-      start = -1;
-    }
-  }
-  return runs;
-}
-
-/** Draw an envelope as a mirrored band with a soft edge, dark on light. */
-function drawWave(w, h, sample) {
+function loopWave(w, h, seed) {
   const grey = new Uint8Array(w * h);
+  const env = loopEnvelope(Math.round(w / 2), seed);
   const mid = (h - 1) / 2;
-  const maxAmp = h * 0.42;
-  // The soft edge, in pixels. This is the whole reason the result halftones into
-  // a ramp of dot sizes instead of a solid block with a hard border.
-  const soft = h * 0.055;
+  const maxAmp = h * 0.44;
+  const soft = h * 0.06;
 
   for (let x = 0; x < w; x++) {
-    const a = sample(x / (w - 1));
+    // The modulo IS the loop. Two identical halves, so a pan of half the image
+    // width lands on the same picture it left.
+    const a = env[x % env.length];
     const half = Math.max(1.2, a * maxAmp);
     for (let y = 0; y < h; y++) {
       const d = Math.abs(y - mid);
-      // 1 inside the band, 0 outside, smooth across `soft`.
       let inside = 1 - Math.max(0, Math.min(1, (d - half + soft) / soft));
       inside = inside * inside * (3 - 2 * inside);
-      // A faint baseline so a silent stretch still reads as a track rather than
-      // as blank paper — dead air is part of the picture, not an absence of it.
-      const base = Math.exp(-(d * d) / (2 * 2.2 * 2.2)) * 0.28;
-      const ink = Math.max(inside, base);
-      grey[y * w + x] = Math.round(255 * (1 - 0.94 * ink));
+      // A faint baseline, so a quiet stretch still reads as a track rather than
+      // as blank paper. Dead air is part of the picture, not an absence of it.
+      const base = Math.exp(-(d * d) / (2 * 2.2 * 2.2)) * 0.3;
+      grey[y * w + x] = Math.round(255 * (1 - 0.94 * Math.max(inside, base)));
     }
   }
   return grey;
-}
-
-function waveFrames(w, h, seed) {
-  const N = 4096;
-  const env = speechEnvelope(N, seed);
-  const gaps = silences(env, 0.17, Math.round(N * 0.018));
-
-  // Raw: the recording as it came off the camera, dead air included.
-  const raw = drawWave(w, h, (u) => env[Math.min(N - 1, Math.round(u * (N - 1)))]);
-
-  // Cut: the same signal with those runs removed and the rest closed up. Built by
-  // index remapping rather than by redrawing, so it is provably the same audio —
-  // if it were regenerated the two images would be different recordings and the
-  // hard cut between them would be a lie about what changed.
-  const keep = [];
-  let g = 0;
-  for (let i = 0; i < N; i++) {
-    while (g < gaps.length && i > gaps[g][1]) g++;
-    if (g < gaps.length && i >= gaps[g][0] && i <= gaps[g][1]) continue;
-    keep.push(i);
-  }
-  const cut = drawWave(w, h, (u) => env[keep[Math.min(keep.length - 1, Math.round(u * (keep.length - 1)))]]);
-
-  const removed = 1 - keep.length / N;
-  return { raw, cut, removed };
 }
 
 /* ---------- driver ---------- */
@@ -320,16 +322,16 @@ const FRAMES = [
 const check = process.argv.includes("--check");
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
-// The r6 base image, and the same signal with its dead air removed. Wider than
-// the tiles because this one is a full-bleed hero background, and the screen pans
-// across it.
-const WAVE = { w: 1280, h: 720, seed: 7 };
+// Aspect 8 — see the note above; the ratio is what lets the pan stay inside the
+// image at every hero shape. Small on purpose: the screen samples one texel per
+// dot cell, so a 2400px source is already far more than a 60-cell screen can use,
+// and every extra pixel is bytes a visitor downloads for the shader to discard.
+const WAVE = { w: 2400, h: 300, seed: 7 };
 
 let changed = 0;
 
 {
-  const { raw, cut, removed } = waveFrames(WAVE.w, WAVE.h, WAVE.seed);
-  for (const [name, grey] of [["base-wave", raw], ["base-wave-cut", cut]]) {
+  for (const [name, grey] of [["base-wave", loopWave(WAVE.w, WAVE.h, WAVE.seed)]]) {
     const png = encodePng(WAVE.w, WAVE.h, grey);
     const file = join(OUT, `${name}.png`);
     const same = existsSync(file) && readFileSync(file).equals(png);
@@ -344,7 +346,6 @@ let changed = 0;
     writeFileSync(file, png);
     console.log(`  ${same ? "\u00b7" : "\u2713"} ${name}.png  ${WAVE.w}\u00d7${WAVE.h}  ${(png.length / 1024).toFixed(1)}kb`);
   }
-  if (!check) console.log(`    dead air removed by the cut: ${(removed * 100).toFixed(1)}%`);
 }
 
 for (const f of FRAMES) {
