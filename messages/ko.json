@@ -75,6 +75,12 @@
     "title": "창업자 두 명이 직접 만듭니다.",
     "lede": "저희는 2025년 6월 서울 Hugging Face LeRobot Worldwide Hackathon에서 만났습니다. 종현은 서울 행사를 운영했고, 지호는 참가자로 참여했습니다. 두 사람 모두 2026년 6월부터 SudoCut에 풀타임으로 일하고 있습니다.",
     "peopleLabel": "창업자",
+    "linksLabel": "{name} 링크",
+    "links": {
+      "linkedin": "링크드인",
+      "site": "개인 사이트",
+      "email": "이메일"
+    },
     "people": {
       "jonghyun": {
         "name": "박종현",

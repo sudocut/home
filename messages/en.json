@@ -75,6 +75,12 @@
     "title": "Two founders. Both write the code.",
     "lede": "We met in June 2025 at the Hugging Face LeRobot Worldwide Hackathon in Seoul — Jong Hyun ran the Seoul site, Jiho competed in it. Both of us have been full-time on SudoCut since June 2026.",
     "peopleLabel": "Founders",
+    "linksLabel": "Links for {name}",
+    "links": {
+      "linkedin": "LinkedIn",
+      "site": "Personal site",
+      "email": "Email"
+    },
     "people": {
       "jonghyun": {
         "name": "Jong Hyun Park",

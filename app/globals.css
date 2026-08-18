@@ -514,6 +514,35 @@ textarea {
   white-space: pre-line;
 }
 
+/* A founder's own links. Mono micro-type like .sc-person-role so the row reads
+   as metadata under the bio, not as a second call to action — this page spends
+   no cobalt, and a link to a LinkedIn profile is not the required action. */
+.sc-person-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.sc-person-links a {
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sc-content-muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--sc-rule);
+  transition:
+    color var(--sc-fast) var(--sc-ease),
+    border-color var(--sc-fast) var(--sc-ease);
+}
+
+.sc-person-links a:hover {
+  color: var(--sc-content);
+  border-bottom-color: var(--sc-content);
+}
+
 .sc-team-note {
   margin: 44px 0 88px;
   font-size: 14px;
