@@ -17,6 +17,7 @@ const IDENTITIES = [
   ["sudoremove", "sudoremove"],
   ["chester_roh", "AI Frontier Korea (노정석)"],
   ["eegirit", "이기릿 EEgirIT"],
+  ["rlwrld.dexterity", "RLWRLD"],
 ];
 const SHA_A = "a".repeat(64);
 const SHA_B = "b".repeat(64);
@@ -107,17 +108,6 @@ function configuredChannels(manifest) {
     name: channel.name,
     art: `/${channel.served.path.slice("public/".length)}`,
   }));
-}
-
-function configuredChannelsWithUnclearedPartner(manifest) {
-  return [
-    ...configuredChannels(manifest),
-    {
-      handle: "rlwrld.dexterity",
-      name: "RLWRLD",
-      frame: "/frames/frame-06.png",
-    },
-  ];
 }
 
 async function createFinalFixture(root) {
@@ -329,7 +319,7 @@ test("buildDerivative rejects non-900px and non-JPEG sources", async (t) => {
   await assert.rejects(() => buildDerivative(wrongFormat, output), /JPEG/i);
 });
 
-test("buildChannelAssets finalizes five derivatives and only measured served provenance", async (t) => {
+test("buildChannelAssets finalizes six derivatives and only measured served provenance", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "channel-art-finalize-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const sourceManifest = validManifest();
@@ -347,7 +337,7 @@ test("buildChannelAssets finalizes five derivatives and only measured served pro
     },
   });
 
-  assert.equal(calls.length, 5);
+  assert.equal(calls.length, IDENTITIES.length);
   const afterMarkdown = await readFile(sourcePath, "utf8");
   const finalized = parseManifest(afterMarkdown, { phase: "final" });
   assert.equal(
@@ -426,22 +416,8 @@ test("verifyChannelAssets validates a final fixture through a direct TypeScript 
 
   const result = await verifyChannelAssets({ root, temporaryParent });
 
-  assert.equal(result.verified, 5);
+  assert.equal(result.verified, IDENTITIES.length);
   assert.deepEqual(await readdir(temporaryParent), ["keep-me"]);
-});
-
-test("verifyChannelAssets allows extra partner channels without cleared artwork", async (t) => {
-  const root = await mkdtemp(join(tmpdir(), "channel-art-verify-extra-partner-"));
-  t.after(() => rm(root, { recursive: true, force: true }));
-  const { manifest } = await createFinalFixture(root);
-  const { verifyChannelAssets } = await loadVerifier();
-
-  const result = await verifyChannelAssets({
-    root,
-    configuredChannels: configuredChannelsWithUnclearedPartner(manifest),
-  });
-
-  assert.equal(result.verified, 5);
 });
 
 test("verifyChannelAssets accepts only a final manifest", async (t) => {

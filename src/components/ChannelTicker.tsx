@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import type { CSSProperties } from "react";
 import { ChannelArtwork } from "@/components/ChannelArtwork";
 import { CHANNELS } from "@/content/channels";
 
@@ -34,15 +35,14 @@ import { CHANNELS } from "@/content/channels";
  * Halftone frame described in src/content/channels.ts.
  *
  * WHAT THIS COSTS, SO IT IS NOT DISCOVERED LATER. With the current clearance set
- * the normal path is twenty profile image elements — five cleared images, four
- * cycles, for the large-screen seam — plus four fallback canvases for the one
- * partner whose profile image is not cleared yet. The hero screen and D6 paper
- * texture remain. Additional fallback canvases appear only for failed profile
- * images.
+ * the normal path is twenty-four profile image elements — six cleared images,
+ * four cycles, for the large-screen seam — plus the hero screen and D6 paper
+ * texture. Fallback canvases appear only for failed profile images.
  */
 export function ChannelTicker({ pitch = 8 }: { pitch?: number }) {
   const t = useTranslations("home.channels");
   const cycles = [0, 1, 2, 3] as const;
+  const trackStyle = { "--sc-tick-count": CHANNELS.length } as CSSProperties;
 
   const run = (cycle: number) =>
     CHANNELS.map((channel) => (
@@ -73,7 +73,9 @@ export function ChannelTicker({ pitch = 8 }: { pitch?: number }) {
       </p>
 
       <div className="sc-tick-rail">
-        <ul className="sc-tick-track">{cycles.flatMap((cycle) => run(cycle))}</ul>
+        <ul className="sc-tick-track" style={trackStyle}>
+          {cycles.flatMap((cycle) => run(cycle))}
+        </ul>
       </div>
 
       <p className="sc-trust-note">{t("note")}</p>

@@ -720,6 +720,7 @@ textarea {
   --sc-tick-h: 82px;
   --sc-tick-avatar: 58px;
   --sc-tick-gap: 16px;
+  --sc-tick-count: 1;
   --sc-tick-duration: 60s;
 
   border-top: 2px solid var(--sc-content);
@@ -778,14 +779,17 @@ textarea {
   animation-play-state: paused;
 }
 
-/* One full run of five chips, gap included. The track contains four visual
-   cycles, so large screens stay covered even at the wrap point. */
+/* One full run of partner chips, gap included. The track contains four visual
+   cycles, so large screens stay covered even at the wrap point. The component
+   owns --sc-tick-count so the seam distance follows the content list. */
 @keyframes sc-tick {
   from {
     transform: translateX(0);
   }
   to {
-    transform: translateX(calc(-5 * (var(--sc-tick-w) + var(--sc-tick-gap))));
+    transform: translateX(
+      calc(-1 * var(--sc-tick-count) * (var(--sc-tick-w) + var(--sc-tick-gap)))
+    );
   }
 }
 
@@ -850,7 +854,7 @@ textarea {
   font-weight: 600;
   font-size: 13px;
   line-height: 1.15;
-  /* Two of the five names are long, and one is Korean. Clamp rather than
+  /* Some names are long, and one is Korean. Clamp rather than
      truncate at one line: the whole point of the band is that the names are
      legible. */
   -webkit-box-orient: vertical;

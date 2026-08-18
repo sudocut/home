@@ -6,16 +6,15 @@
  *
  * Names and handles are checked against youtube.com/@{handle}. The first five
  * entries are from the `add-trusted-partners-section` branch and were checked on
- * 2026-08-17. RLWRLD was added from the founder-supplied channel URL on
- * 2026-08-18.
+ * 2026-08-17. RLWRLD was added from the founder-supplied channel URL and checked
+ * on 2026-08-18.
  *
  * WHAT IS REAL HERE AND WHAT IS NOT
  * ---------------------------------
  * The names are real. Naming a channel is ours to do: they are the channels' own
- * public titles, and the front page counts them. Profile images render only when
- * retained same-origin derivatives have public-safe clearance recorded in
- * brand/reference/channels/SOURCE.md. A partner without cleared profile-image
- * media stays on the abstract fallback frame.
+ * public titles, and the front page counts them. Profile images render only from
+ * retained same-origin derivatives with public-safe clearance recorded in
+ * brand/reference/channels/SOURCE.md.
  *
  * `art` is the normal path. `frame` remains the runtime fallback: an abstract
  * greyscale field from tools/make-frames.mjs, not footage, not a thumbnail, not
@@ -27,8 +26,7 @@
  *   2. The fallback keeps us from inventing video stills or episode thumbnails
  *      when only profile-image clearance has been granted.
  *
- * So tiles show cleared public profile images when clearance exists. If one
- * cannot load, or if a partner has no cleared profile image yet, the tile falls
+ * So tiles show cleared public profile images. If one cannot load, the tile falls
  * back to an abstract screen with the channel's real name set in type over it.
  * Nothing on the page pretends to be a frame of anyone's show.
  */
@@ -79,6 +77,7 @@ export const CHANNELS: readonly Channel[] = [
     handle: "rlwrld.dexterity",
     name: "RLWRLD",
     frame: "/frames/frame-06.png",
+    art: "/channels/rlwrld.dexterity.webp",
   },
 ] as const;
 

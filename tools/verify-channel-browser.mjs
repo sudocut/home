@@ -47,19 +47,8 @@ const VIEWPORTS = Object.freeze([
   { label: "mobile", width: 390, height: 900, avatarPx: 52, chipHeightPx: 76 },
 ]);
 
-const EXPECTED_CHANNELS = Object.freeze([
-  ...CHANNEL_ART,
-  {
-    handle: "rlwrld.dexterity",
-    name: "RLWRLD",
-    channelUrl: "https://www.youtube.com/@rlwrld.dexterity",
-    artPath: null,
-  },
-]);
+const EXPECTED_CHANNELS = CHANNEL_ART;
 const EXPECTED_ART_PATHS = CHANNEL_ART.map((channel) => channel.artPath);
-const EXPECTED_FALLBACK_URLS = EXPECTED_CHANNELS
-  .filter((channel) => !channel.artPath)
-  .map((channel) => channel.channelUrl);
 const EXPECTED_CHANNEL_URLS = EXPECTED_CHANNELS.map((channel) => channel.channelUrl);
 const TICKER_VISUAL_CYCLES = 4;
 const LARGE_VIEWPORT_WIDTH = 1728;
@@ -317,21 +306,6 @@ async function openPage(page, origin, path) {
   await page.locator(".sc-trust").waitFor({ state: "visible", timeout: 10_000 });
 }
 
-async function waitForTrustFallbacks(page) {
-  if (!EXPECTED_FALLBACK_URLS.length) return;
-  await page.waitForFunction(
-    ({ urls, cycles }) =>
-      urls.every(
-        (url) =>
-          Array.from(document.querySelectorAll("a.sc-tick"))
-            .filter((card) => card.href === url)
-            .reduce((count, card) => count + card.querySelectorAll(".sc-tick-art canvas").length, 0) === cycles,
-      ),
-    { urls: EXPECTED_FALLBACK_URLS, cycles: TICKER_VISUAL_CYCLES },
-    { timeout: 15_000 },
-  );
-}
-
 async function collectTrustBand(page) {
   return page.evaluate(() => {
     const trust = document.querySelector(".sc-trust");
@@ -394,7 +368,6 @@ async function collectTrustBand(page) {
 
 function assertProfileContract(data, { note, avatarPx, chipHeightPx, context }) {
   const expectedRenderedImages = EXPECTED_ART_PATHS.length * TICKER_VISUAL_CYCLES;
-  const expectedRenderedFallbacks = EXPECTED_FALLBACK_URLS.length * TICKER_VISUAL_CYCLES;
   assertEqual(data.trackCount, 1, `${context} should render one continuous ticker track`);
   assertEqual(data.visualCycleCount, TICKER_VISUAL_CYCLES, `${context} visual cycle count`);
   assertEqual(data.originalItemCount, EXPECTED_CHANNELS.length, `${context} should expose one semantic channel set`);
@@ -406,17 +379,12 @@ function assertProfileContract(data, { note, avatarPx, chipHeightPx, context }) 
   assertEqual(data.imageCount, expectedRenderedImages, `${context} should render repeated cleared profile image instances`);
   assertEqual(
     data.fallbackCanvasesByHref.length,
-    expectedRenderedFallbacks,
-    `${context} should render fallback canvases for partner channels without cleared profile images`,
-  );
-  assertSameList(
-    [...new Set(data.fallbackCanvasesByHref)].sort(),
-    [...EXPECTED_FALLBACK_URLS].sort(),
-    `${context} fallback channel URLs`,
+    0,
+    `${context} should not render fallback canvases while cleared profile images load`,
   );
 
   const uniquePaths = [...new Set(data.images.map((image) => image.srcPath))].sort();
-  assertSameList(uniquePaths, [...EXPECTED_ART_PATHS].sort(), `${context} should use exactly five unique channel asset URLs`);
+  assertSameList(uniquePaths, [...EXPECTED_ART_PATHS].sort(), `${context} should use exactly six unique channel asset URLs`);
 
   for (const height of data.itemHeights) {
     assertEqual(height, chipHeightPx, `${context} item height`);
@@ -467,6 +435,7 @@ async function assertTickerSpacing(page, context) {
 
     const rail = document.querySelector(".sc-tick-rail");
     const trust = document.querySelector(".sc-trust");
+    const track = document.querySelector(".sc-tick-track");
     const railRect = rail?.getBoundingClientRect();
     const items = Array.from(document.querySelectorAll(".sc-tick-item")).map((item) => {
       const rect = item.getBoundingClientRect();
@@ -474,15 +443,19 @@ async function assertTickerSpacing(page, context) {
     });
     const rawGap = getComputedStyle(trust).getPropertyValue("--sc-tick-gap").trim();
     const declaredGap = Number.parseFloat(rawGap);
+    const rawCount = track ? getComputedStyle(track).getPropertyValue("--sc-tick-count").trim() : "";
+    const declaredCount = Number.parseFloat(rawCount);
     const gaps = items.slice(1).map((item, index) => item.left - items[index].right);
 
     return {
+      declaredCount,
       declaredGap,
       startGap: (items[0]?.left ?? 0) - (railRect?.left ?? 0),
       gaps,
     };
   });
 
+  assertEqual(spacing.declaredCount, EXPECTED_CHANNELS.length, `${context} ticker cycle count token`);
   assertNear(spacing.startGap, spacing.declaredGap, 1, `${context} track start gap`);
   for (const gap of spacing.gaps) {
     assertNear(gap, spacing.declaredGap, 1, `${context} item/seam gap`);
@@ -604,11 +577,7 @@ async function assertWebGlContract(page) {
   }));
   assertEqual(counts.paper, 1, "normal profile mode should retain one paper canvas");
   assertEqual(counts.hero, 1, "normal profile mode should retain one hero canvas");
-  assertEqual(
-    counts.trust,
-    EXPECTED_FALLBACK_URLS.length * TICKER_VISUAL_CYCLES,
-    "normal profile mode should spend WebGL contexts only for partner chips without cleared profile images",
-  );
+  assertEqual(counts.trust, 0, "normal profile mode should not spend WebGL contexts in the trust band");
 
   const hero = page.locator(".sc-stage-art canvas").first();
   const first = sha256(await hero.screenshot());
@@ -668,7 +637,7 @@ async function assertFallbackCase(browser, origin) {
     }));
     assert(aborted >= 1, "fallback case should abort at least one profile-image request");
     assertEqual(counts.fallbackCanvases, 4, "aborted profile should render four fallback canvases");
-    assertEqual(counts.images, 16, "non-aborted cleared profiles should remain images");
+    assertEqual(counts.images, 20, "non-aborted cleared profiles should remain images");
     assertEqual(counts.brokenImages, 0, "fallback case should not expose broken image icons");
     collector.assertNoIssues("fallback profile-image case");
   } finally {
@@ -691,7 +660,6 @@ async function verifyInBrowser(browser, origin) {
 
       try {
         await openPage(page, origin, locale.path);
-        await waitForTrustFallbacks(page);
         assertProfileContract(await collectTrustBand(page), {
           note: locale.note,
           avatarPx: viewport.avatarPx,
@@ -724,7 +692,6 @@ async function verifyInBrowser(browser, origin) {
     const collector = createPageIssueCollector(page);
     try {
       await openPage(page, origin, locale.path);
-      await waitForTrustFallbacks(page);
       await assertReducedMotion(page, `${locale.path} reduced-motion`);
       collector.assertNoIssues(`${locale.path} reduced-motion`);
     } finally {
@@ -740,7 +707,6 @@ async function verifyInBrowser(browser, origin) {
   const largeCollector = createPageIssueCollector(largePage);
   try {
     await openPage(largePage, origin, "/en");
-    await waitForTrustFallbacks(largePage);
     assertProfileContract(await collectTrustBand(largePage), {
       note: LOCALES[0].note,
       avatarPx: VIEWPORTS[0].avatarPx,
