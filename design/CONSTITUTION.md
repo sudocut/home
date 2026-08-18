@@ -179,7 +179,10 @@ construction. That is the whole reason this one can be admitted and that one
 cannot.
 
 **What D7 permits.** `halftone-dots` as a **foreground object** — a panel, a
-band, a tile, a hero plate. It screens a picture; it is content, not wallpaper.
+fallback tile, a hero plate. It screens a picture; it is content, not wallpaper.
+In the channel trust band, D7 describes only the abstract fallback frame shown
+when a cleared profile image cannot load. The normal profile pixels are governed
+by D8's narrow media-pixel exception, not by this shader rule.
 
 **What D7 does not permit**, and these are the parts that keep S1 and D6 intact:
 
@@ -348,9 +351,16 @@ it.
 4. The duplicated run is `aria-hidden`. It exists to hide the seam, not to
    announce five channels ten times.
 
-**Not permitted:** a second marquee anywhere, motion on any other band, and the
-band carrying cobalt. It is a row of monochrome screens; the point colour stays on
-the one action.
+**Narrow media-pixel exception.** The channel trust band may display the five
+cleared YouTube profile images recorded in `brand/reference/channels/SOURCE.md`.
+Those image pixels are third-party media content, not palette tokens. The
+exception ends at the circular avatar image: tile backgrounds, borders, text,
+motion, hover states and fallback screens stay tokenized ink/paper, and the point
+colour stays on the one action.
+
+**Not permitted:** a second marquee anywhere, motion on any other band, cobalt in
+the band chrome, unrecorded third-party media, video stills, or episode
+thumbnails.
 
 **What reverses it:** delete the keyframes. The band becomes a static row and
 nothing else on the page depends on the movement.

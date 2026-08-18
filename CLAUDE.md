@@ -20,6 +20,11 @@ an existing token — never hand-pick a hex.
 
 - **One point color.** Cobalt `--sc-action` marks the single required action, at
   most **once per view**. Two cobalt objects on one page is a bug.
+- **Narrow media-pixel exception.** The five cleared channel profile images in
+  `public/channels/*.webp` may render as third-party content pixels inside the
+  trust-band avatar only. Do not sample those pixels into UI. Surrounding chrome
+  — background, border, text, motion, hover and fallback screens — stays
+  tokenized ink/paper.
 - `--sc-signal-red` / `--sc-signal-yellow` are **status only**. Never decoration.
 - **`radius: 0`.** No rounded corners except `50%` circles.
 - **Shadows are hard offset, zero blur.** `6px 6px 0`, `9px 9px 0` on hover.

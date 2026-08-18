@@ -84,7 +84,7 @@ function sizeForPitch(pitch: number, height: number): number | null {
 }
 
 export type HalftoneProps = {
-  /** Source image under /public. Abstract frames live in /frames — see tools/make-frames.mjs. */
+  /** Source image under /public. Trust-band fallback frames live in /frames. */
   src: string;
   /** Dot pitch in CSS pixels, 6–32. Clamped to the D7 band. */
   pitch?: number;
@@ -130,9 +130,8 @@ export function Halftone({ src, pitch = 12, grid = "square", className }: Halfto
         // decoded HTMLImageElement, ShaderMount never sets u_imageAspectRatio
         // (shader-mount.js:102, :250) and the screen has nothing to screen.
         const image = new Image();
-        // Same-origin today. Stated anyway because the point of this component is
-        // that real cleared thumbnails drop in later, and a cross-origin one
-        // without CORS headers fails the texture upload rather than degrading.
+        // Same-origin by design. The trust band's normal profile images bypass
+        // this shader; this path is for local fallback frames, not remote media.
         image.crossOrigin = "anonymous";
         image.src = src;
         await image.decode();

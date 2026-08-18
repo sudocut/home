@@ -17,7 +17,12 @@
     "design:new": "bash tools/new-round.sh",
     "design:generate": "node tools/generate.mjs",
     "design:verify": "node tools/verify-round.mjs",
-    "design:board": "bash tools/serve.sh"
+    "design:board": "bash tools/serve.sh",
+    "channels:build-assets": "node tools/build-channel-art.mjs",
+    "channels:finalize-assets": "node tools/build-channel-art.mjs --finalize",
+    "channels:verify-assets": "node tools/verify-channel-art.mjs",
+    "channels:verify-browser": "node tools/verify-channel-browser.mjs",
+    "channels:test": "node --test tools/tests/*.test.mjs"
   },
   "dependencies": {
     "next": "16.2.10",
@@ -31,6 +36,8 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "playwright-core": "1.62.1",
+    "sharp": "0.34.5",
     "tailwindcss": "^4.3.2",
     "typescript": "^5.9.0"
   }
