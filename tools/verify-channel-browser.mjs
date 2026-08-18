@@ -43,12 +43,14 @@ const LOCALES = Object.freeze([
 ]);
 
 const VIEWPORTS = Object.freeze([
-  { label: "desktop", width: 1280, height: 900, avatarPx: 88 },
-  { label: "mobile", width: 390, height: 900, avatarPx: 64 },
+  { label: "desktop", width: 1280, height: 900, avatarPx: 58, chipHeightPx: 82 },
+  { label: "mobile", width: 390, height: 900, avatarPx: 52, chipHeightPx: 76 },
 ]);
 
 const EXPECTED_ART_PATHS = CHANNELS.map((channel) => channel.artPath);
 const EXPECTED_CHANNEL_URLS = CHANNELS.map((channel) => channel.channelUrl);
+const TICKER_VISUAL_CYCLES = 4;
+const LARGE_VIEWPORT_WIDTH = 1728;
 
 function capDeadline(deadlineMs) {
   const parsed = Number(deadlineMs);
@@ -280,6 +282,12 @@ function assertEqual(actual, expected, message) {
   }
 }
 
+function assertNear(actual, expected, tolerance, message) {
+  if (Math.abs(actual - expected) > tolerance) {
+    throw new Error(`${message}: expected ${expected}±${tolerance}, got ${actual}`);
+  }
+}
+
 function assertSameList(actual, expected, message) {
   const actualText = JSON.stringify(actual);
   const expectedText = JSON.stringify(expected);
@@ -301,59 +309,89 @@ async function collectTrustBand(page) {
   return page.evaluate(() => {
     const trust = document.querySelector(".sc-trust");
     const tracks = Array.from(trust?.querySelectorAll(".sc-tick-track") ?? []);
-    const originalTrack = tracks.find((track) => track.getAttribute("aria-hidden") !== "true");
-    const duplicateTracks = tracks.filter((track) => track.getAttribute("aria-hidden") === "true");
-    const duplicateTrack = duplicateTracks[0];
+    const originalItems = Array.from(trust?.querySelectorAll(".sc-tick-item:not([aria-hidden='true'])") ?? []);
+    const duplicateItems = Array.from(trust?.querySelectorAll(".sc-tick-item[aria-hidden='true']") ?? []);
     const images = Array.from(trust?.querySelectorAll("img.sc-tick-avatar") ?? []).map((image) => {
       const rect = image.getBoundingClientRect();
+      const slotRect = image.closest(".sc-tick-art")?.getBoundingClientRect();
       const style = getComputedStyle(image);
       return {
         alt: image.getAttribute("alt"),
         srcPath: new URL(image.currentSrc || image.getAttribute("src") || "", location.href).pathname,
         width: Math.round(rect.width),
         height: Math.round(rect.height),
+        slotWidth: Math.round(slotRect?.width ?? 0),
+        slotHeight: Math.round(slotRect?.height ?? 0),
         borderRadius: style.borderRadius,
         objectFit: style.objectFit,
         complete: image.complete,
         naturalWidth: image.naturalWidth,
       };
     });
-    const originalLinks = Array.from(originalTrack?.querySelectorAll("a.sc-tick") ?? []).map((link) => ({
+    const itemHeights = Array.from(trust?.querySelectorAll(".sc-tick-item") ?? []).map((item) =>
+      Math.round(item.getBoundingClientRect().height),
+    );
+    const cardHeights = Array.from(trust?.querySelectorAll("a.sc-tick") ?? []).map((card) =>
+      Math.round(card.getBoundingClientRect().height),
+    );
+    const originalLinks = originalItems.map((item) => item.querySelector("a.sc-tick")).filter(Boolean).map((link) => ({
       href: link.href,
       tabIndex: link.tabIndex,
     }));
-    const duplicateLinks = Array.from(duplicateTrack?.querySelectorAll("a.sc-tick") ?? []).map((link) => ({
+    const duplicateLinks = duplicateItems.map((item) => item.querySelector("a.sc-tick")).filter(Boolean).map((link) => ({
       href: link.href,
       tabIndex: link.tabIndex,
     }));
 
     return {
       note: trust?.querySelector(".sc-trust-note")?.textContent?.trim() ?? "",
-      hiddenTrackCount: duplicateTracks.length,
+      trackCount: tracks.length,
+      visualCycleCount: Math.round((originalItems.length + duplicateItems.length) / 5),
+      originalItemCount: originalItems.length,
+      duplicateItemCount: duplicateItems.length,
       imageCount: images.length,
       images,
+      itemHeights,
+      cardHeights,
       originalLinks,
       duplicateLinks,
     };
   });
 }
 
-function assertProfileContract(data, { note, avatarPx, context }) {
-  assertEqual(data.imageCount, 10, `${context} should render ten profile image instances`);
+function assertProfileContract(data, { note, avatarPx, chipHeightPx, context }) {
+  const expectedRendered = CHANNELS.length * TICKER_VISUAL_CYCLES;
+  assertEqual(data.trackCount, 1, `${context} should render one continuous ticker track`);
+  assertEqual(data.visualCycleCount, TICKER_VISUAL_CYCLES, `${context} visual cycle count`);
+  assertEqual(data.originalItemCount, CHANNELS.length, `${context} should expose one semantic channel set`);
+  assertEqual(
+    data.duplicateItemCount,
+    CHANNELS.length * (TICKER_VISUAL_CYCLES - 1),
+    `${context} should render duplicate cycles only for the seam`,
+  );
+  assertEqual(data.imageCount, expectedRendered, `${context} should render repeated profile image instances`);
 
   const uniquePaths = [...new Set(data.images.map((image) => image.srcPath))].sort();
   assertSameList(uniquePaths, [...EXPECTED_ART_PATHS].sort(), `${context} should use exactly five unique channel asset URLs`);
+
+  for (const height of data.itemHeights) {
+    assertEqual(height, chipHeightPx, `${context} item height`);
+  }
+  for (const height of data.cardHeights) {
+    assertEqual(height, chipHeightPx, `${context} card height`);
+  }
 
   for (const image of data.images) {
     assertEqual(image.alt, "", `${context} profile images should be decorative`);
     assertEqual(image.width, avatarPx, `${context} avatar width`);
     assertEqual(image.height, avatarPx, `${context} avatar height`);
+    assertEqual(image.slotWidth, avatarPx, `${context} avatar slot width`);
+    assertEqual(image.slotHeight, avatarPx, `${context} avatar slot height`);
     assertEqual(image.borderRadius, "50%", `${context} avatar border radius`);
     assertEqual(image.objectFit, "cover", `${context} avatar object-fit`);
     assert(image.complete && image.naturalWidth > 0, `${context} should not expose a broken profile image`);
   }
 
-  assertEqual(data.hiddenTrackCount, 1, `${context} should have one aria-hidden duplicate run`);
   assertSameList(
     data.originalLinks.map((link) => link.href),
     EXPECTED_CHANNEL_URLS,
@@ -361,20 +399,91 @@ function assertProfileContract(data, { note, avatarPx, context }) {
   );
   assertSameList(
     data.duplicateLinks.map((link) => link.href),
-    EXPECTED_CHANNEL_URLS,
+    Array.from({ length: TICKER_VISUAL_CYCLES - 1 }, () => EXPECTED_CHANNEL_URLS).flat(),
     `${context} duplicate links`,
   );
   assertSameList(
     data.duplicateLinks.map((link) => link.tabIndex),
-    CHANNELS.map(() => -1),
+    CHANNELS.map(() => -1).flatMap((value) => Array.from({ length: TICKER_VISUAL_CYCLES - 1 }, () => value)),
     `${context} duplicate links should be skipped by tab navigation`,
   );
   assertEqual(data.note, note, `${context} localized public-profile note`);
 }
 
+async function assertTickerSpacing(page, context) {
+  const spacing = await page.evaluate(async () => {
+    const animations = Array.from(document.querySelectorAll(".sc-tick-track")).flatMap((track) =>
+      track.getAnimations(),
+    );
+    for (const animation of animations) {
+      animation.pause();
+      animation.currentTime = 0;
+    }
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const rail = document.querySelector(".sc-tick-rail");
+    const trust = document.querySelector(".sc-trust");
+    const railRect = rail?.getBoundingClientRect();
+    const items = Array.from(document.querySelectorAll(".sc-tick-item")).map((item) => {
+      const rect = item.getBoundingClientRect();
+      return { left: rect.left, right: rect.right };
+    });
+    const rawGap = getComputedStyle(trust).getPropertyValue("--sc-tick-gap").trim();
+    const declaredGap = Number.parseFloat(rawGap);
+    const gaps = items.slice(1).map((item, index) => item.left - items[index].right);
+
+    return {
+      declaredGap,
+      startGap: (items[0]?.left ?? 0) - (railRect?.left ?? 0),
+      gaps,
+    };
+  });
+
+  assertNear(spacing.startGap, spacing.declaredGap, 1, `${context} track start gap`);
+  for (const gap of spacing.gaps) {
+    assertNear(gap, spacing.declaredGap, 1, `${context} item/seam gap`);
+  }
+}
+
+async function assertTickerCoversLargeViewport(page, context) {
+  const samples = await page.evaluate(async () => {
+    const result = [];
+    const track = document.querySelector(".sc-tick-track");
+    const animations = track ? track.getAnimations() : [];
+    const animation = animations[0];
+    const duration =
+      typeof animation?.effect?.getTiming === "function"
+        ? Number(animation.effect.getTiming().duration)
+        : 60_000;
+
+    for (const pct of [0, 0.25, 0.5, 0.75, 0.98, 0.999]) {
+      for (const item of animations) {
+        item.pause();
+        item.currentTime = duration * pct;
+      }
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+      const visibleItems = Array.from(document.querySelectorAll(".sc-tick-item"))
+        .map((item) => item.getBoundingClientRect())
+        .filter((rect) => rect.right > 0 && rect.left < innerWidth);
+      const maxRight = Math.max(...visibleItems.map((rect) => rect.right));
+      result.push({ pct, maxRight, rightBlank: innerWidth - maxRight });
+    }
+
+    return result;
+  });
+
+  for (const sample of samples) {
+    assert(
+      sample.maxRight >= LARGE_VIEWPORT_WIDTH,
+      `${context} ticker should cover the right edge at ${sample.pct}: blank ${sample.rightBlank}px`,
+    );
+  }
+}
+
 async function assertTickerPauses(page, context) {
   const rail = page.locator(".sc-tick-rail");
-  const firstLink = page.locator(".sc-tick-track:not([aria-hidden]) a.sc-tick").first();
+  const firstLink = page.locator(".sc-tick-item:not([aria-hidden='true']) a.sc-tick").first();
 
   await page.waitForFunction(() =>
     Array.from(document.querySelectorAll(".sc-tick-track")).every(
@@ -411,7 +520,7 @@ async function assertReducedMotion(page, context) {
   const result = await page.evaluate(() => {
     const rail = document.querySelector(".sc-tick-rail");
     const tracks = Array.from(document.querySelectorAll(".sc-tick-track"));
-    const links = Array.from(document.querySelectorAll(".sc-tick-track:not([aria-hidden]) a.sc-tick"));
+    const links = Array.from(document.querySelectorAll(".sc-tick-item:not([aria-hidden='true']) a.sc-tick"));
     const last = links.at(-1);
     last?.scrollIntoView({ block: "nearest", inline: "end" });
     const railRect = rail?.getBoundingClientRect();
@@ -471,11 +580,8 @@ async function assertFallbackCase(browser, origin) {
   });
   let aborted = 0;
   await context.route("**/channels/eo_korea.webp", (route) => {
-    if (aborted === 0) {
-      aborted += 1;
-      return route.abort("failed");
-    }
-    return route.continue();
+    aborted += 1;
+    return route.abort("failed");
   });
   const page = await context.newPage();
   const collector = createPageIssueCollector(page, {
@@ -490,9 +596,9 @@ async function assertFallbackCase(browser, origin) {
         const affected = allCards.filter((card) => card.getAttribute("href") === "https://www.youtube.com/@eo_korea");
         const unaffected = allCards.filter((card) => card.getAttribute("href") !== "https://www.youtube.com/@eo_korea");
         return (
-          affected.length === 2 &&
+          affected.length === 4 &&
           affected.every((card) => card.querySelectorAll(".sc-tick-art canvas").length === 1) &&
-          unaffected.length === 8 &&
+          unaffected.length === 16 &&
           unaffected.every((card) => {
             const image = card.querySelector("img.sc-tick-avatar");
             return !!image && image.complete && image.naturalWidth > 0;
@@ -511,9 +617,9 @@ async function assertFallbackCase(browser, origin) {
         (image) => !image.complete || image.naturalWidth === 0,
       ).length,
     }));
-    assertEqual(aborted, 1, "fallback case should abort exactly one profile-image request");
-    assertEqual(counts.fallbackCanvases, 2, "aborted profile should render two fallback canvases");
-    assertEqual(counts.images, 8, "non-aborted profiles should remain images");
+    assert(aborted >= 1, "fallback case should abort at least one profile-image request");
+    assertEqual(counts.fallbackCanvases, 4, "aborted profile should render four fallback canvases");
+    assertEqual(counts.images, 16, "non-aborted profiles should remain images");
     assertEqual(counts.brokenImages, 0, "fallback case should not expose broken image icons");
     collector.assertNoIssues("fallback profile-image case");
   } finally {
@@ -539,8 +645,13 @@ async function verifyInBrowser(browser, origin) {
         assertProfileContract(await collectTrustBand(page), {
           note: locale.note,
           avatarPx: viewport.avatarPx,
+          chipHeightPx: viewport.chipHeightPx,
           context: label,
         });
+        await assertTickerSpacing(page, label);
+        if (viewport.width === LARGE_VIEWPORT_WIDTH) {
+          await assertTickerCoversLargeViewport(page, label);
+        }
         await assertTickerPauses(page, label);
         if (!webGlChecked) {
           await assertWebGlContract(page);
@@ -568,6 +679,27 @@ async function verifyInBrowser(browser, origin) {
     } finally {
       await context.close();
     }
+  }
+
+  const largeContext = await browser.newContext({
+    viewport: { width: LARGE_VIEWPORT_WIDTH, height: 900 },
+    deviceScaleFactor: 1,
+  });
+  const largePage = await largeContext.newPage();
+  const largeCollector = createPageIssueCollector(largePage);
+  try {
+    await openPage(largePage, origin, "/en");
+    assertProfileContract(await collectTrustBand(largePage), {
+      note: LOCALES[0].note,
+      avatarPx: VIEWPORTS[0].avatarPx,
+      chipHeightPx: VIEWPORTS[0].chipHeightPx,
+      context: "/en large desktop",
+    });
+    await assertTickerSpacing(largePage, "/en large desktop");
+    await assertTickerCoversLargeViewport(largePage, "/en large desktop");
+    largeCollector.assertNoIssues("/en large desktop");
+  } finally {
+    await largeContext.close();
   }
 
   await assertFallbackCase(browser, origin);

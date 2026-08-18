@@ -712,12 +712,15 @@ textarea {
    chrome stays ink on paper: the cleared profile image is content, not a new
    UI colour, and the one cobalt object on this page remains the waitlist action. */
 .sc-trust {
-  /* Tile width, gutter and loop length. Each variant restates these — the band
-     is a strip in one design and the hero in another — but they are declared
-     here so the keyframes below always resolve, whatever a variant forgets. */
-  --sc-tick-w: 176px;
+  /* Chip width, height, gutter and loop length. Each variant restates these —
+     the band is a strip in one design and the hero in another — but they are
+     declared here so the keyframes below always resolve, whatever a variant
+     forgets. */
+  --sc-tick-w: 258px;
+  --sc-tick-h: 82px;
+  --sc-tick-avatar: 58px;
   --sc-tick-gap: 16px;
-  --sc-tick-duration: 42s;
+  --sc-tick-duration: 60s;
 
   border-top: 2px solid var(--sc-content);
   border-bottom: 2px solid var(--sc-content);
@@ -747,8 +750,7 @@ textarea {
    visitor with prefers-reduced-motion — or one who hovered and paused it — can
    still reach every channel instead of seeing the row cut off at the edge. */
 .sc-tick-rail {
-  display: flex;
-  gap: var(--sc-tick-gap);
+  display: block;
   margin-top: 16px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -763,13 +765,10 @@ textarea {
   flex: 0 0 auto;
   gap: var(--sc-tick-gap);
   margin: 0;
-  padding: 0 0 0 var(--sc-tick-gap);
+  padding: 0 var(--sc-tick-gap);
+  width: max-content;
   list-style: none;
   animation: sc-tick var(--sc-tick-duration) linear infinite;
-}
-
-.sc-tick-track:first-child {
-  padding-left: calc(40px * var(--sc-density));
 }
 
 /* D8 condition 3: hover and focus pause it. Every tile is a link, and chasing a
@@ -779,8 +778,8 @@ textarea {
   animation-play-state: paused;
 }
 
-/* One full run of five tiles, gap included. Translating by exactly that puts the
-   duplicate run where the first one started, so the wrap has no seam. */
+/* One full run of five chips, gap included. The track contains four visual
+   cycles, so large screens stay covered even at the wrap point. */
 @keyframes sc-tick {
   from {
     transform: translateX(0);
@@ -793,14 +792,22 @@ textarea {
 .sc-tick-item {
   flex: 0 0 auto;
   width: var(--sc-tick-w);
+  height: var(--sc-tick-h);
 }
 
 .sc-tick {
-  display: block;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: var(--sc-tick-avatar) minmax(0, 1fr);
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  gap: 0 12px;
+  height: 100%;
   text-decoration: none;
   border: 1px solid var(--sc-content);
   background: var(--sc-surface);
-  padding: 0;
+  padding: 12px;
+  overflow: hidden;
   transition:
     box-shadow var(--sc-fast) var(--sc-ease),
     transform var(--sc-fast) var(--sc-ease);
@@ -813,9 +820,9 @@ textarea {
 
 .sc-tick-art {
   display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-bottom: 1px solid var(--sc-content);
+  grid-row: 1 / span 2;
+  width: var(--sc-tick-avatar);
+  height: var(--sc-tick-avatar);
 }
 
 .sc-tick-profile {
@@ -827,32 +834,40 @@ textarea {
 
 .sc-tick-avatar {
   box-sizing: border-box;
-  width: 88px;
-  height: 88px;
+  width: var(--sc-tick-avatar);
+  height: var(--sc-tick-avatar);
   object-fit: cover;
   border: 2px solid var(--sc-content);
   border-radius: 50%;
 }
 
 .sc-tick-name {
-  display: block;
-  padding: 10px 12px 0;
+  display: -webkit-box;
+  align-self: end;
+  padding: 0;
+  overflow: hidden;
   font-family: var(--sc-body);
   font-weight: 600;
   font-size: 13px;
-  line-height: 1.25;
+  line-height: 1.15;
   /* Two of the five names are long, and one is Korean. Clamp rather than
      truncate at one line: the whole point of the band is that the names are
      legible. */
-  min-height: 2.5em;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .sc-tick-handle {
   display: block;
-  padding: 2px 12px 10px;
+  align-self: start;
+  padding: 3px 0 0;
+  overflow: hidden;
   font-family: var(--sc-mono);
   font-size: 11px;
+  line-height: 1.2;
   color: var(--sc-content-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Says out loud that the pictures are public profiles and every tile links to
@@ -905,9 +920,11 @@ textarea {
 }
 
 .sc-trust {
-  --sc-tick-w: 168px;
+  --sc-tick-w: 258px;
+  --sc-tick-h: 82px;
+  --sc-tick-avatar: 58px;
   --sc-tick-gap: 14px;
-  --sc-tick-duration: 40s;
+  --sc-tick-duration: 60s;
   border-top: 0;
 }
 
@@ -1092,12 +1109,9 @@ textarea {
   }
 
   .sc-trust {
-    --sc-tick-w: 140px;
-  }
-
-  .sc-tick-avatar {
-    width: 64px;
-    height: 64px;
+    --sc-tick-w: 220px;
+    --sc-tick-h: 76px;
+    --sc-tick-avatar: 52px;
   }
 }
 
