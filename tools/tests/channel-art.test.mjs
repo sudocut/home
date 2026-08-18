@@ -469,6 +469,30 @@ test("verifyChannelAssets rejects recorded hash or size mismatches", async (t) =
   }
 });
 
+test("verifyChannelAssets rejects an actual derivative over the 100000-byte ceiling", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "channel-art-verify-byte-ceiling-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const { manifest } = await createFinalFixture(root);
+  const channel = manifest.channels[0];
+  const servedPath = join(root, channel.served.path);
+  const pixels = Buffer.alloc(256 * 256 * 3);
+  let state = 0x12345678;
+  for (let index = 0; index < pixels.length; index += 1) {
+    state = (Math.imul(state, 1664525) + 1013904223) | 0;
+    pixels[index] = state >>> 24;
+  }
+  await sharp(pixels, { raw: { width: 256, height: 256, channels: 3 } })
+    .webp({ lossless: true })
+    .toFile(servedPath);
+  assert.ok((await readFile(servedPath)).byteLength > 100000, "fixture must exceed the ceiling");
+  const { verifyChannelAssets } = await loadVerifier();
+
+  await assert.rejects(
+    () => verifyChannelAssets({ root, configuredChannels: configuredChannels(manifest) }),
+    /exceeds 100000 bytes/i,
+  );
+});
+
 test("verifyChannelAssets rejects decoded dimension or format mismatches", async (t) => {
   const { verifyChannelAssets } = await loadVerifier();
   for (const kind of ["original-dimension", "served-dimension", "served-format"]) {

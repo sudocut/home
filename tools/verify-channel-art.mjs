@@ -98,13 +98,13 @@ export async function verifyChannelAssets({
       if (sha256(originalBytes) !== channel.original.sha256) {
         throw new Error(`Original hash mismatch for ${channel.handle}`);
       }
+      if (servedBytes.byteLength > MAX_SERVED_BYTES) {
+        throw new Error(`Served file exceeds ${MAX_SERVED_BYTES} bytes for ${channel.handle}`);
+      }
       if (servedBytes.byteLength !== channel.served.bytes) {
         throw new Error(
           `Served size mismatch for ${channel.handle}: expected ${channel.served.bytes}, received ${servedBytes.byteLength}`,
         );
-      }
-      if (servedBytes.byteLength > MAX_SERVED_BYTES) {
-        throw new Error(`Served file exceeds ${MAX_SERVED_BYTES} bytes for ${channel.handle}`);
       }
       if (sha256(servedBytes) !== channel.served.sha256) {
         throw new Error(`Served hash mismatch for ${channel.handle}`);
