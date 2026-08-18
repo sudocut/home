@@ -35,11 +35,7 @@ export default async function AboutPage({ params }: { params: Promise<LocalePara
       <section className="sc-page-head">
         <p className="sc-kicker">{t("kicker")}</p>
         <h1>{t("title")}</h1>
-        <p className="sc-lede">
-          {t("ledeBefore")}
-          <span style={{ fontFamily: "var(--sc-mono)" }}>{t("ledeMono")}</span>
-          {t("ledeAfter")}
-        </p>
+        <p className="sc-lede">{t("lede")}</p>
       </section>
 
       <section aria-label={t("beliefsLabel")} className="sc-numbered">

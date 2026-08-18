@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 type LocaleParams = { locale: string };
 
 const PEOPLE = ["jonghyun", "jiho"] as const;
 const RULES = ["one", "two", "three", "four"] as const;
+const PERSON_PHOTOS: Partial<Record<(typeof PEOPLE)[number], string>> = {
+  jiho: "/team/jihoyang-cutout.webp",
+};
 
 export async function generateMetadata({
   params,
@@ -44,13 +48,39 @@ export default async function TeamPage({ params }: { params: Promise<LocaleParam
           2026-07-27 to publish themselves, so this is theirs and only theirs —
           no birth years, no personal social links, and no third parties. */}
       <section aria-label={t("peopleLabel")} className="sc-people">
-        {PEOPLE.map((person) => (
-          <article className="sc-person" key={person}>
-            <h2>{t(`people.${person}.name`)}</h2>
-            <p className="sc-person-role">{t(`people.${person}.role`)}</p>
-            <p className="sc-person-copy">{t(`people.${person}.copy`)}</p>
-          </article>
-        ))}
+        {PEOPLE.map((person) => {
+          const photo = PERSON_PHOTOS[person];
+          return (
+            <article
+              className={photo ? "sc-person sc-person--with-photo" : "sc-person"}
+              key={person}
+            >
+              <div
+                className={photo ? "sc-person-head sc-person-head--with-photo" : "sc-person-head"}
+              >
+                {photo ? (
+                  <figure className="sc-person-photo-frame" aria-hidden="true">
+                    <Image
+                      className="sc-person-photo"
+                      src={photo}
+                      width={512}
+                      height={512}
+                      alt=""
+                      sizes="72px"
+                    />
+                  </figure>
+                ) : null}
+                <div className="sc-person-title">
+                  <h2>{t(`people.${person}.name`)}</h2>
+                  <p className="sc-person-role">{t(`people.${person}.role`)}</p>
+                </div>
+              </div>
+              <div className="sc-person-body">
+                <p className="sc-person-copy">{t(`people.${person}.copy`)}</p>
+              </div>
+            </article>
+          );
+        })}
       </section>
 
       <section aria-label={t("rulesLabel")} className="sc-numbered">

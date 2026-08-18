@@ -374,6 +374,8 @@ textarea {
   line-height: 1.1;
   margin: 18px 0 22px;
   max-width: 18ch;
+  white-space: pre-line;
+  word-break: keep-all;
 }
 
 /* Pricing's headline is the one that runs full width — it is a two-sentence
@@ -454,6 +456,40 @@ textarea {
   padding: 44px 40px 40px;
 }
 
+.sc-person-head {
+  display: flex;
+  align-items: flex-start;
+}
+
+.sc-person-head--with-photo {
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.sc-person-photo-frame {
+  flex: 0 0 auto;
+  width: 72px;
+  aspect-ratio: 1;
+  margin: 0;
+  overflow: hidden;
+  border: 1.5px solid var(--sc-content);
+  background: transparent;
+}
+
+.sc-person-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  filter: none;
+}
+
+.sc-person-title,
+.sc-person-body {
+  min-width: 0;
+}
+
 .sc-person + .sc-person {
   border-left: 1px solid var(--sc-content);
 }
@@ -475,6 +511,7 @@ textarea {
 .sc-person-copy {
   margin-top: 18px;
   font-size: 15px;
+  white-space: pre-line;
 }
 
 .sc-team-note {
@@ -973,6 +1010,8 @@ textarea {
   font-size: clamp(32px, 4.2vw, 54px);
   line-height: 1.04;
   letter-spacing: -0.025em;
+  white-space: pre-line;
+  word-break: keep-all;
 }
 
 /* Short on purpose. The founder cut the page twice; this line survives both
@@ -1092,6 +1131,14 @@ textarea {
 
   .sc-person {
     padding: 36px 26px 32px;
+  }
+
+  .sc-person-head--with-photo {
+    gap: 12px;
+  }
+
+  .sc-person-photo-frame {
+    width: 64px;
   }
 
   .sc-block-head {
