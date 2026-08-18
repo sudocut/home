@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "SudoCut — sudo rm the boring parts.",
+    "title": "SudoCut — Less footage. More story.",
     "titleTemplate": "{page} — SudoCut",
     "description": "SudoCut removes the boring parts from long spoken footage. Join the closed-beta waitlist."
   },
@@ -19,7 +19,7 @@
     }
   },
   "footer": {
-    "tagline": "sudo rm the boring parts.",
+    "tagline": "Less footage. More story.",
     "rights": "© {year} SudoCut · Korea first",
     "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
@@ -29,7 +29,7 @@
     "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
   "home": {
-    "kicker": "sudo rm the boring parts.",
+    "kicker": "Less footage. More story.",
     "title": "AI cut it. We published it. Same views.",
     "qualifier": "Same episode, two edits, one channel we run. A view count.",
     "deliverable": "MP4 + a Premiere or Final Cut project. Every cut opens.",
@@ -42,9 +42,7 @@
   "about": {
     "kicker": "Why we exist",
     "title": "Editing is the work. Scrubbing dead air isn't.",
-    "ledeBefore": "A recurring podcast or interview show records for hours, then one producer spends hours more cutting what nobody wanted to hear. It is slow, repetitive, and no one's judgement is in it. So we ",
-    "ledeMono": "sudo rm",
-    "ledeAfter": " it.",
+    "lede": "A recurring podcast or interview show records for hours, then one producer spends hours more cutting what nobody wanted to hear. It is slow, repetitive, and not where the creator's judgment matters most. SudoCut removes that repetitive first pass.",
     "beliefsLabel": "What we believe",
     "beliefs": {
       "one": {
@@ -86,7 +84,7 @@
       "jiho": {
         "name": "Jiho Yang",
         "role": "Co-founder",
-        "copy": "Builds across the analysis, engine and export services. Competed at the Seoul hackathon where we met, graduated from HKUST in July 2026, and has been full-time on SudoCut since June."
+        "copy": "Built products at several startups.\nStudied mathematics at HKUST, and now builds SudoCut full-time.\nUsually replies to work-related messages within 30 minutes."
       }
     },
     "rulesLabel": "How we decide",
