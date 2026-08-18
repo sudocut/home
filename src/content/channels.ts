@@ -4,16 +4,18 @@
  * Handles and names are locale-invariant identifiers rather than copy, so like
  * WaitlistCta's FORM_URL they live here and not in messages/.
  *
- * Names and handles are from the `add-trusted-partners-section` branch, where
- * each was checked against youtube.com/@{handle} on 2026-08-17 — all five
- * resolved. This file adds the artwork slot; it does not restate the research.
+ * Names and handles are checked against youtube.com/@{handle}. The first five
+ * entries are from the `add-trusted-partners-section` branch and were checked on
+ * 2026-08-17. RLWRLD was added from the founder-supplied channel URL on
+ * 2026-08-18.
  *
  * WHAT IS REAL HERE AND WHAT IS NOT
  * ---------------------------------
- * The names and profile images are real. Naming a channel is ours to do: they are
- * the channels' own public titles, and the front page already counts them. The
- * profile images are retained same-origin derivatives with public-safe clearance
- * recorded in brand/reference/channels/SOURCE.md.
+ * The names are real. Naming a channel is ours to do: they are the channels' own
+ * public titles, and the front page counts them. Profile images render only when
+ * retained same-origin derivatives have public-safe clearance recorded in
+ * brand/reference/channels/SOURCE.md. A partner without cleared profile-image
+ * media stays on the abstract fallback frame.
  *
  * `art` is the normal path. `frame` remains the runtime fallback: an abstract
  * greyscale field from tools/make-frames.mjs, not footage, not a thumbnail, not
@@ -25,9 +27,10 @@
  *   2. The fallback keeps us from inventing video stills or episode thumbnails
  *      when only profile-image clearance has been granted.
  *
- * So the normal tiles show cleared public profile images. If one cannot load, the
- * tile falls back to an abstract screen with the channel's real name set in type
- * over it. Nothing on the page pretends to be a frame of anyone's show.
+ * So tiles show cleared public profile images when clearance exists. If one
+ * cannot load, or if a partner has no cleared profile image yet, the tile falls
+ * back to an abstract screen with the channel's real name set in type over it.
+ * Nothing on the page pretends to be a frame of anyone's show.
  */
 
 export type Channel = {
@@ -71,6 +74,11 @@ export const CHANNELS: readonly Channel[] = [
     name: "이기릿 EEgirIT",
     frame: "/frames/frame-05.png",
     art: "/channels/eegirit.webp",
+  },
+  {
+    handle: "rlwrld.dexterity",
+    name: "RLWRLD",
+    frame: "/frames/frame-06.png",
   },
 ] as const;
 

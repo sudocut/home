@@ -7,7 +7,7 @@ import { access } from "node:fs/promises";
 import { constants } from "node:fs";
 import { pathToFileURL } from "node:url";
 
-import { CHANNEL_ART as CHANNELS } from "./lib/channel-art.mjs";
+import { CHANNEL_ART } from "./lib/channel-art.mjs";
 
 export const LOOPBACK_HOST = "127.0.0.1";
 export const DEFAULT_READY_DEADLINE_MS = 15_000;
@@ -34,11 +34,11 @@ export const DEFAULT_CHROME_CANDIDATES = Object.freeze([
 const LOCALES = Object.freeze([
   {
     path: "/en",
-    note: "Public channel profiles · each card opens its YouTube source.",
+    note: "Channel links · shown profile images are cleared for this site.",
   },
   {
     path: "/ko",
-    note: "공개 채널 프로필 · 각 카드는 해당 YouTube 채널로 연결됩니다.",
+    note: "각 카드는 YouTube 채널로 연결됩니다. 보이는 프로필 이미지는 게시 허락을 받은 이미지입니다.",
   },
 ]);
 
@@ -47,8 +47,20 @@ const VIEWPORTS = Object.freeze([
   { label: "mobile", width: 390, height: 900, avatarPx: 52, chipHeightPx: 76 },
 ]);
 
-const EXPECTED_ART_PATHS = CHANNELS.map((channel) => channel.artPath);
-const EXPECTED_CHANNEL_URLS = CHANNELS.map((channel) => channel.channelUrl);
+const EXPECTED_CHANNELS = Object.freeze([
+  ...CHANNEL_ART,
+  {
+    handle: "rlwrld.dexterity",
+    name: "RLWRLD",
+    channelUrl: "https://www.youtube.com/@rlwrld.dexterity",
+    artPath: null,
+  },
+]);
+const EXPECTED_ART_PATHS = CHANNEL_ART.map((channel) => channel.artPath);
+const EXPECTED_FALLBACK_URLS = EXPECTED_CHANNELS
+  .filter((channel) => !channel.artPath)
+  .map((channel) => channel.channelUrl);
+const EXPECTED_CHANNEL_URLS = EXPECTED_CHANNELS.map((channel) => channel.channelUrl);
 const TICKER_VISUAL_CYCLES = 4;
 const LARGE_VIEWPORT_WIDTH = 1728;
 
@@ -305,6 +317,21 @@ async function openPage(page, origin, path) {
   await page.locator(".sc-trust").waitFor({ state: "visible", timeout: 10_000 });
 }
 
+async function waitForTrustFallbacks(page) {
+  if (!EXPECTED_FALLBACK_URLS.length) return;
+  await page.waitForFunction(
+    ({ urls, cycles }) =>
+      urls.every(
+        (url) =>
+          Array.from(document.querySelectorAll("a.sc-tick"))
+            .filter((card) => card.href === url)
+            .reduce((count, card) => count + card.querySelectorAll(".sc-tick-art canvas").length, 0) === cycles,
+      ),
+    { urls: EXPECTED_FALLBACK_URLS, cycles: TICKER_VISUAL_CYCLES },
+    { timeout: 15_000 },
+  );
+}
+
 async function collectTrustBand(page) {
   return page.evaluate(() => {
     const trust = document.querySelector(".sc-trust");
@@ -342,15 +369,21 @@ async function collectTrustBand(page) {
       href: link.href,
       tabIndex: link.tabIndex,
     }));
+    const fallbackCanvasesByHref = Array.from(trust?.querySelectorAll("a.sc-tick") ?? [])
+      .filter((card) => card.querySelectorAll(".sc-tick-art canvas").length > 0)
+      .map((card) => card.href);
 
     return {
       note: trust?.querySelector(".sc-trust-note")?.textContent?.trim() ?? "",
       trackCount: tracks.length,
-      visualCycleCount: Math.round((originalItems.length + duplicateItems.length) / 5),
+      visualCycleCount: originalItems.length
+        ? Math.round((originalItems.length + duplicateItems.length) / originalItems.length)
+        : 0,
       originalItemCount: originalItems.length,
       duplicateItemCount: duplicateItems.length,
       imageCount: images.length,
       images,
+      fallbackCanvasesByHref,
       itemHeights,
       cardHeights,
       originalLinks,
@@ -360,16 +393,27 @@ async function collectTrustBand(page) {
 }
 
 function assertProfileContract(data, { note, avatarPx, chipHeightPx, context }) {
-  const expectedRendered = CHANNELS.length * TICKER_VISUAL_CYCLES;
+  const expectedRenderedImages = EXPECTED_ART_PATHS.length * TICKER_VISUAL_CYCLES;
+  const expectedRenderedFallbacks = EXPECTED_FALLBACK_URLS.length * TICKER_VISUAL_CYCLES;
   assertEqual(data.trackCount, 1, `${context} should render one continuous ticker track`);
   assertEqual(data.visualCycleCount, TICKER_VISUAL_CYCLES, `${context} visual cycle count`);
-  assertEqual(data.originalItemCount, CHANNELS.length, `${context} should expose one semantic channel set`);
+  assertEqual(data.originalItemCount, EXPECTED_CHANNELS.length, `${context} should expose one semantic channel set`);
   assertEqual(
     data.duplicateItemCount,
-    CHANNELS.length * (TICKER_VISUAL_CYCLES - 1),
+    EXPECTED_CHANNELS.length * (TICKER_VISUAL_CYCLES - 1),
     `${context} should render duplicate cycles only for the seam`,
   );
-  assertEqual(data.imageCount, expectedRendered, `${context} should render repeated profile image instances`);
+  assertEqual(data.imageCount, expectedRenderedImages, `${context} should render repeated cleared profile image instances`);
+  assertEqual(
+    data.fallbackCanvasesByHref.length,
+    expectedRenderedFallbacks,
+    `${context} should render fallback canvases for partner channels without cleared profile images`,
+  );
+  assertSameList(
+    [...new Set(data.fallbackCanvasesByHref)].sort(),
+    [...EXPECTED_FALLBACK_URLS].sort(),
+    `${context} fallback channel URLs`,
+  );
 
   const uniquePaths = [...new Set(data.images.map((image) => image.srcPath))].sort();
   assertSameList(uniquePaths, [...EXPECTED_ART_PATHS].sort(), `${context} should use exactly five unique channel asset URLs`);
@@ -404,7 +448,7 @@ function assertProfileContract(data, { note, avatarPx, chipHeightPx, context }) 
   );
   assertSameList(
     data.duplicateLinks.map((link) => link.tabIndex),
-    CHANNELS.map(() => -1).flatMap((value) => Array.from({ length: TICKER_VISUAL_CYCLES - 1 }, () => value)),
+    EXPECTED_CHANNELS.map(() => -1).flatMap((value) => Array.from({ length: TICKER_VISUAL_CYCLES - 1 }, () => value)),
     `${context} duplicate links should be skipped by tab navigation`,
   );
   assertEqual(data.note, note, `${context} localized public-profile note`);
@@ -513,7 +557,7 @@ async function assertTickerPauses(page, context) {
   );
 
   const activeHref = await page.evaluate(() => document.activeElement?.getAttribute("href"));
-  assertEqual(activeHref, `https://www.youtube.com/@${CHANNELS[0].handle}`, `${context} focused channel link`);
+  assertEqual(activeHref, EXPECTED_CHANNELS[0].channelUrl, `${context} focused channel link`);
 }
 
 async function assertReducedMotion(page, context) {
@@ -560,7 +604,11 @@ async function assertWebGlContract(page) {
   }));
   assertEqual(counts.paper, 1, "normal profile mode should retain one paper canvas");
   assertEqual(counts.hero, 1, "normal profile mode should retain one hero canvas");
-  assertEqual(counts.trust, 0, "normal profile mode should not spend WebGL contexts in the trust band");
+  assertEqual(
+    counts.trust,
+    EXPECTED_FALLBACK_URLS.length * TICKER_VISUAL_CYCLES,
+    "normal profile mode should spend WebGL contexts only for partner chips without cleared profile images",
+  );
 
   const hero = page.locator(".sc-stage-art canvas").first();
   const first = sha256(await hero.screenshot());
@@ -598,10 +646,11 @@ async function assertFallbackCase(browser, origin) {
         return (
           affected.length === 4 &&
           affected.every((card) => card.querySelectorAll(".sc-tick-art canvas").length === 1) &&
-          unaffected.length === 16 &&
+          unaffected.length === 20 &&
           unaffected.every((card) => {
             const image = card.querySelector("img.sc-tick-avatar");
-            return !!image && image.complete && image.naturalWidth > 0;
+            const fallback = card.querySelector(".sc-tick-art canvas");
+            return (!!image && image.complete && image.naturalWidth > 0) || !!fallback;
           })
         );
       },
@@ -619,7 +668,7 @@ async function assertFallbackCase(browser, origin) {
     }));
     assert(aborted >= 1, "fallback case should abort at least one profile-image request");
     assertEqual(counts.fallbackCanvases, 4, "aborted profile should render four fallback canvases");
-    assertEqual(counts.images, 16, "non-aborted profiles should remain images");
+    assertEqual(counts.images, 16, "non-aborted cleared profiles should remain images");
     assertEqual(counts.brokenImages, 0, "fallback case should not expose broken image icons");
     collector.assertNoIssues("fallback profile-image case");
   } finally {
@@ -642,6 +691,7 @@ async function verifyInBrowser(browser, origin) {
 
       try {
         await openPage(page, origin, locale.path);
+        await waitForTrustFallbacks(page);
         assertProfileContract(await collectTrustBand(page), {
           note: locale.note,
           avatarPx: viewport.avatarPx,
@@ -674,6 +724,7 @@ async function verifyInBrowser(browser, origin) {
     const collector = createPageIssueCollector(page);
     try {
       await openPage(page, origin, locale.path);
+      await waitForTrustFallbacks(page);
       await assertReducedMotion(page, `${locale.path} reduced-motion`);
       collector.assertNoIssues(`${locale.path} reduced-motion`);
     } finally {
@@ -689,6 +740,7 @@ async function verifyInBrowser(browser, origin) {
   const largeCollector = createPageIssueCollector(largePage);
   try {
     await openPage(largePage, origin, "/en");
+    await waitForTrustFallbacks(largePage);
     assertProfileContract(await collectTrustBand(largePage), {
       note: LOCALES[0].note,
       avatarPx: VIEWPORTS[0].avatarPx,

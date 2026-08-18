@@ -18,12 +18,17 @@ import {
 } from "./lib/channel-art.mjs";
 
 function assertConfiguredChannels(channels) {
-  if (!Array.isArray(channels) || channels.length !== CHANNEL_ART.length) {
-    throw new Error(`Configured channels must contain exactly ${CHANNEL_ART.length} entries`);
+  if (!Array.isArray(channels)) {
+    throw new Error("Configured channels must be an array");
+  }
+
+  const channelsWithArtwork = channels.filter((channel) => channel?.art);
+  if (channelsWithArtwork.length !== CHANNEL_ART.length) {
+    throw new Error(`Configured channel artwork must contain exactly ${CHANNEL_ART.length} cleared entries`);
   }
 
   for (const [index, descriptor] of CHANNEL_ART.entries()) {
-    const channel = channels[index];
+    const channel = channelsWithArtwork[index];
     if (
       channel?.handle !== descriptor.handle ||
       channel?.name !== descriptor.name ||

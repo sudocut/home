@@ -109,6 +109,17 @@ function configuredChannels(manifest) {
   }));
 }
 
+function configuredChannelsWithUnclearedPartner(manifest) {
+  return [
+    ...configuredChannels(manifest),
+    {
+      handle: "rlwrld.dexterity",
+      name: "RLWRLD",
+      frame: "/frames/frame-06.png",
+    },
+  ];
+}
+
 async function createFinalFixture(root) {
   const manifest = validManifest();
   await writeOriginals(root, manifest);
@@ -417,6 +428,20 @@ test("verifyChannelAssets validates a final fixture through a direct TypeScript 
 
   assert.equal(result.verified, 5);
   assert.deepEqual(await readdir(temporaryParent), ["keep-me"]);
+});
+
+test("verifyChannelAssets allows extra partner channels without cleared artwork", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "channel-art-verify-extra-partner-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const { manifest } = await createFinalFixture(root);
+  const { verifyChannelAssets } = await loadVerifier();
+
+  const result = await verifyChannelAssets({
+    root,
+    configuredChannels: configuredChannelsWithUnclearedPartner(manifest),
+  });
+
+  assert.equal(result.verified, 5);
 });
 
 test("verifyChannelAssets accepts only a final manifest", async (t) => {

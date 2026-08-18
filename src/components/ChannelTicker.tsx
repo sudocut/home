@@ -13,7 +13,7 @@ import { CHANNELS } from "@/content/channels";
  *   1. **The list is repeated, and the copies are `aria-hidden`.** A seamless
  *      loop needs more than one run; a large desktop needs enough run length to
  *      avoid showing an empty right edge near the wrap. A screen reader needs the
- *      five channels once, so only the first cycle is semantic and tabbable.
+ *      partner channels once, so only the first cycle is semantic and tabbable.
  *   2. **Stopped, it is still complete.** The track scrolls with `overflow-x`
  *      available, so when prefers-reduced-motion kills the animation — or when
  *      hover pauses it — the band is a scrollable list rather than a row that has
@@ -33,11 +33,12 @@ import { CHANNELS } from "@/content/channels";
  * profile image fails to load, ChannelArtwork falls back to the abstract
  * Halftone frame described in src/content/channels.ts.
  *
- * WHAT THIS COSTS, SO IT IS NOT DISCOVERED LATER. The normal path is twenty
- * image elements — five channels, four cycles, for the large-screen seam — plus
- * the hero screen and D6 paper texture. The old all-Halftone path stays
- * available only as an isolated runtime fallback for a failed profile image, so
- * the usual page no longer burns WebGL contexts for the trust band.
+ * WHAT THIS COSTS, SO IT IS NOT DISCOVERED LATER. With the current clearance set
+ * the normal path is twenty profile image elements — five cleared images, four
+ * cycles, for the large-screen seam — plus four fallback canvases for the one
+ * partner whose profile image is not cleared yet. The hero screen and D6 paper
+ * texture remain. Additional fallback canvases appear only for failed profile
+ * images.
  */
 export function ChannelTicker({ pitch = 8 }: { pitch?: number }) {
   const t = useTranslations("home.channels");
