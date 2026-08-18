@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
-import { Halftone } from "@/components/Halftone";
-import { CHANNELS, channelSource } from "@/content/channels";
+import { ChannelArtwork } from "@/components/ChannelArtwork";
+import { CHANNELS } from "@/content/channels";
 
 /**
  * The trust band — the channels publishing with SudoCut, screened and flowing.
@@ -52,7 +52,7 @@ export function ChannelTicker({ pitch = 8 }: { pitch?: number }) {
           tabIndex={duplicate ? -1 : undefined}
           target="_blank"
         >
-          <Halftone className="sc-tick-art" pitch={pitch} src={channelSource(channel)} />
+          <ChannelArtwork art={channel.art} frame={channel.frame} pitch={pitch} />
           <span className="sc-tick-name">{channel.name}</span>
           <span className="sc-tick-handle">@{channel.handle}</span>
         </a>
