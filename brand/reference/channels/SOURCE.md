@@ -166,6 +166,39 @@
         "bytes": 6116,
         "sha256": "af1d96043fe2af2c26e711915060e985979a79d5e25fe0ff02f4e8a710e303aa"
       }
+    },
+    {
+      "handle": "rlwrld.dexterity",
+      "name": "RLWRLD",
+      "channelUrl": "https://www.youtube.com/@rlwrld.dexterity",
+      "capturedImageUrl": "https://yt3.googleusercontent.com/boG7pBXb34crpGaSLnINMoamEmdxnj5v2p8xzi6MlZSu39qJqEysH0IGlZdhymj8foWrCwr3=s900-c-k-c0x00ffffff-no-rj",
+      "retrievedAt": "2026-08-18",
+      "relationship": {
+        "basis": "SudoCut founder confirmation that this channel publishes with SudoCut",
+        "date": "2026-08-18",
+        "evidence": "Founder-supplied RLWRLD channel URL in implementation session, 2026-08-18"
+      },
+      "permission": {
+        "status": "cleared",
+        "grantor": "Channel owner authorization confirmed by SudoCut founder",
+        "grantedAt": "2026-08-18",
+        "scope": "SudoCut company website and public sudocut/home GitHub repository",
+        "evidence": "SudoCut founder confirmation in implementation session, 2026-08-18: RLWRLD profile image can be published"
+      },
+      "original": {
+        "path": "brand/reference/channels/original/rlwrld.dexterity.jpg",
+        "width": 900,
+        "height": 900,
+        "sha256": "5672300c57e908b54ebb162f8d3b2779c9e48cd44ba288cc459c8632a5a712b0"
+      },
+      "served": {
+        "path": "public/channels/rlwrld.dexterity.webp",
+        "width": 256,
+        "height": 256,
+        "maxBytes": 100000,
+        "bytes": 1040,
+        "sha256": "8a7ba164c3a2ccb6aaeabc13facaf6b5fce559605a345b3fb825e62ee33b0a40"
+      }
     }
   ]
 }
