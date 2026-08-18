@@ -38,7 +38,7 @@ const LOCALES = Object.freeze([
   },
   {
     path: "/ko",
-    note: "각 카드는 YouTube 채널로 연결됩니다. 프로필 이미지는 게시 허락을 받은 것만 사용했습니다.",
+    note: "각 카드는 YouTube 채널로 연결됩니다. 프로필 이미지는 허락받은 것만 사용했습니다.",
   },
 ]);
 
