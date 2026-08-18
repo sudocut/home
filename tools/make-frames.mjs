@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * make-frames.mjs — generate the greyscale source images the halftone screens.
+ * make-frames.mjs — generate greyscale source images for halftone screens and
+ * fallbacks.
  *
  *   node tools/make-frames.mjs          # writes public/frames/*.png
  *   node tools/make-frames.mjs --check  # regenerate to a temp dir and diff
@@ -9,13 +10,15 @@
  * --------------------------------------
  * `halftone-dots` is an image FILTER (design/vendor/paper-shaders/shaders/
  * halftone-dots.d.ts). With no `u_image` it screens nothing — the same class of
- * bug that made the D6 paper texture inert for two rounds. So the halftone needs
- * a picture, and the site does not have one.
+ * bug that made the D6 paper texture inert for two rounds. So every halftone
+ * needs a picture. Cleared channel profiles now live in public/channels/ for the
+ * normal trust-band path; this file supplies the abstract fallback frames and the
+ * other brand-owned screen sources.
  *
- * It does not have one for an honest reason: **we have no cleared frame of any
- * partner channel's footage.** Naming a channel is ours to do (the names are the
- * channels' own public titles). Publishing a still from their video is theirs to
- * grant, and nobody has been asked.
+ * The fallback is still abstract for an honest reason: **we have no cleared
+ * frame of any partner channel's footage.** Naming a channel is ours to do (the
+ * names are the channels' own public titles). The granted media is a profile
+ * image, not a video still or episode thumbnail.
  *
  * So these are NOT footage, NOT thumbnails, and NOT anything anyone shot. They
  * are abstract luminance fields — a key light, a falloff and a couple of low
@@ -24,8 +27,9 @@
  * for a frame of a real episode, which is the failure mode soul.md's "never show
  * a capability we don't have" is pointed at.
  *
- * When real cleared stills exist, drop them at public/channels/<handle>.jpg and
- * src/content/channels.ts picks them up. Nothing here changes.
+ * If a cleared profile image fails at runtime, ChannelArtwork drops back to these
+ * frames. Nothing here is a substitute for a missing profile, and nothing here
+ * pretends to be a frame from a show.
  *
  * Committed rather than generated at build time so `pnpm build` needs no image
  * toolchain, and so the PR that changes a frame shows the frame changing.

@@ -708,10 +708,9 @@ textarea {
 
 /* ── Trust band — constitution D8 ───────────────────────────────────────── */
 
-/* The band the founder asked to be visible the moment someone lands. Ink on
-   paper only: the one cobalt object on this page is the waitlist action, and a
-   row of five tiles is the easiest place in the world to accidentally spend the
-   point colour a second time. */
+/* The band the founder asked to be visible the moment someone lands. The tile
+   chrome stays ink on paper: the cleared profile image is content, not a new
+   UI colour, and the one cobalt object on this page remains the waitlist action. */
 .sc-trust {
   /* Tile width, gutter and loop length. Each variant restates these — the band
      is a strip in one design and the hero in another — but they are declared
@@ -819,6 +818,22 @@ textarea {
   border-bottom: 1px solid var(--sc-content);
 }
 
+.sc-tick-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sc-surface);
+}
+
+.sc-tick-avatar {
+  box-sizing: border-box;
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border: 2px solid var(--sc-content);
+  border-radius: 50%;
+}
+
 .sc-tick-name {
   display: block;
   padding: 10px 12px 0;
@@ -840,8 +855,8 @@ textarea {
   color: var(--sc-content-muted);
 }
 
-/* Says out loud that the pictures are abstract. The names are real and the
-   screens are not, and a visitor should not have to work that out. */
+/* Says out loud that the pictures are public profiles and every tile links to
+   its source channel. The fallback screens are implementation detail, not copy. */
 .sc-trust-note {
   margin-top: 14px;
   padding: 0 calc(40px * var(--sc-density));
@@ -1078,6 +1093,11 @@ textarea {
 
   .sc-trust {
     --sc-tick-w: 140px;
+  }
+
+  .sc-tick-avatar {
+    width: 64px;
+    height: 64px;
   }
 }
 

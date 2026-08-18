@@ -23,21 +23,19 @@ import { CHANNELS } from "@/content/channels";
  * Hover and focus pause it. An infinitely moving link is a target you have to
  * chase, and every tile here is a link.
  *
- * MONOCHROME, ALWAYS. Every tile is ink on paper. The one cobalt object on the
- * page is the waitlist action, and nothing in this band may become a second one.
+ * The tile chrome stays ink on paper. The cleared profile image is the narrow
+ * D8 media-pixel exception; it may bring its own pixels, but the border,
+ * background, text, motion and hover language still spend only tokens.
  *
- * The pictures are abstract screens, not thumbnails — src/content/channels.ts
- * explains why, and the band says so in a line of its own rather than leaving a
- * visitor to assume they are looking at real frames.
+ * The pictures are public channel profiles, not video thumbnails. If a local
+ * profile image fails to load, ChannelArtwork falls back to the abstract
+ * Halftone frame described in src/content/channels.ts.
  *
- * WHAT THIS COSTS, SO IT IS NOT DISCOVERED LATER. Ten tiles is ten WebGL
- * contexts — five channels, twice, for the seam — plus one for the hero screen
- * and one for the D6 paper texture. Twelve renders fine and stays under Chrome's
- * per-process cap of sixteen, but it is not free: headless needed roughly three
- * times the settle time to reach a first frame with the band on the page than
- * without it. If a variant ever wants a second row, or the band moves onto a page
- * that already has screens, pre-render the tiles to PNG instead of raising the
- * count. Every one of them is a static image of a static shader.
+ * WHAT THIS COSTS, SO IT IS NOT DISCOVERED LATER. The normal path is ten image
+ * elements — five channels, twice, for the seam — plus the hero screen and D6
+ * paper texture. The old all-Halftone path stays available only as an isolated
+ * runtime fallback for a failed profile image, so the usual page no longer burns
+ * ten WebGL contexts for the trust band.
  */
 export function ChannelTicker({ pitch = 8 }: { pitch?: number }) {
   const t = useTranslations("home.channels");
