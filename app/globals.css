@@ -1014,9 +1014,8 @@ textarea {
   word-break: keep-all;
 }
 
-/* Short on purpose. The founder cut the page twice; this line survives both
-   because the claim above it is a view count on one channel and may never be
-   published without saying so. */
+/* Short on purpose. The founder cut the page twice; this line anchors the
+   operating metric to a concrete self-run channel rather than a generic claim. */
 .sc-qualifier {
   font-size: 15px;
   line-height: 1.5;

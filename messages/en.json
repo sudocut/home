@@ -30,8 +30,8 @@
   },
   "home": {
     "kicker": "Less footage. More story.",
-    "title": "AI cut it. We published it. Same views.",
-    "qualifier": "Same episode, two edits, one channel we run. A view count.",
+    "title": "Less editing time.\nSame views.",
+    "qualifier": "We published the same episode as a human edit and a SudoCut edit on a channel we run, then compared views.",
     "deliverable": "MP4 + a Premiere or Final Cut project. Every cut opens.",
     "channels": {
       "label": "Publishing with SudoCut",
@@ -62,11 +62,11 @@
       }
     },
     "proof": {
-      "label": "The A/B result in full",
-      "mark": "A/B",
-      "claim": "Same views as the human edit.",
-      "detail": "We published the same episode two ways on a channel we run — one cut by a human editor, one cut by SudoCut — and the AI cut matched it on views. That is a view-count result on our own channel, not a blind study of viewers. It is the measurement that made us build this rather than an argument for it.",
-      "tagline": "Measured, on one channel"
+      "label": "Editing time",
+      "mark": "4–6h → 1h",
+      "claim": "One episode's editing time dropped to about one hour.",
+      "detail": "A full episode used to take about 4–6 hours to edit. With SudoCut, the rough cut and cleanup pass took about one hour. The human work stays. We reduce the repetitive cut cleanup so editors can focus on the parts that matter.",
+      "tagline": "Based on a channel we operate"
     },
     "more": "Join the closed-beta waitlist →"
   },

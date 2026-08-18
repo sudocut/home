@@ -18,8 +18,8 @@ export async function generateMetadata({
 }
 
 /**
- * /about — r4 winner (kimi-k3-a). Three numbered beliefs, then the blind A/B
- * result stated in full.
+ * /about — r4 winner (kimi-k3-a). Three numbered beliefs, then the operating
+ * metric proof card stated in full.
  *
  * NO cobalt on this page. The ranked variant spends the point colour only on the
  * front page's waitlist button; the link at the foot is an underlined mono link,
