@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>shader survey</title>
+<!--
+  shader-survey.html — mount ANY vendored paper-shader at ink-on-paper and given
+  uniforms, so tools/shader-survey.mjs can render and measure the whole catalogue
+  instead of choosing one from its own description.
+
+  The founder asked us to look past `halftone-dots`. "Look at the shaders and pick
+  the best one" is not a reading exercise — several of these are two-colour and
+  brand-legal on paper and unusable in practice, and the only way to know which is
+  to render them. Same contract as the other probes: it renders, the driver
+  measures, nothing here is judged by eye alone.
+
+  Query params:
+    shader   module basename under design/vendor/paper-shaders/shaders/
+    export   the fragment-shader export name (defaults to <camelCase>FragmentShader)
+    u        JSON object of uniform overrides, merged over the defaults below
+    src      image for the filters that need one
+    bw, bh   draw into an element of exactly this CSS size, pinned top-left
+    speed, frame   passed to ShaderMount, so u_time can be tested per shader
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #f1f1ec; }
+  #bg { position: fixed; inset: 0; }
+  :root.sized #bg {
+    inset: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--bw);
+    height: var(--bh);
+  }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<script>
+  {
+    const q = new URLSearchParams(location.search);
+    const bw = q.get('bw'), bh = q.get('bh');
+    if (bw && bh) {
+      const r = document.documentElement;
+      r.style.setProperty('--bw', `${bw}px`);
+      r.style.setProperty('--bh', `${bh}px`);
+      r.classList.add('sized');
+    }
+  }
+</script>
+<script type="module">
+  import { ShaderMount } from '/design/vendor/paper-shaders/shader-mount.js';
+  import { getShaderColorFromString as col } from '/design/vendor/paper-shaders/get-shader-color-from-string.js';
+  import { getShaderNoiseTexture } from '/design/vendor/paper-shaders/get-shader-noise-texture.js';
+
+  const q = new URLSearchParams(location.search);
+  const name = q.get('shader');
+  const camel = name.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+  const mod = await import(`/design/vendor/paper-shaders/shaders/${name}.js`);
+  const frag = mod[q.get('export') || `${camel}FragmentShader`];
+  if (!frag) throw new Error(`no fragment shader export for ${name}`);
+
+  // The palette, and the whole reason most of this catalogue is unusable: every
+  // colour slot a shader has must be fillable from ink, paper and panel. A shader
+  // that needs a fourth is out, whatever it looks like.
+  const INK = '#24292c', PAPER = '#f1f1ec', PANEL = '#fbfaf5';
+
+  const image = await (async () => {
+    const src = q.get('src');
+    if (!src) return undefined;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = src;
+    await img.decode();
+    return img;
+  })();
+
+  const noise = getShaderNoiseTexture();
+  await noise.decode();
+
+  // Superset of the sizing uniforms every shader in this library shares. Setting
+  // one a given shader does not declare is harmless — ShaderMount warns and moves
+  // on — and it keeps the driver from having to know each shader's shape.
+  const base = {
+    u_colorFront: col(INK),
+    u_colorBack: col(PAPER),
+    u_colorFill: col(INK),
+    u_colorStroke: col(INK),
+    u_colorShadow: col(INK),
+    u_colorHighlight: col(PAPER),
+    u_noiseTexture: noise,
+    u_scale: 1, u_rotation: 0, u_offsetX: 0, u_offsetY: 0,
+    u_originX: 0.5, u_originY: 0.5,
+    u_worldWidth: 0, u_worldHeight: 0, u_fit: 2,
+    ...(image ? { u_image: image } : {}),
+  };
+
+  const overrides = JSON.parse(q.get('u') || '{}');
+  for (const [k, v] of Object.entries(overrides)) {
+    // A string value is a colour name from the palette, never a literal.
+    base[k] = v === 'ink' ? col(INK) : v === 'paper' ? col(PAPER) : v === 'panel' ? col(PANEL) : v;
+  }
+
+  new ShaderMount(
+    document.getElementById('bg'), frag, base, undefined,
+    Number(q.get('speed') || 0), Number(q.get('frame') || 0),
+  );
+  requestAnimationFrame(() => requestAnimationFrame(() => { document.title = 'ready'; }));
+</script>
+</body>
+</html>

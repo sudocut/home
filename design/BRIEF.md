@@ -78,7 +78,8 @@ Full list in `design/CONSTITUTION.md`. The ones that get variants rejected:
    as Korean and never as translated English.
 9. **Subtract by default.** If removing something improves the page, remove it.
 10. **Paper texture only at the mandated settings** in §4b — copy them exactly.
-    Ink fibre is what made r2 read as greyed-out. No other shader, ever.
+    Ink fibre is what made r2 read as greyed-out. The only other shader permitted
+    is `halftone-dots`, as a foreground screen, at the settings in §4d.
 
 ## 4. Output contract
 
@@ -175,6 +176,67 @@ image filter whose CMYK inks fall outside the closed palette.
 
 If your page starts to look greyed-out, the fibre colour is the first thing to
 check.
+
+## 4d. Halftone screen — the one other shader (constitution D7)
+
+`halftone-dots` is admitted as a **foreground** object: a panel, a band, a tile, a
+hero plate. It screens a picture. It is never the page's background field — the
+sheet stays warm paper, the D6 texture and the 76px grid.
+
+It survives where `halftone-cmyk` does not because it has exactly **two** colour
+slots, so it can run entirely on `--sc-content` and `--sc-surface`. Put anything
+else in them and you have invented a colour.
+
+```js
+u_colorFront: col(token('--sc-content')),   // ink — the dots
+u_colorBack:  col(token('--sc-surface')),   // paper
+u_type: 0, u_grid: 0, u_inverted: false,    // inverted TRUE reverses the tone
+u_radius: 1.0, u_contrast: 0.5,
+u_grainMixer: 0, u_grainOverlay: 0, u_grainSize: 0.5,
+u_fit: 2, u_image: <a decoded HTMLImageElement>,   // required, as in §4b
+u_size: derived — see below. Never written by hand.
+// speed 0, frame 0 — static
+```
+
+**The free variable is the cell pitch in CSS pixels, and `u_size` is NOT it.**
+`u_size` is a dot *count* across the box, so the same value is a different design
+in a different sized panel: held at 0.60 it measured coverage 0.336 in an 880px
+plate and 0.548 — a flooded mud slick — in a 176px tile. Pitch is the invariant;
+at a matched pitch those two boxes measured 0.333 and 0.338.
+
+Pick a pitch in **6–32px**, never coarser than the panel's height over 8, and
+derive:
+
+```js
+const cells  = clamp(panelHeightPx / pitchPx, 8, 150);
+const u_size = ((300 - 2 * cells) / 293) ** (1 / 0.7);
+```
+
+Never cobalt, never red or yellow, `u_radius` never above 1.0 (it floods),
+`u_type` always `classic` (`soft`, `gooey` and `holes` all flood), and
+`u_grainOverlay` always 0 (it paints pure black and white, which is neither
+token). Source images: `public/frames/*.png`. Measured tables: constitution D7.
+
+## 4e. Motion and the console (constitution D9, D10)
+
+**`u_time` is dead in `halftone-dots`.** It is declared and never read, so
+`speed` on `ShaderMount` spins a `requestAnimationFrame` loop forever and renders
+the identical frame. Proved: `speed 1` at frames 0 / 2000 / 8000 is byte-identical,
+while `u_size` 0.50 vs 0.55 is not. **Do not animate with `speed`.**
+
+Animate from your own loop, at `speed 0`, over the uniforms the shader does read:
+`u_offsetX`, `u_offsetY`, `u_size`, `u_scale`, `u_contrast`, `u_rotation`.
+`setUniforms` calls `render()` synchronously, so one write is one frame.
+
+Required: `prefers-reduced-motion` stops the loop dead (not slows it), so does
+`document.hidden`, a loop point is a hard cut and never an ease back (O4), and
+there is at most **one moving screen per page** — the D8 trust band is the only
+other motion allowed.
+
+The visitor may adjust the screen, but only inside ranges that measured inside the
+band: pitch 6–32px, contrast 0.25–0.80, motion 0–1.6, square/hex, raw/cut source.
+`u_radius`, `u_type` and both colour slots are never exposed. Never render a
+control in cobalt — the point colour belongs to the one action.
 
 ## 4c. Moodboard
 

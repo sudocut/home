@@ -57,6 +57,11 @@ used by the selected *Bauhaus Timeline Proof* direction.
 | D4 | 양피지 warmth = warm paper + 76px grid. No *raster* texture. **Amended by D6** — a WebGL paper texture at the mandated settings is now permitted on top. | one `background-image` |
 | **D5** | **English first, Korean second.** Reverses S5. | locale default |
 | **D6** | **Paper texture shader allowed at mandated light settings only.** Amended 2026-07-27. | see below |
+| **D7** | **`halftone-dots` is admitted as a foreground screen.** Two colours, ink on paper, never cobalt. Amends D6's "no other shader, ever". Decided 2026-08-18. | see below |
+| **D8** | **The trust band flows.** One continuous marquee, the channel band only. Narrows W6. Decided 2026-08-18. | delete the keyframes |
+| **D9** | **The screen moves.** D7's `static` is lifted for the hero screen only, driven by uniforms — never by `speed`. The loop is **seamless**, not a reset. Decided 2026-08-18. | delete the pan |
+| ~~D10~~ | ~~The visitor can adjust the screen.~~ **REVERSED the same day**, 2026-08-18. The console is gone. | re-add the console |
+| **D11** | **The screen's shader is chosen by survey, not by habit.** Any two-colour paper-shader is eligible; the palette decides what is even a candidate. Decided 2026-08-18. | see below |
 
 ### D5 — English first (2026-07-26, founder)
 
@@ -149,11 +154,206 @@ u_image: sheet,
 **Do not tune these by eye — that is how both previous versions shipped wrong.**
 Re-run `node tools/shader-probe.mjs` and change the table above with it.
 
-**Still banned:** any other shader as a page background, animation, the texture
-carrying the point colour, and `halftone-cmyk` — it is an image filter whose
-`u_colorC/M/Y/K` inks fall outside the closed palette.
+**Still banned:** animation, the texture carrying the point colour, and
+`halftone-cmyk` — it is an image filter whose `u_colorC/M/Y/K` inks fall outside
+the closed palette. **"Any other shader as a page background" was amended by D7**;
+that clause now reads *any other shader as the page's own background field*, which
+`halftone-dots` is not.
 
 Full reasoning: `design/rounds/r2/VERDICT.md`.
+
+### D7 — `halftone-dots` as a foreground screen (2026-08-18, founder)
+
+**This amends D6, and D6 is the layer directly under soul.md.** D6 ended with
+*"Still banned: any other shader as a page background"*. The founder has ruled
+`halftone-dots` in, and asked for it used **aggressively**, so the rule changes.
+It is recorded here rather than resolved quietly, because a founder decision that
+overrides a written rule is exactly the thing this file exists to keep visible.
+
+**What is not in tension.** `halftone-cmyk` stays banned and D7 does not touch it.
+Its ban was never about halftoning — it was about `u_colorC/M/Y/K`, four inks that
+are not in the closed palette. `halftone-dots` has exactly **two** colour slots,
+`u_colorFront` and `u_colorBack`, so it can be driven entirely from
+`--sc-content` and `--sc-surface`. A two-colour screen is inside the palette by
+construction. That is the whole reason this one can be admitted and that one
+cannot.
+
+**What D7 permits.** `halftone-dots` as a **foreground object** — a panel, a
+band, a tile, a hero plate. It screens a picture; it is content, not wallpaper.
+
+**What D7 does not permit**, and these are the parts that keep S1 and D6 intact:
+
+| | |
+|---|---|
+| Never `--sc-action` | The screen may not carry cobalt in either colour slot. Cobalt marks the one required action; a field of cobalt dots spends the point colour on decoration and breaks S1 in the most literal way available. |
+| Never red or yellow | W2 — status only. |
+| Never the page's background field | The sheet stays `--sc-surface` + the D6 paper texture + the 76px grid. D7 puts screens **on** the sheet; it does not replace it. |
+| Static | `speed 0`, `frame 0`. O4: the brand never dissolves. |
+| `u_grainOverlay: 0` | Measured below: at 0.4 it moves fidelity by nothing (0.982 either way) and it mixes the output toward `vec3(step(0., v))` — pure black and pure white speckle, which is neither token. A knob that costs palette compliance and buys nothing measurable is off. |
+
+#### The measurement
+
+`node tools/halftone-probe.mjs` (with `bash tools/serve.sh 4173 &` running). Ink
+`#24292c` on paper `#f1f1ec`, an 880x495 plate, against
+`public/frames/frame-hero.png`.
+
+A halftone fails differently from a paper texture, so D6's grain/dMean pair does
+not apply. A screen is a **reproduction**, and it has three failure modes:
+
+- **FLOODED** — `coverage` climbs past ~0.5, dots merge, the panel becomes a solid
+  ink block. This is r2's rejected failure in new clothes: a large dark rectangle
+  on a warm sheet reads as a foreign object whatever drew it.
+- **WASHED** — `coverage` under ~0.12. Speckled paper, not a picture.
+- **DESTROYED** — the ink is on the page and the picture is not. `fidelity` is the
+  signed Pearson correlation between the screened output and the same source
+  rendered flat through the same pipeline, both reduced to tiles. Floor 0.9.
+
+| setting | u_size | radius | contrast | type | coverage | grain | fidelity | |
+|---|---|---|---|---|---|---|---|---|
+| poster, `u_inverted: true` | 0.62 | 1.0 | 0.5 | classic | 0.251 | 24.21 | **−0.975** | **INVERTED** |
+| fine (newsprint) | 0.20 | 1.0 | 0.5 | classic | 0.405 | 36.72 | 0.984 | ok |
+| medium | 0.35 | 1.0 | 0.5 | classic | 0.380 | 38.86 | 0.982 | ok |
+| coarse | 0.50 | 1.0 | 0.5 | classic | 0.367 | 36.22 | 0.981 | ok |
+| poster | 0.62 | 1.0 | 0.5 | classic | 0.360 | 31.35 | 0.979 | ok |
+| billboard | 0.75 | 1.0 | 0.5 | classic | 0.350 | 23.91 | 0.980 | ok |
+| billboard+ | 0.88 | 1.0 | 0.5 | classic | 0.350 | 14.13 | 0.963 | ok |
+| radius 1.3 | 0.50 | 1.3 | 0.5 | classic | **0.544** | 20.44 | 0.982 | **FLOODED** |
+| radius 0.7 | 0.50 | 0.7 | 0.5 | classic | 0.162 | 33.36 | 0.981 | ok |
+| contrast 0.25 | 0.50 | 1.0 | 0.25 | classic | 0.232 | 44.11 | 0.991 | ok |
+| contrast 0.8 | 0.50 | 1.0 | 0.8 | classic | 0.444 | 30.03 | 0.967 | ok |
+| hex grid | 0.50 | 1.0 | 0.5 | classic hex | 0.354 | 33.82 | 0.981 | ok |
+| soft | 0.50 | 1.0 | 0.5 | soft | **0.526** | 12.81 | 0.980 | **FLOODED** |
+| gooey | 0.50 | 1.0 | 0.5 | gooey | **0.538** | 12.74 | 0.962 | **FLOODED** |
+| holes | 0.50 | 1.0 | 0.5 | holes | **0.554** | 25.17 | 0.946 | **FLOODED** |
+| `u_grainOverlay: 0.4` | 0.50 | 1.0 | 0.5 | classic | 0.383 | 37.22 | 0.980 | no measurable gain |
+
+**The first row is the reason this table exists.** Every setting in the probe's
+first run scored about **−0.97** — a near-perfect reproduction, upside down. In
+the shader a dot's radius grows as sampled luminance *falls*, so `u_inverted`,
+which reads like the switch that gives you a positive image, is the switch that
+gives you a negative one. On an abstract test frame a tonal inversion looks
+completely fine. Nobody would have caught it by eye, and the sign of a correlation
+catches it instantly. This is the same class of error as D6's dead `u_image`, and
+it is the second time a paper-shaders uniform has meant the opposite of what its
+name suggests.
+
+#### `u_size` is not a setting. Cell pitch is.
+
+`u_size` sets a dot COUNT across the image box — `cellsPerSide = mix(300., 7.,
+pow(u_size, .7))`, halved for `classic` — so **the same value is a different
+design in a different sized box.** Held at 0.60 and varying nothing but the box
+(`node tools/halftone-probe.mjs --box`):
+
+| box | cell pitch | coverage | mean | fidelity | |
+|---|---|---|---|---|---|
+| 880x495 | 10.4px | 0.359 | 168.5 | 0.980 | ok |
+| 640x360 | 7.6px | 0.370 | 166.9 | 0.981 | ok |
+| 480x270 | 5.7px | 0.387 | 164.4 | 0.983 | ok |
+| 360x203 | 4.3px | 0.427 | 159.9 | 0.984 | ok |
+| 280x158 | 3.3px | 0.478 | 153.4 | 0.985 | ok |
+| 220x124 | 2.6px | **0.513** | 145.6 | 0.986 | **FLOODED** |
+| 176x99 | 2.1px | **0.541** | 138.3 | 0.974 | **FLOODED** |
+
+One setting, a photograph at the top of the table and a mud slick at the bottom.
+The cause is in `getCircle`: `float aa = fwidth(d)` — a **screen-space** derivative
+— so a dot's soft edge is a fixed number of pixels wide however small the cell
+gets. Shrink the cell and the edge is most of the dot, every dot bleeds, and the
+panel darkens.
+
+Hold the **pitch** instead and the boxes agree (`--pitch`):
+
+| pitch | u_size @880 | coverage @880 | u_size @176 | coverage @176 | grain @176 |
+|---|---|---|---|---|---|
+| 4px | 0.086 | 0.461 | 0.799 | 0.460 | **2.79** |
+| 6px | 0.331 | 0.381 | 0.876 | 0.384 | 37.70 |
+| 8px | 0.484 | 0.394 | 0.915 | 0.398 | 29.15 |
+| 12px | 0.653 | 0.373 | 0.954 | 0.374 | 25.93 |
+| 16px | 0.744 | 0.349 | 0.974 | 0.357 | 22.47 |
+| 24px | 0.837 | 0.353 | 0.994 | 0.372 | fidelity **0.803** |
+
+Coverage matches to within 0.008 across a 5x difference in box size. **Pitch is the
+honest unit**, and it is what `<Halftone>` takes; `u_size` is derived from the
+element's measured height and recomputed on resize.
+
+Two floors fall out of that table, and they bound from opposite ends:
+
+- **Pitch ≥ 6px.** At 4px the ink is still there (coverage 0.46) and the dots are
+  not — grain 2.79 against 37.70 at 6px. The screen has become flat tone.
+- **At least 8 cells down the box.** The 176px tile at a 24px pitch is four cells
+  tall and scores fidelity 0.803: ink on the page, picture gone.
+
+Together they mean a screen shorter than about **80px** cannot be one, and the
+usable pitch ceiling for any box is `height / 8`.
+
+#### A note on how two of these tables were wrong first
+
+Both mistakes are recorded because both would have been invisible in review.
+
+1. **The two runs were different crops.** `u_fit` is cover, so a canvas of a
+   different aspect screens a different part of the source, and a crop that lands
+   on the bright half of the frame genuinely has less ink in it. Comparing a
+   900x560 plate against a 176x99 tile was not comparing settings.
+2. **Chrome would not make the window small.** `--window-size=176,99` does not
+   give a 176x99 viewport; it gives the minimum, renders across all of it, and
+   screenshots the top-left corner. Every small-box number produced that way was
+   a crop of a large render, and it read as a clean finding — coverage appearing
+   to collapse below 480px, which looks exactly like an antialiasing cliff and is
+   the opposite of the real effect. The probe now sizes the **element**, keeps the
+   window comfortable, and crops to the element.
+
+#### Mandated settings
+
+```js
+u_colorFront: col(token('--sc-content')),   // ink — the dots
+u_colorBack:  col(token('--sc-surface')),   // paper — the sheet behind them
+u_type: 0,            // classic. soft, gooey and holes all flood at radius 1.0
+u_grid: 0,            // square. hex is permitted; it measures the same
+u_inverted: false,    // MEASURED, not guessed — true reverses the tone
+u_radius: 1.0,        // hard ceiling. 1.3 floods
+u_contrast: 0.5,
+u_grainMixer: 0, u_grainOverlay: 0, u_grainSize: 0.5,
+u_fit: 2,             // cover — a screen is a crop, never a letterbox
+u_image: <a decoded HTMLImageElement>,   // REQUIRED, same as D6
+u_size: derived from the element's height and the chosen pitch — never written
+// speed 0, frame 0 — static
+```
+
+**The one free variable is the cell pitch, in CSS pixels. Permitted band 6–32px,
+and never coarser than the box height over 8.** Do not set `u_size` by hand and do
+not tune any of this by eye: change the sweep in `tools/halftone-probe.mjs`,
+re-run it, and replace the tables above with the numbers it prints.
+
+
+
+### D8 — the trust band flows (2026-08-18, founder)
+
+**W6 does not cover this, and pretending it did would be the dishonest move.** W6
+says motion is 120–200ms `ease` and entrances 300–520ms. Those are *transitions* —
+a thing changing state. A marquee is a third category: continuous, stateless, and
+by construction longer than 200ms. The founder asked for the partner band to flow.
+Rather than stretch W6 until it means nothing, D8 admits the exception and fences
+it.
+
+**Permitted:** exactly one continuous loop, on the **channel trust band only**.
+`linear`, `infinite`, no easing, no fade, no parallax, no scroll-driven animation.
+
+**Required, all four:**
+
+1. `prefers-reduced-motion` kills it. Already global in `globals.css`.
+2. **Stopped, the band is still complete** — the rail scrolls, so a paused or
+   motion-reduced visitor can reach every channel. A marquee that is unreadable
+   when stopped is an accessibility failure with a design on top.
+3. **Hover and focus pause it.** Every tile is a link, and an infinitely moving
+   link is a target you have to chase.
+4. The duplicated run is `aria-hidden`. It exists to hide the seam, not to
+   announce five channels ten times.
+
+**Not permitted:** a second marquee anywhere, motion on any other band, and the
+band carrying cobalt. It is a row of monochrome screens; the point colour stays on
+the one action.
+
+**What reverses it:** delete the keyframes. The band becomes a static row and
+nothing else on the page depends on the movement.
 
 ---
 
@@ -169,3 +369,190 @@ A rule enters here when a round **verdict** settles a question that keeps recurr
 Add it with a date and a source, and state what would reverse it. If a rule cannot
 be checked — by `verify-round.mjs` or by a human in ten seconds — it is a preference,
 not a rule. Leave it out.
+
+### D9 — the screen moves (2026-08-18, founder)
+
+**D7 said `static`, and this lifts it.** Founder: *"I want you to use that shader
+to animate that effect."* The static rule came from O4 — the brand never
+dissolves — and from D6's ban on an animated background. D9 keeps the reason and
+narrows the rule: the **hero screen** may move; the paper sheet under it, the 76px
+grid and every other surface stay still.
+
+#### `u_time` is dead in this shader. Animating with `speed` renders nothing.
+
+This is the one thing about D9 that has to be read before anything is built.
+
+`halftone-dots` declares `uniform float u_time` and **never reads it in
+`main()`**. `ShaderMount` faithfully advances it and uploads it every frame, so
+`speed: 1` produces a `requestAnimationFrame` loop that runs forever, on every
+visitor's battery, drawing the identical picture.
+
+Measured, with a positive control so the harness is known to be able to see a
+difference at all:
+
+| render | sha256 |
+|---|---|
+| `speed 1, frame 0` | `fdc436b8…` |
+| `speed 1, frame 2000` | `fdc436b8…` |
+| `speed 1, frame 8000` | `fdc436b8…` |
+| `speed 0, u_size 0.50` | `fdc436b8…` |
+| `speed 0, u_size 0.55` | `4a1bfdec…` |
+
+Three different times are **byte-identical**, and identical to the still frame; a
+0.05 change in `u_size` is not. So the difference is visible to the measurement
+and absent from time.
+
+**This is the third dead uniform in this library.** D6's `u_image` made the paper
+fibre render nothing at any setting. D7's `u_inverted` means the opposite of what
+its name says. Now `u_time`. The rule this repo should carry away is not about any
+one of them: **assume no paper-shaders uniform does what it is called until a
+render proves it.**
+
+#### So animation is driven from our own loop
+
+`ShaderMount` stays at `speed 0` — which also means it schedules no frames of its
+own — and `setUniforms` is called from one `requestAnimationFrame` loop.
+`setUniforms` calls `render()` synchronously, so one write is one frame. Only
+uniforms the shader actually reads may be animated: `u_offsetX`, `u_offsetY`,
+`u_size`, `u_scale`, `u_contrast`, `u_rotation`.
+
+**Required:**
+
+1. **`prefers-reduced-motion` stops the loop dead** — not slows it. The screen
+   holds its frame, which is a complete design. Watched live, not read once.
+2. **`document.hidden` stops it.** At `speed 0` the vendor's own visibility pause
+   never fires, so this is ours to do.
+3. **A loop point is seamless, or it is a hard cut. Never an ease back.**
+
+   The first version of this clause said the pan should hard reset, on the
+   grounds that O4 forbids dissolving. It was obeyed, and the founder saw it
+   immediately: *"it is not connected from start to the end so user can feel that
+   it's disconnected."*
+
+   The mistake was treating a seam as a motion problem. It was a **picture**
+   problem. `public/frames/base-wave.png` now repeats exactly twice across its
+   width — every term in the generator has a whole number of cycles, and the two
+   halves are byte-identical, measured at a mean absolute difference of 0.0000.
+   The pan sweeps exactly half the image and subtracts half when it wraps, so it
+   lands on identical content and there is nothing to perceive.
+
+   That does not weaken O4. Nothing dissolves; the signal is simply continuous.
+   A hard cut remains the right answer when two states genuinely differ — it is
+   the wrong answer when they are supposed to be one thing.
+
+   **The geometry is load-bearing.** `u_fit: cover` shows a window of
+   `boxAspect / imageAspect`, and the pan needs the rest, so
+   `boxAspect / 8 + 0.5 <= 1` — true for every hero shape here. Narrow the
+   source's aspect ratio or widen the pan and a short, wide hero walks off the
+   edge of the image, where `getUvFrame` blanks it.
+4. **One moving screen per page.** The trust band's marquee (D8) is the only other
+   motion allowed, and no page may add a third.
+
+#### D10 — the visitor can adjust the screen — PROPOSED AND REVERSED (2026-08-18)
+
+**This rule lasted one round. It is kept rather than deleted because the argument
+for it is still good and the next round should be able to find it.**
+
+Founder, proposing it: *"there is farriers parameters for effect so on the user
+website user could adjust parameters to use that effect funny or interestingly…
+if I can adjust the background effect of that page it might be better page for
+users."*
+
+Founder, reversing it after seeing it: *"remove the adjust the screen widget or
+card because I think it does not matter for right now."*
+
+**What was built.** A console on the page with sliders for dot pitch, contrast and
+motion, plus grid and source toggles, every one clamped to a range that measured
+inside D7's band. `u_radius`, `u_type` and both colour slots were never exposed,
+so a visitor could change how the page looked but not whether it still read as
+SudoCut.
+
+**Why it was worth trying.** soul.md S7 is *expose the criteria — reviewable,
+never a black box*, and it is the same instinct that puts every cut on an editable
+timeline. A front page that hands over its own controls makes that argument in the
+only way a landing page can.
+
+**Why it lost, and this is the part to remember.** The brief that produced it also
+said *the text is too many*. A console is five labels, five values and a legend —
+**interface is text**, and it was competing with a claim the whole page exists to
+deliver. The `console` variant's own PR flagged exactly this risk before the
+founder ruled; the risk was real.
+
+**If it comes back**, it belongs on a page whose job is to explain the product
+rather than on the one page whose job is a single decision. The implementation is
+recoverable from the `r6-console` branch.
+
+---
+
+### D11 — which shader, and why it is chosen by survey (2026-08-18, founder)
+
+Founder: *"the design now are using halftone dots. I think it is not the best way
+to this design so you can just look around the shaders and pick a best one with
+best parameters."*
+
+`halftone-dots` was never chosen against alternatives — it was the first shader
+that fit the palette, and D7 froze it by writing its settings down. D11 replaces
+that accident with a rule: **the shader is whatever survives the palette and then
+measures best.** `tools/shader-survey.mjs` runs the comparison.
+
+#### The palette is the first filter, and it does most of the work
+
+A shader is eligible only if **every colour slot it has can be filled from ink,
+paper and panel**. That is not a preference; a shader with four inks cannot be
+expressed in this system at all.
+
+Ineligible, and why — none of these is a taste judgement:
+
+| shader | why it cannot be used |
+|---|---|
+| `mesh-gradient`, `static-mesh-gradient`, `static-radial-gradient`, `warp`, `grain-gradient` | built to blend many colours; W8 bans decorative gradients |
+| `god-rays`, `metaballs`, `smoke-ring`, `gem-smoke`, `neuro-noise`, `pulsing-border` | built to **glow**; W5 bans blur outright |
+| `voronoi` | has a `u_colorGlow` |
+| `liquid-metal`, `heatmap`, `color-panels` | multi-colour by construction |
+| `halftone-cmyk` | four inks — the original D7 exclusion, unchanged |
+
+#### The survey
+
+`node tools/shader-survey.mjs`, ink `#24292c` on paper `#f1f1ec`, 880×495.
+`coverage` and the flood/faint thresholds are D7's. `u_time moves` is measured by
+rendering two frames nine seconds apart at `speed 1` — never read off the docs.
+
+| shader | slots | coverage | grain | u_time moves | |
+|---|---|---|---|---|---|
+| `halftone-dots` on wave | 2 · ink/paper | 0.210 | 18.4 | — | the incumbent |
+| **`image-dithering` on wave** | **3 · ink/paper/ink** | **0.321** | **6.3** | **—** | **adopted** |
+| `image-dithering` on spectrogram | 3 | 0.303 | 21.9 | — | ok |
+| `image-dithering` on timeline | 3 | 0.458 | 24.9 | — | heavy |
+| `image-dithering` on wave, px 6 | 3 | 0.314 | 4.3 | — | **FLAT** |
+| `dithering` simplex, procedural | 2 · ink/paper | 0.403 | 22.2 | **yes, 71.2** | ok |
+| `dithering` sphere | 2 | 0.536 | 24.7 | yes | **FLOODED** |
+| `dot-grid` fine circles | 3 · paper/ink/ink | 0.129 | 6.7 | — | ok, very light |
+| `waves` fine lines | 2 · ink/paper | 0.647 | 22.5 | — | **FLOODED** |
+| `perlin-noise` | 2 · ink/paper | 0.997 | 0.3 | yes | **FLOODED** — solid ink |
+| `fluted-glass` on wave | 3 | 0.331 | 3.9 | — | **FLAT** — no structure |
+| `spiral` | 2 · ink/paper | 0.400 | 2.0 | yes | **FLAT** — no structure |
+
+#### What was adopted, and the argument in one line
+
+**`image-dithering`, 8×8 Bayer, `u_pxSize` 3, `u_inverted: true`, on the looping
+waveform.** `halftone-dots` reduces the signal to round dots on a fixed grid, and
+the waveform's fine vertical peaks are exactly what a dot grid throws away. The
+dither keeps them: coverage 0.321 against 0.210 **on the same source**, so it is
+carrying more of the picture rather than simply printing darker.
+
+`u_colorHighlight` is set equal to `u_colorFront` — the library's own docs call
+that "classic 2-color dithering". Anything else invents a third ink.
+
+#### Two things the survey caught that reading would not have
+
+1. **`u_inverted` means the opposite of its name here too.** At `false`,
+   `image-dithering` rendered an ink field with the waveform reversed out of it —
+   coverage 0.70, the page turned into the dark rectangle r2 was rejected for.
+   This is the second shader in this library with that exact trap.
+2. **`u_time` is per-shader, not per-library.** `dithering` animates itself, at
+   71.2 mean absolute difference over nine seconds. `halftone-dots`,
+   `image-dithering` and `dot-grid` declare `u_time` and never read it. A screen
+   built on any of those three has to be moved from outside, and one built on
+   `dithering` must not be.
+
+**Never assume; run the survey.** That is the rule D11 actually adds.

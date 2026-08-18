@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ChannelTicker } from "@/components/ChannelTicker";
+import { ScreenStage } from "@/components/ScreenStage";
 import { WaitlistCta } from "@/components/WaitlistCta";
 
 type LocaleParams = { locale: string };
@@ -15,12 +17,37 @@ export async function generateMetadata({
 }
 
 /**
- * Front page — r4 winner (kimi-k3-a), ranked blind and selected by the founder
- * on 2026-07-27. See design/rounds/r4/VERDICT.md.
+ * Front page — r7 variant DRIFT.
  *
- * The hero deliberately does NOT claim the viewport: no 100svh, items aligned to
- * the top, so the figures band arrives while the visitor is still reading. Both
- * variants that pinned a full-height hero placed below this one.
+ * The one shader in the library whose own clock works.
+ *
+ * `dithering` is procedural — no base image at all — and it reads `u_time` in
+ * `main()`, measured at 71.2 mean absolute difference over nine seconds. So this
+ * variant runs on `ShaderMount`'s native speed and our pan loop is not involved.
+ * That is a real engineering argument: no periodic source to maintain, no wrap to
+ * get right, no geometry constraint on the hero's aspect ratio.
+ *
+ * The cost is meaning. It is a beautiful dithered cloud that has nothing to do
+ * with audio, video or editing — where the waveform, spectrogram and timeline all
+ * show the visitor what the product works on. Restraint is a criterion in this
+ * rubric; so is proof.
+ *
+ * SHARED BY ALL SIX r7 VARIANTS
+ * The layout is r6-playhead, unchanged and already chosen. **Only the screen
+ * differs**, because the founder asked whether `halftone-dots` was the right
+ * shader at all — and a round that also moved the layout could not answer that.
+ *
+ * Three variants hold the shader and change the base image; two change the
+ * shader; one changes nothing and is the control. That split is the experiment:
+ * it separates "which shader" from "which picture", which six free-form designs
+ * could not.
+ *
+ * Every candidate was rendered and measured before it was proposed —
+ * `node tools/shader-survey.mjs`. Most of the library never reached the page:
+ * `mesh-gradient`, `god-rays`, `metaballs`, `liquid-metal`, `warp`, `voronoi`
+ * and the rest blend many colours or glow, and W5 bans blur while W8 bans
+ * decorative gradients. They cannot be expressed in a three-colour palette, so
+ * they are not taste rejections.
  */
 export default async function HomePage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
@@ -29,44 +56,21 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
 
   return (
     <>
-      <div className="sc-wrap">
-        <section className="sc-hero">
-          <div>
-            <p className="sc-kicker">{t("kicker")}</p>
-            <h1>{t("title")}</h1>
-            <p className="sc-lede">{t("lede")}</p>
-            {/* The one cobalt object on this page. */}
-            <WaitlistCta />
-          </div>
+      <ScreenStage screen={{ shader: "dithering", shape: 1, px: 3, scale: 0.55 }}>
+        <div className="sc-plate">
+          <p className="sc-kicker">{t("kicker")}</p>
+          <h1 className="sc-plate-head">{t("title")}</h1>
+          <p className="sc-qualifier">{t("qualifier")}</p>
+          {/* The one cobalt object on this page. */}
+          <WaitlistCta />
+        </div>
+      </ScreenStage>
 
-          <aside aria-label={t("proof.label")} className="sc-proof">
-            <p className="sc-proof-ab">{t("proof.mark")}</p>
-            <p className="sc-proof-claim">{t("proof.claim")}</p>
-            <p className="sc-proof-detail">{t("proof.detail")}</p>
-            <p className="sc-proof-tagline">{t("proof.tagline")}</p>
-          </aside>
-        </section>
-      </div>
-
-      <section aria-label={t("split.label")} className="sc-split">
-        {(["chore", "story"] as const).map((cell) => (
-          <div className="sc-split-cell" key={cell}>
-            <p className="sc-num">{t(`split.${cell}.value`)}</p>
-            <p className="sc-split-label">{t(`split.${cell}.label`)}</p>
-            <p className="sc-split-copy">{t(`split.${cell}.copy`)}</p>
-          </div>
-        ))}
-      </section>
+      {/* Constitution D8 — the only other motion on the page. */}
+      <ChannelTicker pitch={7} />
 
       <div className="sc-wrap">
-        {/* Names the deliverable, which every r4 variant left unsaid — see the
-            r4 verdict. Replaces an illustrative "14:32 → 10:47" that came from
-            brand/voice.md's examples and measured nothing. */}
-        <p className="sc-example">
-          {t("deliverable.before")}
-          <span className="sc-numeric">{t("deliverable.figure")}</span>
-          {t("deliverable.after")}
-        </p>
+        <p className="sc-deliverable">{t("deliverable")}</p>
       </div>
     </>
   );

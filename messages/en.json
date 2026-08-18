@@ -20,43 +20,23 @@
   },
   "footer": {
     "tagline": "sudo rm the boring parts.",
-    "rights": "© {year} SudoCut · Korea first"
+    "rights": "© {year} SudoCut · Korea first",
+    "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
   "waitlist": {
     "label": "Closed beta waitlist",
-    "ask": "Two questions: your email, and a link to the channel you run.",
     "submit": "Request an invite →",
-    "note": "Invite-only · ~10 channels · Korea first · free during beta",
     "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
   "home": {
     "kicker": "sudo rm the boring parts.",
-    "title": "Upload the recording. Get back a publishable episode.",
-    "lede": "SudoCut transcribes your footage, then cuts dead air, retakes, repetition and tangents with the full context of the conversation. It comes back as a finished MP4 and a Premiere or Final Cut project — so you can open every cut, check it, and put anything back.",
-    "proof": {
-      "label": "A/B result on our own channel",
-      "mark": "A/B",
-      "claim": "Same views as the human edit.",
-      "detail": "We published the same episode two ways on a channel we run — one cut by a human editor, one cut by SudoCut. The AI cut matched it on views.",
-      "tagline": "Measured, on one channel"
-    },
-    "split": {
-      "label": "Where SudoCut sits today",
-      "chore": {
-        "value": "8h+",
-        "label": "To finish one episode",
-        "copy": "What a producer on a recurring talk show still spends, by hand, after the recording stops."
-      },
-      "story": {
-        "value": "4",
-        "label": "Channels publishing with it",
-        "copy": "Real uploads, today. Channels we run or work on — production testbeds, not customers yet."
-      }
-    },
-    "deliverable": {
-      "before": "What comes back: ",
-      "figure": "MP4",
-      "after": " for upload, plus a Premiere or Final Cut project you can open and change. Nothing is locked."
+    "title": "AI cut it. We published it. Same views.",
+    "qualifier": "Same episode, two edits, one channel we run. A view count.",
+    "deliverable": "MP4 + a Premiere or Final Cut project. Every cut opens.",
+    "channels": {
+      "label": "Publishing with SudoCut",
+      "count": "5 channels",
+      "note": "Names are real. Screens are abstract — partner artwork is theirs to grant."
     }
   },
   "about": {
@@ -175,9 +155,24 @@
           "included": "60 min/mo",
           "sub": "+ 600 min one-time grant"
         },
-        { "name": "Starter", "price": "₩14,900", "included": "600 min (10h)", "sub": "" },
-        { "name": "Pro", "price": "₩49,000", "included": "1,200 min (20h)", "sub": "" },
-        { "name": "Studio", "price": "₩149,000", "included": "3,600 min (60h)", "sub": "" },
+        {
+          "name": "Starter",
+          "price": "₩14,900",
+          "included": "600 min (10h)",
+          "sub": ""
+        },
+        {
+          "name": "Pro",
+          "price": "₩49,000",
+          "included": "1,200 min (20h)",
+          "sub": ""
+        },
+        {
+          "name": "Studio",
+          "price": "₩149,000",
+          "included": "3,600 min (60h)",
+          "sub": ""
+        },
         {
           "name": "Managed",
           "price": "₩299,000",

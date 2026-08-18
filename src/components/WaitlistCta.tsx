@@ -43,10 +43,17 @@ export function WaitlistCta() {
   // address rather than rendering a dead button.
   const href = form || `mailto:${email}`;
 
+  // A label and the action, and nothing else. The "two questions" line, the gate
+  // line ("Invite-only · ~10 channels · Korea first · free during beta") and the
+  // privacy line have all come off the front page.
+  //
+  // NONE OF THEM WERE DELETED FROM THE SITE. The gate terms are on /pricing in
+  // full, and the privacy promise moved to the footer. Cutting copy is allowed to
+  // cost the page words; it is not allowed to cost the visitor a fact they need
+  // or us a commitment we made.
   return (
     <div className="sc-wait" id="waitlist">
       <p className="sc-wait-label">{t("label")}</p>
-      <p className="sc-wait-ask">{t("ask")}</p>
 
       <div className="sc-wait-row">
         {/* The one cobalt object. Do not add a second anywhere in this view. */}
@@ -59,9 +66,6 @@ export function WaitlistCta() {
           {t("submit")}
         </a>
       </div>
-
-      <p className="sc-wait-note">{t("note")}</p>
-      <p className="sc-wait-note">{t("privacy")}</p>
     </div>
   );
 }
