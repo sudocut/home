@@ -498,6 +498,45 @@ async function assertTickerCoversLargeViewport(page, context) {
   }
 }
 
+async function assertHoveredTickStaysInsideRail(page, context) {
+  await page.evaluate(() => {
+    for (const animation of document.querySelector(".sc-tick-track")?.getAnimations() ?? []) {
+      animation.pause();
+      animation.currentTime = 0;
+    }
+  });
+
+  const firstCard = page.locator(".sc-tick-item:not([aria-hidden='true']) a.sc-tick").first();
+  const box = await firstCard.boundingBox();
+  assert(box !== null, `${context} first ticker card should have a box`);
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.waitForTimeout(200);
+
+  const geometry = await page.evaluate(() => {
+    const rail = document.querySelector(".sc-tick-rail");
+    const card = document.querySelector(".sc-tick-item:not([aria-hidden='true']) a.sc-tick");
+    const railRect = rail?.getBoundingClientRect();
+    const cardRect = card?.getBoundingClientRect();
+    return {
+      railTop: railRect?.top ?? 0,
+      cardTop: cardRect?.top ?? 0,
+      overflowY: rail ? getComputedStyle(rail).overflowY : "",
+    };
+  });
+
+  assert(
+    geometry.cardTop >= geometry.railTop - 0.5,
+    `${context} hovered ticker card should not be clipped by rail top: card ${geometry.cardTop}, rail ${geometry.railTop}, overflow-y ${geometry.overflowY}`,
+  );
+
+  await page.mouse.move(1, 1);
+  await page.evaluate(() => {
+    for (const animation of document.querySelector(".sc-tick-track")?.getAnimations() ?? []) {
+      animation.play();
+    }
+  });
+}
+
 async function assertTickerPauses(page, context) {
   const rail = page.locator(".sc-tick-rail");
   const firstLink = page.locator(".sc-tick-item:not([aria-hidden='true']) a.sc-tick").first();
@@ -670,6 +709,7 @@ async function verifyInBrowser(browser, origin) {
         if (viewport.width === LARGE_VIEWPORT_WIDTH) {
           await assertTickerCoversLargeViewport(page, label);
         }
+        await assertHoveredTickStaysInsideRail(page, label);
         await assertTickerPauses(page, label);
         if (!webGlChecked) {
           await assertWebGlContract(page);

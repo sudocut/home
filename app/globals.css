@@ -722,6 +722,8 @@ textarea {
   --sc-tick-gap: 16px;
   --sc-tick-count: 1;
   --sc-tick-duration: 60s;
+  --sc-tick-lift-room: 2px;
+  --sc-tick-shadow-room: 6px;
 
   border-top: 2px solid var(--sc-content);
   border-bottom: 2px solid var(--sc-content);
@@ -752,7 +754,8 @@ textarea {
    still reach every channel instead of seeing the row cut off at the edge. */
 .sc-tick-rail {
   display: block;
-  margin-top: 16px;
+  margin-top: calc(16px - var(--sc-tick-lift-room));
+  padding: var(--sc-tick-lift-room) 0 var(--sc-tick-shadow-room);
   overflow-x: auto;
   scrollbar-width: none;
 }
