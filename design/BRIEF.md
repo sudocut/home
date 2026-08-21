@@ -240,9 +240,12 @@ control in cobalt — the point colour belongs to the one action.
 
 ## 4c. Moodboard
 
-34 reference images the team collected live in `design/moodboard/`, with the
-per-image accents recorded in `design/moodboard/SOURCE.md`. Board direction, in
-their own words: *"minimal, generous whitespace, single accent color."*
+34 reference images the team collected live in the **private** `sudocut/web`
+repository, at `design/moodboards/minimal-1-point-color/`, with the per-image
+accents recorded in its README. They were removed from this public repository
+because they are third-party work with no recorded license — see
+[`design/moodboard/README.md`](moodboard/README.md). Board direction, in their own
+words: *"minimal, generous whitespace, single accent color."*
 
 What the recorded accents actually show: the base is overwhelmingly **near-white
 and off-white** (`#f8f8f8`, `#f3f3f3`, `#efefef`, `#ece8e5`), with a warm
