@@ -1,6 +1,7 @@
 # SudoCut Brand Kit
 
 **v2.0 · 2026-07-26** · supersedes the Option H PDF exploration
+**Amended 2026-08-21** — the secondary line, see §12
 
 > `sudo rm the boring parts.`
 
@@ -42,7 +43,7 @@ do not, because they were invented in isolation from the codebase.
 | Shadow | *"no shadows"* | **No _blurred_ shadows** | The hard offset zero-blur shadow *is* the house signature. |
 | Motion | 400ms `cubic-bezier(.85,0,.15,1)` | **120–200ms `ease`** | Shipped timings. 400ms is too slow for UI. |
 | Radius | no rounded corners | **`0px`** | Agreement. Both sources concur. But see **Q-RADIUS**. |
-| Tagline | "Less footage. More story." | **Secondary** | Primary is soul.md's `sudo rm the boring parts.` |
+| Tagline | "Less footage. More story." | **Replaced 2026-08-21** | Superseded by the public company line, §12. Primary is still soul.md's `sudo rm the boring parts.` |
 
 **Survives from Option H, intact and valuable:** the mark and its geometry, the
 six-lockup system, the four misuse rules, the entire voice section, and the
@@ -320,8 +321,31 @@ cannot silently produce unreadable text.
 This section survives Option H **intact** — it is a direct expression of soul.md's
 *"Honesty over polish. No hype."* Korean register and examples: [`voice.md`](./voice.md).
 
-Primary line: `sudo rm the boring parts.`
-Secondary English marketing line: "Less footage. More story."
+### The lines
+
+| Rank | Line | Source |
+|---|---|---|
+| **Primary** | `sudo rm the boring parts.` | soul.md. Unchanged. |
+| **Public company line** | **We take the busywork.**<br>**You keep the creating.** | Founder, 2026-08-21. `sudocut/company` CDR-0008. |
+
+**"Less footage. More story." is superseded.** It described editing, and the company
+intends to take dubbing, translation and other repetitive production work as well.
+A line naming only one instance would need rewriting each time the scope grew.
+
+The public line is the company mission split in half, in the order a person would
+say it — *we take the busywork* is "using AI to remove repetitive work", *you keep
+the creating* is "creators should be able to concentrate on creative work". It
+restates the mission rather than competing with it; the mission sentence itself is
+recorded in `sudocut/company` and still requires a decision record to amend.
+
+*Busywork* names the category, not one instance. *Creating* is a verb — something the
+person does, not a quality they possess.
+
+**Colour:** where the line is set in two colours, `--sc-ink` carries the first
+sentence and `--sc-accent` the second. What we take is stated plainly; what you keep
+is the thing that matters, and the one point colour marks the one thing that matters.
+Same logic as the wordmark, where the colour break lands exactly where the product
+name breaks.
 
 ---
 
