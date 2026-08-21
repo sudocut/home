@@ -282,7 +282,9 @@ numerals stay numerals; avoid 외래어 padding (솔루션, 플랫폼, 최적화
 deletable). Never machine-translate the English.
 
 Positioning line: `sudo rm the boring parts.`
-Secondary English line: "Less footage. More story."
+Public company line: **We take the busywork. You keep the creating.**
+(Replaced "Less footage. More story." on 2026-08-21 — `sudocut/company` CDR-0008.
+Ink carries the first sentence, accent the second.)
 
 ## 6. How you will be judged
 
