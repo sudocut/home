@@ -695,6 +695,229 @@ textarea {
   color: var(--sc-content-muted);
 }
 
+/* ── Help library ───────────────────────────────────────────────────────────
+ * /help and /help/[slug]. Markdown files in content/help/ are the source
+ * documents; this is the only place their rendered elements are styled.
+ *
+ * Nothing here invents a new visual language — hairline rules, the mono micro
+ * label, the existing scroll frame for tables. Adding a route is not a licence
+ * to run an unranked round. If the help library ever wants a look of its own,
+ * that is a round (design/README.md), not a stylesheet edit.
+ *
+ * No --sc-action anywhere below: a page made of links has no single required
+ * action, and marking one would be the two-cobalt-objects bug by another route.
+ */
+
+.sc-doc-list {
+  margin: 0 0 calc(56px * var(--sc-density));
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--sc-rule);
+}
+
+.sc-doc-list li {
+  padding: calc(22px * var(--sc-density)) 0;
+  border-bottom: 1px solid var(--sc-rule);
+}
+
+.sc-doc-list li > a {
+  font-family: var(--sc-heavy);
+  font-size: 1.25rem;
+  letter-spacing: -0.015em;
+  text-decoration-color: var(--sc-rule);
+}
+
+.sc-doc-list li > a:hover {
+  text-decoration-color: currentColor;
+}
+
+.sc-doc-summary {
+  max-width: 62ch;
+  margin-top: calc(6px * var(--sc-density));
+  color: var(--sc-content-muted);
+}
+
+/* Same micro label as .sc-label, but it carries a date rather than heading a
+   block, so it stays inline-level and keeps its own spacing. */
+.sc-doc-meta {
+  margin-top: calc(10px * var(--sc-density));
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sc-content-muted);
+}
+
+/* Shown when a document has no translation in the requested locale yet. A
+   notice, not a status: --sc-signal-* are for status only. */
+.sc-doc-note {
+  max-width: 68ch;
+  margin: 0 0 calc(28px * var(--sc-density));
+  padding: calc(12px * var(--sc-density)) calc(16px * var(--sc-density));
+  border: 1px solid var(--sc-rule);
+  border-left: 3px solid var(--sc-content);
+  background: var(--sc-surface-raised);
+  color: var(--sc-content-muted);
+  font-size: 0.9375rem;
+}
+
+/* ── The rendered document ─────────────────────────────────────────────── */
+
+/* The measure is 68ch, not --sc-measure: that token is the 1180px page width.
+   BRAND-KIT §12 applies harder here than anywhere else on the site — a help
+   document is read, not scanned.
+
+   It is set on the CHILDREN rather than on .sc-doc, so that one kind of child
+   can opt out: a screenshot or screen recording. A 1100px capture of the product
+   squeezed into a 640px column is a picture of unreadable text, which defeats
+   the only reason it is in a help document. Media gets the page width; prose
+   does not. */
+.sc-doc {
+  max-width: none;
+  margin-bottom: calc(56px * var(--sc-density));
+  color: var(--sc-content);
+}
+
+.sc-doc > * {
+  max-width: 68ch;
+}
+
+.sc-doc > * + * {
+  margin-top: calc(18px * var(--sc-density));
+}
+
+/* react-markdown wraps a standalone image in a <p>; that paragraph is the media
+   block, not prose. */
+.sc-doc > p:has(> img:only-child) {
+  max-width: none;
+  margin-top: calc(28px * var(--sc-density));
+  margin-bottom: calc(28px * var(--sc-density));
+}
+
+.sc-doc h2,
+.sc-doc h3,
+.sc-doc h4 {
+  font-family: var(--sc-heavy);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.sc-doc > h2 {
+  margin-top: calc(48px * var(--sc-density));
+  font-size: 1.5rem;
+}
+
+.sc-doc > h3 {
+  margin-top: calc(34px * var(--sc-density));
+  font-size: 1.125rem;
+}
+
+.sc-doc > h4 {
+  margin: calc(26px * var(--sc-density)) 0 0;
+  font-size: 1rem;
+}
+
+.sc-doc a {
+  text-decoration-color: var(--sc-rule);
+}
+
+.sc-doc a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Tailwind's preflight resets list-style to none on every ul/ol. That is right
+   for a UI and wrong for a document — a numbered procedure without its numbers
+   is not a procedure. Markers are restored only inside .sc-doc. */
+.sc-doc ul {
+  margin: 0;
+  padding-left: 1.3em;
+  list-style: disc;
+}
+
+.sc-doc ol {
+  margin: 0;
+  padding-left: 1.3em;
+  list-style: decimal;
+}
+
+.sc-doc ul ul {
+  list-style: circle;
+}
+
+.sc-doc li + li {
+  margin-top: calc(6px * var(--sc-density));
+}
+
+.sc-doc li::marker {
+  color: var(--sc-content-muted);
+}
+
+.sc-doc li > ul,
+.sc-doc li > ol {
+  margin-top: calc(6px * var(--sc-density));
+}
+
+/* remark-gfm task lists carry their own checkbox, so the marker column is dead
+   space. Disabled inputs, because a rendered document is not a form. */
+.sc-doc .contains-task-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.sc-doc .task-list-item input {
+  margin-right: 0.5em;
+}
+
+.sc-doc blockquote {
+  margin: 0;
+  padding-left: calc(18px * var(--sc-density));
+  border-left: 3px solid var(--sc-rule);
+  color: var(--sc-content-muted);
+}
+
+.sc-doc code {
+  padding: 0.1em 0.35em;
+  background: var(--sc-hover);
+  font-family: var(--sc-mono);
+  font-size: 0.875em;
+}
+
+.sc-doc pre {
+  margin: 0;
+  padding: calc(16px * var(--sc-density));
+  overflow-x: auto;
+  border: 1px solid var(--sc-rule);
+  background: var(--sc-surface-raised);
+}
+
+.sc-doc pre code {
+  padding: 0;
+  background: none;
+  font-size: 0.8125rem;
+}
+
+.sc-doc img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--sc-rule);
+}
+
+/* An animated GIF cannot be stopped by CSS — prefers-reduced-motion has no reach
+   into it, and the constitution requires reduced motion to kill ALL animation.
+   A GIF in a help document is content rather than decoration, which is arguably
+   a different category, but that reading has NOT been ruled on: this is an open
+   question, not a settled deviation. Swapping to <video> with the .mp4 sibling
+   that already sits beside each GIF in public/help/ would settle it in the
+   constitution's favour. Raised with the founder 2026-08-27, undecided. */
+
+/* .sc-tablewrap already frames and scrolls the table — see the pricing page.
+   Only the type scale differs inside a reading column. */
+.sc-doc .sc-tablewrap td {
+  font-size: 0.9375rem;
+}
+
 /* ── Utilities ──────────────────────────────────────────────────────────── */
 
 /* Micro label — BRAND-KIT §5: mono, 0.1em tracking, uppercase. */

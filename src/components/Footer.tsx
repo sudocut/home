@@ -10,6 +10,12 @@ import { Link } from "@/i18n/navigation";
  * or leave it unreachable, it is linked here. If the next round decides the
  * waitlist is the only way in, delete the route and this link together.
  *
+ * /help is linked here for the same reason, and deliberately NOT in the header:
+ * the r4 winner's nav is a wordmark and three links, and adding a fourth is a
+ * change to a ranked decision, not a port detail. Help documents are shared as
+ * direct links anyway. Promoting /help into the nav is a round or a founder
+ * call — see design/README.md.
+ *
  * r6 moved the waitlist's PRIVACY LINE here. The founder asked for less text on
  * the front page and that line is not the important message — but it is a promise
  * about what we do with an address, so it moves rather than goes. Cutting copy is
@@ -26,7 +32,8 @@ export function Footer() {
         <span className="sc-wordmark">SudoCut</span>
         <span className="sc-foot-tag">{t("tagline")}</span>
         <span className="sc-foot-fine">
-          {t("rights", { year })} · <Link href="/contact">{nav("contact")}</Link>
+          {t("rights", { year })} · <Link href="/help">{nav("help")}</Link> ·{" "}
+          <Link href="/contact">{nav("contact")}</Link>
         </span>
         <span className="sc-foot-privacy">{t("privacy")}</span>
       </div>
