@@ -10,6 +10,7 @@
     "about": "About",
     "team": "Team",
     "pricing": "Pricing",
+    "help": "Help",
     "waitlist": "Waitlist",
     "contact": "Contact",
     "languageLabel": "Language",
@@ -190,6 +191,17 @@
       "target": "This card is a target. Nothing here can be bought today."
     },
     "footNote": "Prices in KRW only. Beta invites open from the waitlist on the front page."
+  },
+  "help": {
+    "kicker": "Help",
+    "title": "Help documents.",
+    "lede": "Short documents about how the beta works. Each one has its own link, so we can send you straight to the answer.",
+    "listLabel": "Help documents",
+    "updated": "Updated",
+    "empty": "No documents are published yet.",
+    "footNote": "Can't find it here? Email support@sudo-cut.com.",
+    "back": "← All help documents",
+    "fallback": "This document hasn't been translated yet. Showing the {language} version."
   },
   "contact": {
     "kicker": "Contact",

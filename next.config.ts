@@ -15,8 +15,11 @@ const nextConfig: NextConfig = {
   // SVG is an isolated document and gets neither). Every route here is statically
   // prerendered, so the read happens at build time — but trace the files anyway so
   // a future dynamic route cannot 500 on a missing asset.
+  // content/help/**.md is read by src/content/docs.ts. Same reasoning as the
+  // logos: every help route is statically prerendered so the reads happen at
+  // build time, but trace the files so a future dynamic route cannot 500.
   outputFileTracingIncludes: {
-    "/**": ["./brand/logo/*.svg"],
+    "/**": ["./brand/logo/*.svg", "./content/help/**/*.md"],
   },
   async redirects() {
     return [
