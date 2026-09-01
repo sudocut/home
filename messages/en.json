@@ -13,6 +13,8 @@
     "help": "Help",
     "waitlist": "Waitlist",
     "contact": "Contact",
+    "terms": "Terms",
+    "privacy": "Privacy",
     "languageLabel": "Language",
     "language": {
       "ko": "한국어",
@@ -21,7 +23,8 @@
   },
   "footer": {
     "tagline": "Less footage. More story.",
-    "rights": "© {year} SudoCut · Korea first",
+    "rights": "© {year} SudoCut",
+    "linksLabel": "Footer",
     "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
   "waitlist": {
@@ -201,6 +204,11 @@
     "empty": "No documents are published yet.",
     "footNote": "Can't find it here? Email support@sudo-cut.com.",
     "back": "← All help documents",
+    "fallback": "This document hasn't been translated yet. Showing the {language} version."
+  },
+  "legal": {
+    "kicker": "Legal",
+    "updated": "Updated",
     "fallback": "This document hasn't been translated yet. Showing the {language} version."
   },
   "contact": {

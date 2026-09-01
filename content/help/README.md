@@ -53,3 +53,8 @@ is prose, and the page's styling is the site's, not the document's.
 
 Links to other help documents should be written locale-absolute:
 `[top-ups](/en/help/closed-beta)`.
+
+`remark-gfm` autolinks any bare literal starting `www.`, and it takes the rest of
+the run with it — `**www.example.com**` becomes a link whose href includes the
+closing asterisks, and in Korean the attached particle too. Write such domains as
+an explicit `[text](url)` link.

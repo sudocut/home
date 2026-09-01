@@ -13,6 +13,8 @@
     "help": "도움말",
     "waitlist": "대기자 명단",
     "contact": "문의",
+    "terms": "이용약관",
+    "privacy": "개인정보처리방침",
     "languageLabel": "언어",
     "language": {
       "ko": "한국어",
@@ -21,7 +23,8 @@
   },
   "footer": {
     "tagline": "지루한 부분은 덜어냅니다.",
-    "rights": "© {year} SudoCut · 한국부터",
+    "rights": "© {year} SudoCut",
+    "linksLabel": "푸터",
     "privacy": "이메일과 채널 링크는 초대 검토와 발송에만 씁니다."
   },
   "waitlist": {
@@ -201,6 +204,11 @@
     "empty": "아직 공개된 문서가 없습니다.",
     "footNote": "찾는 내용이 없다면 support@sudo-cut.com으로 알려주세요.",
     "back": "← 도움말 문서 전체",
+    "fallback": "이 문서는 아직 번역되지 않았습니다. {language} 원문을 보여드립니다."
+  },
+  "legal": {
+    "kicker": "법적 고지",
+    "updated": "수정일",
     "fallback": "이 문서는 아직 번역되지 않았습니다. {language} 원문을 보여드립니다."
   },
   "contact": {

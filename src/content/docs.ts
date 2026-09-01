@@ -3,8 +3,8 @@ import { join } from "node:path";
 import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/config";
 
 /**
- * The help library. The markdown files in `content/help/<locale>/` ARE the
- * source documents — this module only locates and parses them. Nothing is
+ * The markdown document collections. The files in `content/<collection>/<locale>/`
+ * ARE the source documents — this module only locates and parses them. Nothing is
  * duplicated into `messages/`; the page chrome is translated there, the document
  * body is not, because a document is written once in the language it is written
  * in. See `content/help/README.md` for the authoring contract.
@@ -13,9 +13,18 @@ import { DEFAULT_LOCALE, LOCALES, type Locale } from "@/i18n/config";
  * prerendered, so the reads happen at build time and never on a request — but
  * `content/**` is traced in next.config.ts anyway so a future dynamic route
  * cannot 500 on a missing file.
+ *
+ * Two collections, and the difference is the route rather than the parser:
+ * `help` is an indexed library at /help/<slug>, `legal` is a fixed pair of
+ * documents at /terms and /privacy. Legal pages get their own directory and their
+ * own URLs because a terms-of-service link is quoted in places we do not control
+ * — an OAuth consent screen, an app store form — and must not move when the help
+ * library is reorganised.
  */
 
-const ROOT = join(process.cwd(), "content", "help");
+export type Collection = "help" | "legal";
+
+const ROOT = join(process.cwd(), "content");
 
 export type DocMeta = {
   slug: string;
@@ -57,10 +66,10 @@ function parseFrontmatter(raw: string): { data: Record<string, string>; body: st
   return { data, body: raw.slice(match[0].length) };
 }
 
-function readDoc(locale: Locale, slug: string): Doc | null {
+function readDoc(collection: Collection, locale: Locale, slug: string): Doc | null {
   let raw: string;
   try {
-    raw = readFileSync(join(ROOT, locale, `${slug}.md`), "utf8");
+    raw = readFileSync(join(ROOT, collection, locale, `${slug}.md`), "utf8");
   } catch {
     return null;
   }
@@ -82,9 +91,9 @@ function readDoc(locale: Locale, slug: string): Doc | null {
   };
 }
 
-function slugsIn(locale: Locale): string[] {
+function slugsIn(collection: Collection, locale: Locale): string[] {
   try {
-    return readdirSync(join(ROOT, locale))
+    return readdirSync(join(ROOT, collection, locale))
       .filter((name) => name.endsWith(".md"))
       .map((name) => name.slice(0, -3));
   } catch {
@@ -97,8 +106,8 @@ function slugsIn(locale: Locale): string[] {
  * locale's directory, so a document that only exists in Korean is still reachable
  * from the English index rather than silently unpublished.
  */
-export function docSlugs(): string[] {
-  return [...new Set(LOCALES.flatMap(slugsIn))].sort();
+export function docSlugs(collection: Collection): string[] {
+  return [...new Set(LOCALES.flatMap((locale) => slugsIn(collection, locale)))].sort();
 }
 
 /**
@@ -107,10 +116,10 @@ export function docSlugs(): string[] {
  * A shared link therefore never 404s because a translation is late — the page
  * serves what it has and says which language it is in.
  */
-export function getDoc(locale: Locale, slug: string): Doc | null {
+export function getDoc(collection: Collection, locale: Locale, slug: string): Doc | null {
   const order: Locale[] = [locale, DEFAULT_LOCALE, ...LOCALES];
   for (const candidate of order) {
-    const doc = readDoc(candidate, slug);
+    const doc = readDoc(collection, candidate, slug);
     if (doc) return doc;
   }
   return null;
@@ -127,9 +136,9 @@ export function isIsoDate(value: string): boolean {
 }
 
 /** The index, sorted by `order` then title. Bodies are not loaded into the list. */
-export function listDocs(locale: Locale): DocMeta[] {
-  return docSlugs()
-    .map((slug) => getDoc(locale, slug))
+export function listDocs(collection: Collection, locale: Locale): DocMeta[] {
+  return docSlugs(collection)
+    .map((slug) => getDoc(collection, locale, slug))
     .filter((doc): doc is Doc => doc !== null)
     .map(({ body: _body, ...meta }) => meta)
     .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
