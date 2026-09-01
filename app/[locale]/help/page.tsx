@@ -33,7 +33,7 @@ export default async function HelpPage({ params }: { params: Promise<LocaleParam
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("help");
-  const docs = listDocs(isLocale(locale) ? locale : DEFAULT_LOCALE);
+  const docs = listDocs("help", isLocale(locale) ? locale : DEFAULT_LOCALE);
 
   return (
     <div className="sc-wrap">

@@ -197,7 +197,34 @@ textarea {
   font-size: 13px;
 }
 
+/* The footer's four standing links. Founder call, 2026-09-01: terms and privacy
+   have to be findable, and they were not at 12px in the muted colour at the tail
+   of the copyright line. Same row as the r4 winner's fine print, one step up in
+   size and at full contrast — the link idiom is .sc-doc's, not a new one. */
+.sc-foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-family: var(--sc-mono);
+  font-size: 13px;
+}
+
+/* Underlined at --sc-content-muted rather than .sc-doc's --sc-rule: a rule-weight
+   underline all but disappears at 13px, and these four have to read as links from
+   position AND from marking, not from position alone. */
+.sc-foot-links a {
+  text-decoration-line: underline;
+  text-decoration-color: var(--sc-content-muted);
+}
+
+.sc-foot-links a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Copyright only, now that the links have moved out of it — so it drops to its
+   own row under the privacy line rather than competing with them. */
 .sc-foot-fine {
+  flex-basis: 100%;
   font-family: var(--sc-mono);
   font-size: 12px;
   color: var(--sc-content-muted);
@@ -819,6 +846,7 @@ textarea {
 }
 
 .sc-doc a {
+  text-decoration-line: underline;
   text-decoration-color: var(--sc-rule);
 }
 

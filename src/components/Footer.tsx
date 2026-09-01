@@ -20,6 +20,18 @@ import { Link } from "@/i18n/navigation";
  * the front page and that line is not the important message — but it is a promise
  * about what we do with an address, so it moves rather than goes. Cutting copy is
  * allowed to cost words; it is not allowed to cost a commitment.
+ *
+ * /terms and /privacy are here for a reason that is not taste: Google's OAuth
+ * consent screen records both URLs and requires them to be reachable from the
+ * site they name, and a footer is where a visitor looks for them anyway.
+ *
+ * DEVIATION FROM THE RANKED VARIANT, founder call 2026-09-01: the r4 winner has
+ * ONE fine-print line and the links lived at the tail of it, 12px and muted. The
+ * founder asked for terms and privacy to be easy to reach, so the four links are
+ * their own labelled <nav> at 13px and full contrast, and the copyright drops to
+ * a row of its own. The footer still carries a wordmark, a tagline and small
+ * type — what changed is which of the two is the quieter one. Four links is the
+ * ceiling; a fifth is a round, not another <Link>.
  */
 export function Footer() {
   const t = useTranslations("footer");
@@ -31,11 +43,14 @@ export function Footer() {
       <div className="sc-wrap">
         <span className="sc-wordmark">SudoCut</span>
         <span className="sc-foot-tag">{t("tagline")}</span>
-        <span className="sc-foot-fine">
-          {t("rights", { year })} · <Link href="/help">{nav("help")}</Link> ·{" "}
+        <nav aria-label={t("linksLabel")} className="sc-foot-links">
+          <Link href="/help">{nav("help")}</Link>
           <Link href="/contact">{nav("contact")}</Link>
-        </span>
+          <Link href="/terms">{nav("terms")}</Link>
+          <Link href="/privacy">{nav("privacy")}</Link>
+        </nav>
         <span className="sc-foot-privacy">{t("privacy")}</span>
+        <span className="sc-foot-fine">{t("rights", { year })}</span>
       </div>
     </footer>
   );

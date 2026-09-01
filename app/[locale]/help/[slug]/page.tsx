@@ -13,7 +13,7 @@ type DocParams = { locale: string; slug: string };
 // page rather than a 404. Paired with dynamicParams = false, an unknown slug is
 // a router-level 404 and the whole route stays static.
 export function generateStaticParams(): { slug: string }[] {
-  return docSlugs().map((slug) => ({ slug }));
+  return docSlugs("help").map((slug) => ({ slug }));
 }
 
 export const dynamicParams = false;
@@ -24,7 +24,7 @@ export async function generateMetadata({
   params: Promise<DocParams>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const doc = getDoc(isLocale(locale) ? locale : DEFAULT_LOCALE, slug);
+  const doc = getDoc("help", isLocale(locale) ? locale : DEFAULT_LOCALE, slug);
   if (!doc) return {};
   const meta = await getTranslations({ locale, namespace: "meta" });
   return {
@@ -48,7 +48,7 @@ export default async function DocPage({ params }: { params: Promise<DocParams> }
   setRequestLocale(locale);
 
   const requested = isLocale(locale) ? locale : DEFAULT_LOCALE;
-  const doc = getDoc(requested, slug);
+  const doc = getDoc("help", requested, slug);
   if (!doc) notFound();
 
   const t = await getTranslations("help");
