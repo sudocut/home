@@ -73,7 +73,13 @@ Notes on Korean register:
 | Rank | Line | Use |
 |---|---|---|
 | **Primary** | `sudo rm the boring parts.` | The positioning line. From soul.md. |
-| Secondary | "Less footage. More story." | English marketing subhead. From Option H. |
+| **Public company line** | **We take the busywork.** / **You keep the creating.** | The line we say to people. Founder, 2026-08-21 · `sudocut/company` CDR-0008. |
+| ~~Secondary~~ | ~~"Less footage. More story."~~ | **Superseded 2026-08-21.** Described editing only. |
+
+**Korean is not decided.** CDR-0007 requires Korean to be written as Korean, never
+machine-translated from English, so the Korean rendering of the public line is a
+founder decision and is deliberately not guessed here. The site still ships
+`지루한 부분은 덜어냅니다.`
 
 > **Open question.** soul.md logs an unresolved brand-tone question: does the
 > `sudo rm` developer pun go on the front, or stay an inside easter egg? If the

@@ -41,7 +41,7 @@ These conflict with nothing above them, so they carry forward.
 | 7 | "No shadows" | **No _blurred_ shadows.** Hard offset, zero blur, zero spread. | `bauhaus.css` `6px 6px 0` idiom | The hard offset shadow is the house signature, used on every recommended action. Option H was reacting to soft Material elevation; the rule needed restating, not deleting. |
 | 8 | 400ms `cubic-bezier(0.85, 0, 0.15, 1)` | 120–200ms `ease`; entrances 300–520ms on `cubic-bezier(0.16, 0.78, 0.22, 1)` | `bauhaus.css` transitions | 400ms is too slow for UI. Retained *only* as a candidate logo-animation timing if one is ever built. The **principle** — "transitions are hard cuts, the brand never dissolves" — is kept. |
 | 9 | 60 / 28 / 9 / 3 literal ratio | Recomputed against the real palette | — | The idea is good; the numbers referenced a palette we no longer use. |
-| 10 | Tagline "LESS FOOTAGE. MORE STORY." as primary | **Secondary** English marketing line | `soul.md` | Primary is soul.md's `sudo rm the boring parts.` |
+| 10 | Tagline "LESS FOOTAGE. MORE STORY." as primary | **Secondary** English marketing line | `soul.md` | Primary is soul.md's `sudo rm the boring parts.` **Superseded again 2026-08-21** — the secondary line is now "We take the busywork. You keep the creating." See BRAND-KIT §12. |
 
 ---
 
