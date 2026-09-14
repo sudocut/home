@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ChannelTicker } from "@/components/ChannelTicker";
 import { ScreenStage } from "@/components/ScreenStage";
 import { WaitlistCta } from "@/components/WaitlistCta";
+import { YouTubeConnect } from "@/components/YouTubeConnect";
 
 type LocaleParams = { locale: string };
 
@@ -72,6 +73,10 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
       <div className="sc-wrap">
         <p className="sc-deliverable">{t("deliverable")}</p>
       </div>
+
+      {/* Last band before the footer, and that adjacency is the point — see the
+          header of YouTubeConnect.tsx. Constitution D12. */}
+      <YouTubeConnect />
     </>
   );
 }

@@ -2,7 +2,7 @@
 title: Terms of Service
 summary: The rules for using SudoCut during the closed beta.
 order: 1
-updated: 2026-09-01
+updated: 2026-09-14
 ---
 
 These terms cover the SudoCut application at
@@ -20,7 +20,7 @@ SudoCut is an invite-only closed beta, and everything below follows from that.
 
 - Access is by invitation, to a small number of channels.
 - There is no subscription. The beta itself is free; the only payment that
-  exists is one-time credit packs (section 5).
+  exists is one-time credit packs (section 6).
 - Beta software breaks. Features may change or be withdrawn, a job may fail, a
   processing result may be wrong. There is no uptime commitment and no
   guaranteed support response time.
@@ -70,7 +70,25 @@ hold the rights to.
 We do not review uploads before processing them. If a project is reported to us
 as breaking this section, we may remove it and suspend the account.
 
-## 5. Credits and payment
+## 5. Publishing to YouTube
+
+Connecting a YouTube channel is optional. If you use it:
+
+- **SudoCut uses YouTube API Services, and by using that feature you agree to be
+  bound by the [YouTube Terms of Service](https://www.youtube.com/t/terms).**
+  Google's handling of your data is described in the
+  [Google Privacy Policy](https://www.google.com/policies/privacy); ours is in
+  section 4 of our [Privacy Policy](/en/privacy).
+- You decide what gets published. Nothing is uploaded to your channel until you
+  confirm that upload.
+- The rules in section 4 apply to anything you publish this way, and YouTube's
+  own policies apply on top of them. A video that is fine to hold in a SudoCut
+  project may still breach YouTube's rules, and that is between you and YouTube.
+- You can disconnect at any time — in SudoCut, or at
+  [security.google.com/settings/security/permissions](https://security.google.com/settings/security/permissions).
+  Videos already published stay on your channel; delete those on YouTube.
+
+## 6. Credits and payment
 
 - Processing is metered in **raw minutes** — the length of the source material,
   not of the finished edit.
@@ -86,14 +104,14 @@ as breaking this section, we may remove it and suspend the account.
 - The launch prices shown on our pricing page are a stated target, not an offer.
   Nothing there can be bought today.
 
-## 6. Using the service properly
+## 7. Using the service properly
 
 Do not resell or sublicense access, share your account with people outside your
 organisation, work around credit accounting, probe or overload the service,
 attempt to access other users' projects, reverse-engineer the service, or use it
 to build a competing product.
 
-## 7. What we do not promise
+## 8. What we do not promise
 
 The beta is provided as it is. Every cut SudoCut makes is a **suggestion on a
 timeline you still own** — review it before you publish. We do not warrant that
@@ -103,7 +121,7 @@ transcript will be accurate.
 **Keep your own copy of your original footage.** SudoCut is a processing service,
 not a backup service.
 
-## 8. Liability
+## 9. Liability
 
 To the fullest extent the law allows, we are not liable for lost profits,
 lost data, lost opportunity or other indirect or consequential damage. Our total
@@ -114,7 +132,7 @@ may be nothing.
 Nothing here excludes liability for intent or gross negligence, for death or
 personal injury, or any other liability that cannot be limited by law.
 
-## 9. Suspension and ending
+## 10. Suspension and ending
 
 You may stop at any time. To close your account and have your data deleted,
 write to <support@sudo-cut.com>.
@@ -123,18 +141,18 @@ We may suspend or end your access if you break these terms, if we are legally
 required to, or if we end the beta. Credits do not survive the end of your
 access and are not refunded, except where the law requires it.
 
-## 10. Changes to these terms
+## 11. Changes to these terms
 
 We may change these terms. The date at the top of this page changes with them,
 and we email beta users before a material change takes effect. Continuing to use
 the service afterwards means you accept the new version.
 
-## 11. Governing law
+## 12. Governing law
 
 These terms are governed by the laws of the State of Delaware, United States,
 without regard to its conflict-of-laws rules. If you are a consumer, this does
 not take away the protection of mandatory law in the country you live in.
 
-## 12. Contact
+## 13. Contact
 
 <support@sudo-cut.com>
