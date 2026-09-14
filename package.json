@@ -22,6 +22,7 @@
     "channels:finalize-assets": "node tools/build-channel-art.mjs --finalize",
     "channels:verify-assets": "node tools/verify-channel-art.mjs",
     "channels:verify-browser": "node tools/verify-channel-browser.mjs",
+    "youtube:verify-browser": "node tools/verify-youtube-browser.mjs",
     "channels:test": "node --test tools/tests/*.test.mjs"
   },
   "dependencies": {

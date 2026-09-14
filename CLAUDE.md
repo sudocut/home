@@ -25,6 +25,12 @@ an existing token — never hand-pick a hex.
   trust-band avatar only. Do not sample those pixels into UI. Surrounding chrome
   — background, border, text, motion, hover and fallback screens — stays
   tokenized ink/paper.
+- **Third-party brand files keep their own colours** (constitution D12). Exactly
+  one today: `public/brands/youtube/yt_logo_fullcolor_almostblack_digital.png`,
+  the official YouTube logo, rendered byte-unmodified by `YouTubeConnect`. Do not
+  "fix" it into the palette, do not redraw it as a tokenized SVG, do not filter,
+  crop or recolour it — the licence forbids it and the API audit depends on it.
+  Read `public/brands/youtube/README.md` before touching anything in that folder.
 - `--sc-signal-red` / `--sc-signal-yellow` are **status only**. Never decoration.
 - **`radius: 0`.** No rounded corners except `50%` circles.
 - **Shadows are hard offset, zero blur.** `6px 6px 0`, `9px 9px 0` on hover.

@@ -1325,6 +1325,99 @@ textarea {
   color: var(--sc-content-muted);
 }
 
+/* ── YouTube integration band — constitution D12 ────────────────────────── */
+
+/* The last band before the footer. It is quieter than the trust band above it
+   on purpose: a hairline instead of the band's 2px double rule, paper instead
+   of the raised panel, and a heading two steps down from the hero. The audit
+   needs the mark to be present and legible in a screenshot, not loud — the
+   branding guidelines say in as many words not to make it the most prominent
+   element on the page, and the one point colour stays on the waitlist button. */
+.sc-yt {
+  border-top: 1px solid var(--sc-rule);
+}
+
+.sc-yt .sc-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px 40px;
+  padding-block: 36px 44px;
+}
+
+/* 380px basis rather than a fixed column: the row breaks to stacked when the
+   copy can no longer hold its measure beside a 357px logo, which happens well
+   before the 880px breakpoint on a narrow window. */
+.sc-yt-copy {
+  flex: 1 1 380px;
+  max-width: 54ch;
+}
+
+.sc-yt-label {
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sc-yt-head {
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: clamp(21px, 2.2vw, 27px);
+  line-height: 1.18;
+  word-break: keep-all;
+}
+
+.sc-yt-body {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.sc-yt-note {
+  margin-top: 12px;
+  font-family: var(--sc-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--sc-content-muted);
+  word-break: keep-all;
+}
+
+/* D12, and the whole of it: the file arrives with its own colours AND its own
+   clear space, so this rule does nothing to either. No filter, no opacity, no
+   mask, no blend, no background plate, no crop, no border. Size only.
+   inline-flex, not inline-block, so the focus outline hugs the image instead of
+   the line box it sits on. */
+.sc-yt-link {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+/* 120px / 100px is the CANVAS height of the official PNG, not the height of the
+   logo inside it — the delivered file bakes YouTube's clear space into a
+   1705x573 frame around 1294x289 of artwork. brand.youtube's "Digital: 100px"
+   minimum does not say which of the two it measures; public/brands/youtube/README.md
+   records why we read it as the file and what the other reading would cost.
+   Never take this below 100px. */
+.sc-yt-logo {
+  display: block;
+  width: auto;
+  height: 120px;
+}
+
+@media (max-width: 880px) {
+  .sc-yt .sc-wrap {
+    padding-block: 32px 40px;
+  }
+
+  /* 100px of canvas is 297px wide; the content column at 390px is 346px. */
+  .sc-yt-logo {
+    height: 100px;
+  }
+}
+
 /* ── r7 ──────────────────────────────────────────────────────────────────
    The stage, plate and trust-band rules are inherited whole from r6-playhead;
    nothing about the layout changed this round. What changed is which shader

@@ -41,6 +41,14 @@
       "label": "Publishing with SudoCut",
       "count": "6 channels",
       "note": "Channel links · shown profile images are cleared for this site."
+    },
+    "youtube": {
+      "label": "YouTube integration",
+      "title": "Publish edited videos to your connected channel",
+      "body": "Connect the YouTube channel you own, and SudoCut can send a finished edit straight to it — with the title, description and visibility you set. Uploads arrive private by default, so you decide when anything goes public.",
+      "note": "Closed beta. Connecting a channel is optional; edits download as MP4 and a project file either way.",
+      "logoAlt": "YouTube",
+      "newTab": "(opens youtube.com in a new tab)"
     }
   },
   "about": {

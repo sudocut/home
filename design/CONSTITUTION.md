@@ -62,6 +62,7 @@ used by the selected *Bauhaus Timeline Proof* direction.
 | **D9** | **The screen moves.** D7's `static` is lifted for the hero screen only, driven by uniforms — never by `speed`. The loop is **seamless**, not a reset. Decided 2026-08-18. | delete the pan |
 | ~~D10~~ | ~~The visitor can adjust the screen.~~ **REVERSED the same day**, 2026-08-18. The console is gone. | re-add the console |
 | **D11** | **The screen's shader is chosen by survey, not by habit.** Any two-colour paper-shader is eligible; the palette decides what is even a candidate. Decided 2026-08-18. | see below |
+| **D12** | **A third-party official brand file keeps its own colours.** Narrows W1 to what we draw. One recorded file, unmodified, beside the feature it names. Decided 2026-09-14. | delete `public/brands/` |
 
 ### D5 — English first (2026-07-26, founder)
 
@@ -566,3 +567,57 @@ that "classic 2-color dithering". Anything else invents a third ink.
    `dithering` must not be.
 
 **Never assume; run the survey.** That is the rule D11 actually adds.
+
+### D12 — a third-party official brand file keeps its own colours (2026-09-14, founder)
+
+**W1 says "no other color exists", and this does not repeal it.** W1 governs what
+*we* draw. A third-party logo that its owner forbids us to recolour is not
+something we draw — it is a file we are given, on terms, and the terms include
+its colours. D8 already made this distinction once for the channel avatars: those
+pixels are "third-party media content, not palette tokens". D12 is the same
+distinction for a brand mark, and it is needed because the YouTube API Services
+audit requires YouTube branding on the homepage and the branding guidelines say
+in as many words that the standard logo's colours "cannot be modified".
+
+Recolouring it to fit our palette is not an option that was weighed and rejected.
+It is prohibited by the licence we are using the mark under.
+
+**Permitted:** a file under `public/brands/<owner>/`, recorded in a README beside
+it, rendered **byte-unmodified**, at the size the owner's guidelines require,
+adjacent to the feature it identifies, linking where the owner's guidelines say
+it must link.
+
+**Required, all six:**
+
+1. **The README exists before the file is used**, and carries: source URL,
+   archive hash, download date, which variant and why, the measured geometry, and
+   the minimum-size and clear-space rules with their source quoted. An asset
+   whose provenance is not written down is not permitted — same standard as
+   `brand/reference/channels/SOURCE.md`.
+2. **No transform whatsoever.** No `filter`, `opacity`, `mask`, `mix-blend-mode`,
+   `background` plate, crop, rotation, outline or added border. Width and height
+   only. Redrawing the mark as an inline SVG so it can take tokens is the
+   violation this clause exists to name.
+3. **The exception ends at the file's own box.** Every surrounding pixel —
+   band background, hairline, heading, body copy, focus ring, hover — is
+   `var(--sc-*)`. This is D8's fence, restated.
+4. **It is never the most prominent element on the page**, and never set beside
+   the SudoCut wordmark closely enough to read as one combined lockup.
+5. **Cobalt is untouched.** S1 still allows one point colour per view and it is
+   still the waitlist action. A third-party mark is not an accent and does not
+   spend that budget.
+6. **Not next to `--sc-signal-red`.** W2 keeps red as status. A red that is
+   neither our red nor a status must not sit where the two can be confused, which
+   in practice means no error or warning state may render in the same band.
+
+**Not permitted:** a mark used for decoration rather than to identify a real,
+shipped feature; a mark implying sponsorship, endorsement, certification or
+partnership; a second such file on the same view; an owner's mark on a page
+whose copy claims a capability we do not have (S6 outranks this rule and every
+rule under it).
+
+**In force for:** `public/brands/youtube/yt_logo_fullcolor_almostblack_digital.png`,
+rendered by `src/components/YouTubeConnect.tsx`. That is the whole list.
+
+**What reverses it:** delete `public/brands/`. Nothing else on the page depends
+on those pixels — the band degrades to copy, and the copy is still true.
