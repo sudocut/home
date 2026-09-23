@@ -384,7 +384,7 @@ function assertProfileContract(data, { note, avatarPx, chipHeightPx, context }) 
   );
 
   const uniquePaths = [...new Set(data.images.map((image) => image.srcPath))].sort();
-  assertSameList(uniquePaths, [...EXPECTED_ART_PATHS].sort(), `${context} should use exactly six unique channel asset URLs`);
+  assertSameList(uniquePaths, [...EXPECTED_ART_PATHS].sort(), `${context} should use exactly seven unique channel asset URLs`);
 
   for (const height of data.itemHeights) {
     assertEqual(height, chipHeightPx, `${context} item height`);
@@ -654,7 +654,7 @@ async function assertFallbackCase(browser, origin) {
         return (
           affected.length === 4 &&
           affected.every((card) => card.querySelectorAll(".sc-tick-art canvas").length === 1) &&
-          unaffected.length === 20 &&
+          unaffected.length === 24 &&
           unaffected.every((card) => {
             const image = card.querySelector("img.sc-tick-avatar");
             const fallback = card.querySelector(".sc-tick-art canvas");
@@ -676,7 +676,7 @@ async function assertFallbackCase(browser, origin) {
     }));
     assert(aborted >= 1, "fallback case should abort at least one profile-image request");
     assertEqual(counts.fallbackCanvases, 4, "aborted profile should render four fallback canvases");
-    assertEqual(counts.images, 20, "non-aborted cleared profiles should remain images");
+    assertEqual(counts.images, 24, "non-aborted cleared profiles should remain images");
     assertEqual(counts.brokenImages, 0, "fallback case should not expose broken image icons");
     collector.assertNoIssues("fallback profile-image case");
   } finally {

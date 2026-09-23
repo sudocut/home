@@ -18,6 +18,7 @@ export const CHANNEL_ART = Object.freeze(
     ["chester_roh", "AI Frontier Korea (노정석)"],
     ["eegirit", "이기릿 EEgirIT"],
     ["rlwrld.dexterity", "RLWRLD"],
+    ["aicommunitybloom", "AI Community Bloom 블룸"],
   ].map(([handle, name]) =>
     Object.freeze({
       handle,
