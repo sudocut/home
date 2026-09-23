@@ -1392,6 +1392,10 @@ textarea {
   border-top: 0;
 }
 
+.sc-plate .sc-btn {
+  font-size: 16px;
+}
+
 /* ── The line the page ends on ──────────────────────────────────────────── */
 
 .sc-deliverable {
