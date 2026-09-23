@@ -1,8 +1,8 @@
 {
   "meta": {
-    "title": "SudoCut — Less footage. More story.",
+    "title": "SudoCut — Edit and publish in one place",
     "titleTemplate": "{page} — SudoCut",
-    "description": "SudoCut removes the boring parts from long spoken footage. Join the closed-beta waitlist."
+    "description": "Edit videos, add captions and intros, create Shorts, and upload to YouTube in one SudoCut workflow."
   },
   "nav": {
     "skipToContent": "Skip to content",
@@ -22,7 +22,7 @@
     }
   },
   "footer": {
-    "tagline": "Less footage. More story.",
+    "tagline": "Get your recorded videos published on time.",
     "rights": "© {year} SudoCut",
     "linksLabel": "Footer",
     "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
@@ -34,9 +34,19 @@
   },
   "home": {
     "kicker": "From podcasts and interviews to solo videos",
-    "title": "Filming is done.\nStill not published?",
-    "qualifier": "Cutting dead air and fixing captions can delay an upload. In our own workflow, time from filming to upload fell from 16 hours to 2.",
-    "deliverable": "MP4 + a Premiere or Final Cut project. Every cut opens.",
+    "title": "Finished recording.\nStill not published?",
+    "qualifier": "Finish everything that follows a recording in one place: SudoCut.",
+    "workflow": {
+      "label": "Inside SudoCut",
+      "edit": "Edit",
+      "captions": "Captions",
+      "intro": "Intro",
+      "shorts": "Shorts",
+      "publish": "YouTube upload"
+    },
+    "deliverableLabel": "What you get",
+    "deliverableTitle": "Review and change every cut.",
+    "deliverable": "Get an MP4 and a Premiere or Final Cut project. Every cut can be inspected.",
     "channels": {
       "label": "Publishing with SudoCut",
       "count": "7 channels",
@@ -44,9 +54,9 @@
     },
     "youtube": {
       "label": "YouTube integration",
-      "title": "Publish edited videos to your connected channel",
-      "body": "Connect the YouTube channel you own, and SudoCut can send a finished edit straight to it — with the title, description and visibility you set. Uploads arrive private by default, so you decide when anything goes public.",
-      "note": "Closed beta. Connecting a channel is optional; edits download as MP4 and a project file either way.",
+      "title": "Publish the edit you approved to your channel.",
+      "body": "Connect your YouTube channel and send the finished video with the title, description, and visibility you set. Uploads are private by default.",
+      "note": "Channel connection is optional. You can still download the MP4 and project file.",
       "logoAlt": "YouTube",
       "newTab": "(opens youtube.com in a new tab)"
     }

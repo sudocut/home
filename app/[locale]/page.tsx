@@ -6,6 +6,7 @@ import { WaitlistCta } from "@/components/WaitlistCta";
 import { YouTubeConnect } from "@/components/YouTubeConnect";
 
 type LocaleParams = { locale: string };
+const WORKFLOW_STEPS = ["edit", "captions", "intro", "shorts", "publish"] as const;
 
 export async function generateMetadata({
   params,
@@ -62,6 +63,17 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
           <p className="sc-kicker">{t("kicker")}</p>
           <h1 className="sc-plate-head">{t("title")}</h1>
           <p className="sc-qualifier">{t("qualifier")}</p>
+          <div className="sc-hero-workflow">
+            <p className="sc-hero-workflow-label">{t("workflow.label")}</p>
+            <ol className="sc-hero-workflow-list">
+              {WORKFLOW_STEPS.map((step, index) => (
+                <li className="sc-hero-workflow-step" key={step}>
+                  <span className="sc-hero-workflow-number">0{index + 1}</span>
+                  <strong>{t(`workflow.${step}`)}</strong>
+                </li>
+              ))}
+            </ol>
+          </div>
           {/* The one cobalt object on this page. */}
           <WaitlistCta />
         </div>
@@ -70,9 +82,11 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
       {/* Constitution D8 — the only other motion on the page. */}
       <ChannelTicker pitch={7} />
 
-      <div className="sc-wrap">
-        <p className="sc-deliverable">{t("deliverable")}</p>
-      </div>
+      <section className="sc-wrap sc-deliverable">
+        <p className="sc-deliverable-label">{t("deliverableLabel")}</p>
+        <h2 className="sc-deliverable-head">{t("deliverableTitle")}</h2>
+        <p className="sc-deliverable-body">{t("deliverable")}</p>
+      </section>
 
       {/* Last band before the footer, and that adjacency is the point — see the
           header of YouTubeConnect.tsx. Constitution D12. */}
