@@ -1326,6 +1326,13 @@ textarea {
   white-space: nowrap;
 }
 
+.sc-hero-proof-context {
+  margin-top: 6px;
+  font-family: var(--sc-mono);
+  font-size: 12px;
+  color: var(--sc-content-muted);
+}
+
 .sc-plate .sc-wait {
   margin-top: 20px;
   padding-top: 0;

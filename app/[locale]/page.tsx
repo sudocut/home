@@ -65,6 +65,7 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
           <div className="sc-hero-proof">
             <p className="sc-hero-proof-label">{t("proofLabel")}</p>
             <p className="sc-hero-proof-value">{t("proofValue")}</p>
+            <p className="sc-hero-proof-context">{t("proofContext")}</p>
           </div>
           {/* The one cobalt object on this page. */}
           <WaitlistCta />
