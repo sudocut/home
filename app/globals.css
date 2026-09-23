@@ -1273,12 +1273,15 @@ textarea {
 
 .sc-stage-body {
   position: relative;
+  width: 100%;
 }
 
 /* Knocked out of the screen. Content never sits directly on dots: at the pitches
    D9 permits, the screen wins every legibility contest it is entered into. */
 .sc-plate {
-  max-width: 620px;
+  width: 100%;
+  max-width: 680px;
+  margin-inline: auto;
   border: 2px solid var(--sc-content);
   background: var(--sc-surface);
   box-shadow: var(--sc-shadow-widget);
@@ -1286,10 +1289,10 @@ textarea {
 }
 
 .sc-plate-head {
-  margin: 16px 0 14px;
+  margin: 16px 0 16px;
   font-weight: 700;
-  font-size: clamp(32px, 4.2vw, 54px);
-  line-height: 1.04;
+  font-size: clamp(32px, 3.5vw, 48px);
+  line-height: 1.08;
   letter-spacing: -0.025em;
   white-space: pre-line;
   word-break: keep-all;
@@ -1298,40 +1301,89 @@ textarea {
 /* Short on purpose. The founder cut the page twice; this line anchors the
    operating metric to a concrete self-run channel rather than a generic claim. */
 .sc-qualifier {
-  font-size: 15px;
-  line-height: 1.5;
-  max-width: 42ch;
-  color: var(--sc-content-muted);
+  font-size: 17px;
+  line-height: 1.45;
+  max-width: 44ch;
 }
 
 .sc-hero-workflow {
   margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid var(--sc-content);
+  padding: 17px 18px 19px;
+  background: var(--sc-content);
+  color: var(--sc-surface);
 }
 
 .sc-hero-workflow-label {
   font-family: var(--sc-mono);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.04em;
-  color: var(--sc-content-muted);
 }
 
 .sc-hero-workflow-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 1.35fr);
+  margin-top: 16px;
   padding: 0;
   list-style: none;
 }
 
-.sc-hero-workflow-list li {
-  padding: 6px 8px;
-  border: 1px solid var(--sc-content);
+.sc-hero-workflow-step {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-inline: 10px;
+  border-left: 1px solid var(--sc-surface);
+}
+
+.sc-hero-workflow-step:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.sc-hero-workflow-number {
   font-family: var(--sc-mono);
   font-size: 12px;
-  white-space: nowrap;
+  line-height: 1;
+}
+
+.sc-hero-workflow-step strong {
+  margin-top: 12px;
+  font-size: 17px;
+  line-height: 1.2;
+  word-break: keep-all;
+}
+
+@media (max-width: 880px) {
+  .sc-hero-workflow-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sc-hero-workflow-step {
+    padding: 10px 0 10px 12px;
+    border-top: 1px solid var(--sc-surface);
+  }
+
+  .sc-hero-workflow-step:nth-child(2n + 1) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .sc-hero-workflow-step:nth-child(-n + 2) {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .sc-hero-workflow-step:last-child {
+    grid-column: span 2;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 0;
+  }
+
+  .sc-hero-workflow-step:last-child strong {
+    margin-top: 0;
+  }
 }
 
 .sc-plate .sc-wait {

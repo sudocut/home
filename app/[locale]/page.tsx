@@ -66,8 +66,11 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
           <div className="sc-hero-workflow">
             <p className="sc-hero-workflow-label">{t("workflow.label")}</p>
             <ol className="sc-hero-workflow-list">
-              {WORKFLOW_STEPS.map((step) => (
-                <li key={step}>{t(`workflow.${step}`)}</li>
+              {WORKFLOW_STEPS.map((step, index) => (
+                <li className="sc-hero-workflow-step" key={step}>
+                  <span className="sc-hero-workflow-number">0{index + 1}</span>
+                  <strong>{t(`workflow.${step}`)}</strong>
+                </li>
               ))}
             </ol>
           </div>
