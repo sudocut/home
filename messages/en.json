@@ -33,9 +33,9 @@
     "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
   },
   "home": {
-    "kicker": "Less footage. More story.",
-    "title": "Less editing time.\nSame views.",
-    "qualifier": "We published the same episode as a human edit and a SudoCut edit on a channel we run, then compared views.",
+    "kicker": "From podcasts and interviews to solo videos",
+    "title": "Filming is done.\nStill not published?",
+    "qualifier": "Cutting dead air and fixing captions can delay an upload. In our own workflow, time from filming to upload fell from 16 hours to 2.",
     "deliverable": "MP4 + a Premiere or Final Cut project. Every cut opens.",
     "channels": {
       "label": "Publishing with SudoCut",
