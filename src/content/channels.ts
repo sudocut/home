@@ -8,7 +8,8 @@
  * entries are from the `add-trusted-partners-section` branch and were checked on
  * 2026-08-17. RLWRLD was added from the founder-supplied channel URL and checked
  * on 2026-08-18. AI Community Bloom was added from the founder-supplied channel
- * URL and checked on 2026-09-23; it uses an abstract frame without profile art.
+ * URL and checked on 2026-09-23. Its profile art was added at the site owner's
+ * request on the same date.
  *
  * WHAT IS REAL HERE AND WHAT IS NOT
  * ---------------------------------
@@ -84,6 +85,7 @@ export const CHANNELS: readonly Channel[] = [
     handle: "aicommunitybloom",
     name: "AI Community Bloom 블룸",
     frame: "/frames/frame-01.png",
+    art: "/channels/aicommunitybloom.webp",
   },
 ] as const;
 

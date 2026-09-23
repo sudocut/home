@@ -199,6 +199,39 @@
         "bytes": 1040,
         "sha256": "8a7ba164c3a2ccb6aaeabc13facaf6b5fce559605a345b3fb825e62ee33b0a40"
       }
+    },
+    {
+      "handle": "aicommunitybloom",
+      "name": "AI Community Bloom 블룸",
+      "channelUrl": "https://www.youtube.com/@aicommunitybloom",
+      "capturedImageUrl": "https://yt3.googleusercontent.com/glSZxYNTbI9Tf9oQB6Yt3OK-F14zPFrswnd3wNLqjQja5UQpmhZBpk1ca8YMuxE7d9Bh6Egkpw=s900-c-k-c0x00ffffff-no-rj",
+      "retrievedAt": "2026-09-23",
+      "relationship": {
+        "basis": "SudoCut site owner identified this channel as publishing with SudoCut",
+        "date": "2026-09-23",
+        "evidence": "User-provided channel URL in implementation session, 2026-09-23"
+      },
+      "permission": {
+        "status": "cleared",
+        "grantor": "SudoCut site owner directed publication of this public profile image",
+        "grantedAt": "2026-09-23",
+        "scope": "SudoCut company website and public sudocut/home GitHub repository",
+        "evidence": "User instruction in implementation session, 2026-09-23: add the ytSpecAvatarShapeImage image to the channel card"
+      },
+      "original": {
+        "path": "brand/reference/channels/original/aicommunitybloom.jpg",
+        "width": 900,
+        "height": 900,
+        "sha256": "a4d0e0add778bff7454ffdb66e3141773f02e328f90fc6911e719c5400c73568"
+      },
+      "served": {
+        "path": "public/channels/aicommunitybloom.webp",
+        "width": 256,
+        "height": 256,
+        "maxBytes": 100000,
+        "bytes": 4100,
+        "sha256": "093f251b53f251243e6cb6654f552faf10b77e3af65396590a4f5f990f7bba4e"
+      }
     }
   ]
 }

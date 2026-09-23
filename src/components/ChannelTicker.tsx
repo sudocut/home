@@ -35,7 +35,7 @@ import { CHANNELS } from "@/content/channels";
  * Halftone frame described in src/content/channels.ts.
  *
  * WHAT THIS COSTS, SO IT IS NOT DISCOVERED LATER. With the current clearance set
- * the normal path is twenty-four profile image elements — six cleared images,
+ * the normal path is twenty-eight profile image elements — seven cleared images,
  * four cycles, for the large-screen seam — plus the hero screen and D6 paper
  * texture. Fallback canvases appear only for failed profile images.
  */

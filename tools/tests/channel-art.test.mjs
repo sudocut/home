@@ -18,6 +18,7 @@ const IDENTITIES = [
   ["chester_roh", "AI Frontier Korea (노정석)"],
   ["eegirit", "이기릿 EEgirIT"],
   ["rlwrld.dexterity", "RLWRLD"],
+  ["aicommunitybloom", "AI Community Bloom 블룸"],
 ];
 const SHA_A = "a".repeat(64);
 const SHA_B = "b".repeat(64);
@@ -319,7 +320,7 @@ test("buildDerivative rejects non-900px and non-JPEG sources", async (t) => {
   await assert.rejects(() => buildDerivative(wrongFormat, output), /JPEG/i);
 });
 
-test("buildChannelAssets finalizes six derivatives and only measured served provenance", async (t) => {
+test("buildChannelAssets finalizes seven derivatives and only measured served provenance", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "channel-art-finalize-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const sourceManifest = validManifest();
