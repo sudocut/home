@@ -7,7 +7,8 @@
  * Names and handles are checked against youtube.com/@{handle}. The first five
  * entries are from the `add-trusted-partners-section` branch and were checked on
  * 2026-08-17. RLWRLD was added from the founder-supplied channel URL and checked
- * on 2026-08-18.
+ * on 2026-08-18. AI Community Bloom was added from the founder-supplied channel
+ * URL and checked on 2026-09-23; it uses an abstract frame without profile art.
  *
  * WHAT IS REAL HERE AND WHAT IS NOT
  * ---------------------------------
@@ -78,6 +79,11 @@ export const CHANNELS: readonly Channel[] = [
     name: "RLWRLD",
     frame: "/frames/frame-06.png",
     art: "/channels/rlwrld.dexterity.webp",
+  },
+  {
+    handle: "aicommunitybloom",
+    name: "AI Community Bloom 블룸",
+    frame: "/frames/frame-01.png",
   },
 ] as const;
 
