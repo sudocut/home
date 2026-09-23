@@ -62,6 +62,10 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
           <p className="sc-kicker">{t("kicker")}</p>
           <h1 className="sc-plate-head">{t("title")}</h1>
           <p className="sc-qualifier">{t("qualifier")}</p>
+          <div className="sc-hero-proof">
+            <p className="sc-hero-proof-label">{t("proofLabel")}</p>
+            <p className="sc-hero-proof-value">{t("proofValue")}</p>
+          </div>
           {/* The one cobalt object on this page. */}
           <WaitlistCta />
         </div>
@@ -70,9 +74,11 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
       {/* Constitution D8 — the only other motion on the page. */}
       <ChannelTicker pitch={7} />
 
-      <div className="sc-wrap">
-        <p className="sc-deliverable">{t("deliverable")}</p>
-      </div>
+      <section className="sc-wrap sc-deliverable">
+        <p className="sc-deliverable-label">{t("deliverableLabel")}</p>
+        <h2 className="sc-deliverable-head">{t("deliverableTitle")}</h2>
+        <p className="sc-deliverable-body">{t("deliverable")}</p>
+      </section>
 
       {/* Last band before the footer, and that adjacency is the point — see the
           header of YouTubeConnect.tsx. Constitution D12. */}
