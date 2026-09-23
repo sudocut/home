@@ -1,8 +1,8 @@
 {
   "meta": {
-    "title": "SudoCut — Less footage. More story.",
+    "title": "SudoCut — Edit and publish in one place",
     "titleTemplate": "{page} — SudoCut",
-    "description": "SudoCut removes the boring parts from long spoken footage. Join the closed-beta waitlist."
+    "description": "Edit videos, add captions and intros, create Shorts, and upload to YouTube in one SudoCut workflow."
   },
   "nav": {
     "skipToContent": "Skip to content",
@@ -34,11 +34,16 @@
   },
   "home": {
     "kicker": "From podcasts and interviews to solo videos",
-    "title": "Filming is done.\nStill not published?",
-    "qualifier": "Trim dead air and add captions to get your recorded video ready to publish.",
-    "proofLabel": "After filming",
-    "proofValue": "Uploaded in 2 hours",
-    "proofContext": "Previously 16 hours · measured internally",
+    "title": "One video to publish.\nToo many tools to open?",
+    "qualifier": "Finish everything that follows a recording in one place: SudoCut.",
+    "workflow": {
+      "label": "Inside SudoCut",
+      "edit": "Edit",
+      "captions": "Captions",
+      "intro": "Intro",
+      "shorts": "Shorts",
+      "publish": "YouTube upload"
+    },
     "deliverableLabel": "What you get",
     "deliverableTitle": "Review and change every cut.",
     "deliverable": "Get an MP4 and a Premiere or Final Cut project. Every cut can be inspected.",

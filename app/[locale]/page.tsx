@@ -6,6 +6,7 @@ import { WaitlistCta } from "@/components/WaitlistCta";
 import { YouTubeConnect } from "@/components/YouTubeConnect";
 
 type LocaleParams = { locale: string };
+const WORKFLOW_STEPS = ["edit", "captions", "intro", "shorts", "publish"] as const;
 
 export async function generateMetadata({
   params,
@@ -62,10 +63,13 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
           <p className="sc-kicker">{t("kicker")}</p>
           <h1 className="sc-plate-head">{t("title")}</h1>
           <p className="sc-qualifier">{t("qualifier")}</p>
-          <div className="sc-hero-proof">
-            <p className="sc-hero-proof-label">{t("proofLabel")}</p>
-            <p className="sc-hero-proof-value">{t("proofValue")}</p>
-            <p className="sc-hero-proof-context">{t("proofContext")}</p>
+          <div className="sc-hero-workflow">
+            <p className="sc-hero-workflow-label">{t("workflow.label")}</p>
+            <ol className="sc-hero-workflow-list">
+              {WORKFLOW_STEPS.map((step) => (
+                <li key={step}>{t(`workflow.${step}`)}</li>
+              ))}
+            </ol>
           </div>
           {/* The one cobalt object on this page. */}
           <WaitlistCta />

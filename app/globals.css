@@ -1304,33 +1304,34 @@ textarea {
   color: var(--sc-content-muted);
 }
 
-.sc-hero-proof {
+.sc-hero-workflow {
   margin-top: 24px;
   padding-top: 18px;
   border-top: 1px solid var(--sc-content);
 }
 
-.sc-hero-proof-label {
+.sc-hero-workflow-label {
   font-family: var(--sc-mono);
   font-size: 12px;
   letter-spacing: 0.04em;
   color: var(--sc-content-muted);
 }
 
-.sc-hero-proof-value {
-  margin-top: 8px;
-  font-family: var(--sc-numbers);
-  font-size: clamp(34px, 3.5vw, 46px);
-  font-weight: 700;
-  line-height: 1.1;
-  white-space: nowrap;
+.sc-hero-workflow-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 0;
+  list-style: none;
 }
 
-.sc-hero-proof-context {
-  margin-top: 6px;
+.sc-hero-workflow-list li {
+  padding: 6px 8px;
+  border: 1px solid var(--sc-content);
   font-family: var(--sc-mono);
   font-size: 12px;
-  color: var(--sc-content-muted);
+  white-space: nowrap;
 }
 
 .sc-plate .sc-wait {

@@ -1,8 +1,8 @@
 {
   "meta": {
-    "title": "SudoCut — 지루한 부분은 덜어냅니다.",
+    "title": "SudoCut — 편집부터 게시까지 한곳에서",
     "titleTemplate": "{page} — SudoCut",
-    "description": "SudoCut은 긴 말 영상의 지루한 부분을 덜어냅니다. 비공개 베타를 신청하세요."
+    "description": "SudoCut에서 영상 편집, 자막, 인트로, 쇼츠 제작부터 YouTube 업로드까지 이어서 작업하세요."
   },
   "nav": {
     "skipToContent": "본문으로 건너뛰기",
@@ -34,11 +34,16 @@
   },
   "home": {
     "kicker": "팟캐스트부터 인터뷰, 혼자 진행하는 영상까지",
-    "title": "촬영은 끝났는데,\n업로드는 아직인가요?",
-    "qualifier": "긴 촬영본의 빈 구간을 자르고 자막을 붙여 게시를 준비합니다.",
-    "proofLabel": "촬영을 마친 뒤",
-    "proofValue": "2시간 만에 업로드",
-    "proofContext": "기존 16시간 · 내부 측정 사례",
+    "title": "영상 한 편 올리려고,\n여러 도구를 오가나요?",
+    "qualifier": "촬영이 끝난 뒤 이어지는 작업, SudoCut 한곳에서 끝내세요.",
+    "workflow": {
+      "label": "SudoCut 안에서",
+      "edit": "편집",
+      "captions": "자막",
+      "intro": "인트로",
+      "shorts": "쇼츠",
+      "publish": "YouTube 게시"
+    },
     "deliverableLabel": "제공 결과물",
     "deliverableTitle": "컷은 확인하고 다시 고칠 수 있습니다.",
     "deliverable": "MP4와 프리미어 또는 파이널컷 프로젝트를 함께 제공합니다. 잘린 컷은 프로젝트에서 확인할 수 있습니다.",
