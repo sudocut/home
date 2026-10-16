@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CREATOR_APPLICATION_URL } from "@/content/creator-application";
 
 type LocaleParams = { locale: string };
 
@@ -14,15 +15,7 @@ export async function generateMetadata({
   return { title: meta("titleTemplate", { page: t("contact") }) };
 }
 
-/**
- * /contact — NOT part of the r4 winning variant, which has no contact page. Kept
- * because the route and its copy already existed, rebuilt in the winner's system
- * so it does not look like a page from a different site, and linked only from the
- * footer. If the next round decides the waitlist is the only way in, delete this
- * route, its messages, and the footer link together.
- *
- * No cobalt: the waitlist on the front page is where the accent is spent.
- */
+/** Creator applications and general support use separate contact paths. */
 export default async function ContactPage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -51,7 +44,11 @@ export default async function ContactPage({ params }: { params: Promise<LocalePa
         </div>
       </div>
 
-      <div className="sc-more" />
+      <p className="sc-more">
+        <a href={CREATOR_APPLICATION_URL} rel="noopener noreferrer" target="_blank">
+          {t("apply")}
+        </a>
+      </p>
     </div>
   );
 }

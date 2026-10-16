@@ -2,23 +2,25 @@
 title: Privacy Policy
 summary: What SudoCut collects, why, who processes it, and how to have it deleted.
 order: 2
-updated: 2026-09-14
+updated: 2026-10-16
 ---
 
 This policy covers the SudoCut application at
 [www.sudo-cut.com](https://www.sudo-cut.com), this site at
-**company.sudo-cut.com**, the closed-beta waitlist form, and our support address.
+**company.sudo-cut.com**, the creator management application form, and our support address.
 
 SudoCut is operated from the United States. For anything in this policy,
 including any request about your own data, write to <support@sudo-cut.com>.
 
 ## 1. What we collect
 
-### The waitlist
+### Creator management applications
 
-The waitlist is a Google Form. It collects the email address and channel link
-you type into it, and nothing else. We use them only to review the request and
-send an invite. Ask us and we delete them.
+The application is a Google Form. It collects the name, email address, content
+ideas, creator experience, obstacles, time commitment, and recording readiness
+you provide, plus any optional work or channel links you share. We use these
+details to review your application and contact you about creator management.
+Ask us and we delete your application details.
 
 ### Your account
 
@@ -72,7 +74,7 @@ legal obligations such as tax and accounting records.
 
 If you are in the EU or UK: our legal bases are performance of a contract (the
 service and your account), legitimate interest (security, abuse prevention and
-improving the service), consent (the waitlist), and legal obligation.
+improving the service), consent (creator management applications), and legal obligation.
 
 ## 3. Google sign-in data, specifically
 
@@ -176,7 +178,7 @@ do use service providers, who process it only on our instructions:
 
 | Provider | What it handles |
 | --- | --- |
-| Google (Sign-In, Forms, YouTube Data API) | Sign-in identity; waitlist submissions; publishing to a channel you connected |
+| Google (Sign-In, Forms, YouTube Data API) | Sign-in identity; creator management applications; publishing to a channel you connected |
 | Supabase | Accounts, sessions, and the project database |
 | Cloudflare R2 | Media, intermediate artefacts and exports |
 | Speech-to-text and AI processing providers | Transcription and analysis of your audio |
@@ -191,7 +193,7 @@ Our providers operate servers in the United States and elsewhere. Wherever you
 are, using the service means your data — including your media and the
 transcripts derived from it — is stored and processed there for the purposes in
 section 2, for as long as section 7 describes. If you do not want that, do not
-upload material to the beta.
+upload material to the service.
 
 ## 7. How long we keep it
 
@@ -200,8 +202,8 @@ upload material to the beta.
 - **Account data** is kept until you close your account.
 - **YouTube authorisation and channel details** are deleted or refreshed within
   30 days, and deleted when you disconnect the channel or revoke access.
-- **Waitlist entries** are kept until the invite is sent or you ask us to delete
-  them.
+- **Application details** are kept while we review your application and discuss
+  creator management with you, or until you ask us to delete them.
 - **Top-up records** are kept as long as tax and commercial law requires.
 - **Server logs** are kept for a short operational period.
 
@@ -228,7 +230,7 @@ Data is encrypted in transit, and at rest by our storage providers. Media is
 served through short-lived signed URLs. Access to production data is limited to
 the people who need it to run the service.
 
-**Honestly:** we are a very small team running a closed beta. We hold no
+**Honestly:** we are a very small team. We hold no
 security certification, and we say so rather than implying an audit that has not
 happened. If you find a security problem, please tell us at
 <support@sudo-cut.com>.
@@ -236,7 +238,7 @@ happened. If you find a security problem, please tell us at
 ## 11. Changes
 
 We may update this policy. The date at the top changes with it, and we email
-beta users before a material change takes effect.
+users before a material change takes effect.
 
 ## 12. Contact
 
