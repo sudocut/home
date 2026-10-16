@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { CREATOR_APPLICATION_URL } from "@/content/creator-application";
 
 type LocaleParams = { locale: string };
 
@@ -16,17 +17,7 @@ export async function generateMetadata({
   return { title: meta("titleTemplate", { page: t("pricing") }) };
 }
 
-/**
- * /pricing — r4 winner (kimi-k3-a). Two visibly separate blocks so neither can be
- * mistaken for the other: what exists today, and what is only a target.
- *
- * THE NUMBERS ARE REAL. business/pricing.md (rev. 2026-07-22) settles both the
- * five-tier launch card and how to show it: the launch card "is still shown in
- * every pitch" — the guard is *without the charge*, not *without the numbers*.
- * So the card is here, labelled a target, with no way to buy anything.
- *
- * NO cobalt on this page — there is nothing to press, by design.
- */
+/** Current support options, with future subscription targets labelled separately. */
 export default async function PricingPage({ params }: { params: Promise<LocaleParams> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -60,11 +51,8 @@ export default async function PricingPage({ params }: { params: Promise<LocalePa
               <span>{t("now.access.value")}</span>
             </li>
             <li>
-              <span className="sc-k">{t("now.grant.key")}</span>
-              <span>
-                <span className="sc-numeric">{t("now.grant.figure")}</span>
-                {t("now.grant.value")}
-              </span>
+              <span className="sc-k">{t("now.management.key")}</span>
+              <span>{t("now.management.value")}</span>
             </li>
             <li>
               <span className="sc-k">{t("now.topups.key")}</span>
@@ -123,6 +111,11 @@ export default async function PricingPage({ params }: { params: Promise<LocalePa
       </section>
 
       <p className="sc-foot-note">{t("footNote")}</p>
+      <p className="sc-more">
+        <a href={CREATOR_APPLICATION_URL} rel="noopener noreferrer" target="_blank">
+          {t("apply")}
+        </a>
+      </p>
     </div>
   );
 }

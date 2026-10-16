@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
+import { CREATOR_APPLICATION_URL } from "@/content/creator-application";
 
 type LocaleParams = { locale: string };
 
@@ -58,7 +58,9 @@ export default async function AboutPage({ params }: { params: Promise<LocalePara
       </aside>
 
       <p className="sc-more">
-        <Link href={{ pathname: "/", hash: "waitlist" }}>{t("more")}</Link>
+        <a href={CREATOR_APPLICATION_URL} rel="noopener noreferrer" target="_blank">
+          {t("more")}
+        </a>
       </p>
     </div>
   );

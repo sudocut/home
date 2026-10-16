@@ -11,7 +11,6 @@
     "team": "Team",
     "pricing": "Pricing",
     "help": "Help",
-    "waitlist": "Waitlist",
     "contact": "Contact",
     "terms": "Terms",
     "privacy": "Privacy",
@@ -19,18 +18,14 @@
     "language": {
       "ko": "한국어",
       "en": "English"
-    }
+    },
+    "apply": "Creator application"
   },
   "footer": {
     "tagline": "Get your recorded videos published on time.",
     "rights": "© {year} SudoCut",
     "linksLabel": "Footer",
-    "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
-  },
-  "waitlist": {
-    "label": "Closed beta waitlist",
-    "submit": "Request an invite →",
-    "privacy": "We use your address and channel only to review and send invites. Ask us and we'll delete them."
+    "privacy": "Application details are used to review your creator management application and contact you. You can request deletion at support@sudo-cut.com."
   },
   "home": {
     "kicker": "From podcasts and interviews to solo videos",
@@ -90,7 +85,7 @@
       "detail": "A full episode used to take about 4–6 hours to edit. With SudoCut, the rough cut and cleanup pass took about one hour. The human work stays. We reduce the repetitive cut cleanup so editors can focus on the parts that matter.",
       "tagline": "Based on a channel we operate"
     },
-    "more": "Join the closed-beta waitlist →"
+    "more": "Apply for creator management →"
   },
   "team": {
     "kicker": "The team",
@@ -142,27 +137,26 @@
   },
   "pricing": {
     "kicker": "Pricing",
-    "title": "Beta terms now. A launch card later.",
-    "lede": "Two blocks, clearly separated. The first is what exists today. The second is a target — nothing on it can be bought yet.",
+    "title": "Build your channel with us.",
+    "lede": "SudoCut is open. Apply for creator management with sponsorship-based support, or purchase credits for editing. Future subscription targets are shown separately below.",
     "now": {
-      "label": "Closed beta terms",
-      "title": "Now — closed beta",
-      "when": "Aug–Oct 2026 · Korea",
+      "label": "Available options",
+      "title": "Creator management and editing credits",
+      "when": "Service open",
       "access": {
         "key": "Access",
-        "value": "Invite-only, ~10 channels. Free during beta — no subscription exists yet."
-      },
-      "grant": {
-        "key": "Grant",
-        "figure": "600",
-        "value": " raw minutes (10h) credited when you join."
+        "value": "Apply for filming guidance, editing, channel management, and growth support."
       },
       "topups": {
         "key": "Top-ups",
-        "before": "The only payment that exists: one-time credit packs at ",
+        "before": "Pay for editing directly with one-time credit packs at ",
         "rate": "₩100",
         "after": " per raw minute.",
         "packs": ["300분 ₩30,000", "600분 ₩60,000", "1,200분 ₩120,000"]
+      },
+      "management": {
+        "key": "Sponsorships",
+        "value": "We help find sponsorship opportunities and take a commission when sponsorship revenue is earned."
       }
     },
     "launch": {
@@ -211,12 +205,13 @@
       "overageAfter": "/raw-min on every tier. Re-processing the same source is free.",
       "target": "This card is a target. Nothing here can be bought today."
     },
-    "footNote": "Prices in KRW only. Beta invites open from the waitlist on the front page."
+    "footNote": "Creator management applications are open. Tell us about your content through the application form.",
+    "apply": "Apply for creator management →"
   },
   "help": {
     "kicker": "Help",
     "title": "Help documents.",
-    "lede": "Short documents about how the beta works. Each one has its own link, so we can send you straight to the answer.",
+    "lede": "Short documents about how SudoCut works. Each one has its own link, so we can send you straight to the answer.",
     "listLabel": "Help documents",
     "updated": "Updated",
     "empty": "No documents are published yet.",
@@ -232,14 +227,24 @@
   "contact": {
     "kicker": "Contact",
     "title": "Talk to us.",
-    "lede": "The fastest way in is the waitlist. For anything else, email works.",
+    "lede": "For creator management, tell us about your story through the application form. For other questions, email us.",
     "emailLabel": "Email",
     "email": "support@sudo-cut.com",
-    "note": "Beta invites are handled from the waitlist, not from this address."
+    "note": "Please use the application form for creator management requests.",
+    "apply": "Apply for creator management →"
   },
   "notFound": {
     "title": "That page isn't here.",
     "body": "The link may be old, or the page may have moved.",
     "back": "Back to the front page"
+  },
+  "creatorApplication": {
+    "label": "Creator management · Applications open",
+    "submit": "Apply now →",
+    "title": "You bring the story. We help build the channel.",
+    "body": "From filming guidance and editing to channel management and growth support, we handle the work around your content. You focus on recording and telling your story.",
+    "sponsorships": "Our team has experience working on sponsorships with OpenAI, NVIDIA, Samsung Electronics, and more. We also help you find sponsorship opportunities.",
+    "payment": "With the sponsorship-based option, we take a commission when you earn sponsorship revenue. Prefer to pay for editing directly? You can purchase editing credits instead.",
+    "fit": "Have a story worth sharing and the commitment to keep creating? Tell us what you want to make. You do not need an existing channel or professional equipment."
   }
 }

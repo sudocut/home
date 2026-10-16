@@ -1,4 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
+import { CREATOR_APPLICATION_URL } from "@/content/creator-application";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 
@@ -16,8 +17,7 @@ const LINKS = [
  * verdict lists adopting the mark here as a graft for the NEXT round rather than
  * something to slip in during the port.
  *
- * The waitlist link is an anchor to the form on the front page, so every page can
- * offer the action without a second cobalt object living in the header.
+ * The application link stays monochrome so the home page keeps one cobalt action.
  */
 export function Nav() {
   const t = useTranslations("nav");
@@ -36,7 +36,9 @@ export function Nav() {
               {t(link.key)}
             </Link>
           ))}
-          <Link href={{ pathname: "/", hash: "waitlist" }}>{t("waitlist")}</Link>
+          <a href={CREATOR_APPLICATION_URL} rel="noopener noreferrer" target="_blank">
+            {t("apply")}
+          </a>
 
           {/* Locale links point at the other locale's front page rather than the
               equivalent page: there is no middleware.ts here (see

@@ -55,6 +55,7 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("home");
+  const application = await getTranslations("creatorApplication");
 
   return (
     <>
@@ -78,6 +79,17 @@ export default async function HomePage({ params }: { params: Promise<LocaleParam
           <WaitlistCta />
         </div>
       </ScreenStage>
+
+      <section className="sc-wrap sc-deliverable" aria-labelledby="creator-management">
+        <p className="sc-deliverable-label">{application("label")}</p>
+        <h2 className="sc-deliverable-head" id="creator-management">
+          {application("title")}
+        </h2>
+        <p className="sc-deliverable-body">{application("body")}</p>
+        <p className="sc-deliverable-body">{application("sponsorships")}</p>
+        <p className="sc-deliverable-body">{application("payment")}</p>
+        <p className="sc-deliverable-body">{application("fit")}</p>
+      </section>
 
       {/* Constitution D8 — the only other motion on the page. */}
       <ChannelTicker pitch={7} />

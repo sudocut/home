@@ -89,13 +89,10 @@ The site's final layout is what the rounds are for — `r1` is written but not y
   conversion to WOFF2 before launch.
 - **Logo vectors are reconstructed**, not official — rebuilt from the published
   geometry. Exact, but replace them if the originals turn up.
-- **The waitlist links out to a Google Form.** The URL is committed, so there is
-  nothing to configure; `NEXT_PUBLIC_WAITLIST_FORM_URL` overrides it for a
-  preview or a second form (`.env.example`). Two consequences worth knowing: a
-  link that leaves the site converts worse than an inline field, which is what
-  the ranked r4 variant had — look here first if signups are thin. And **the
-  responses sheet holds personal data:** keep it inside the Workspace, share it
-  per-person rather than by link, and delete rows on request.
+- **Creator management applications use Google Forms.** Every application link
+  uses `src/content/creator-application.ts`; no environment override is needed.
+  The responses contain personal data. Limit access to the review team and
+  delete application details on request.
 - **The homepage figures are illustrative, not measured.** `14:32 → 10:47` comes
   from `brand/voice.md`'s examples and is labelled as such on the page. Replace
   it with a real project's numbers when one is publishable — that would be a
